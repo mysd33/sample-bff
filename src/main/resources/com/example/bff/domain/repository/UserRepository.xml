@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.bff.domain.repository.UserRepository">
+
+    <!-- マッピング定義 -->
+
+    <!-- １件insert -->
+    <insert id="insert" >
+        INSERT INTO m_user (
+            user_id,
+            password,
+            user_name,
+            birthday,
+            age,
+            marriage,
+            role)
+        VALUES (
+            #{userId},
+            #{password},
+            #{userName},
+            #{birthday},
+            #{age},
+            #{marriage},
+            #{role})
+    </insert>
+
+    <!-- １件検索 -->
+    <select id="findOne" resultType="User">
+        SELECT
+            user_id,
+            password,
+            user_name,
+            birthday,
+            age,
+            marriage,
+            role
+        FROM
+            m_user
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <!-- 全件検索 -->
+    <select id="findAll" resultType="User">
+        SELECT
+            user_id,
+            password,
+            user_name,
+            birthday,
+            age,
+            marriage,
+            role
+        FROM
+            m_user
+    </select>
+    
+    <!-- 全件検索（ページネーション用） -->
+    <select id="findAllForPagination" resultType="User">
+        SELECT
+            user_id,
+            password,
+            user_name,
+            birthday,
+            age,
+            marriage,
+            role
+        FROM
+            m_user
+        <choose>
+            <when test="!sort.isEmpty()">
+                ORDER BY                
+                <foreach item="order" collection="sort" separator=",">
+                    ${order.property}
+                    ${order.direction}
+                </foreach>
+            </when>
+        </choose>
+        LIMIT
+            #{pageSize}
+        OFFSET
+            #{offset}
+    </select>
+    
+    
+    <!-- 件数取得 -->
+    <select id="count" resultType="int">
+        SELECT
+            count(user_id)
+        FROM
+            m_user
+    </select>
+
+    <!-- １件更新 -->
+    <update id="updateOne" parameterType="User">
+        UPDATE m_user
+        SET
+            password = #{password},
+            user_name = #{userName},
+            birthday = #{birthday},
+            age = #{age},
+            marriage = #{marriage}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- １件削除 -->
+    <delete id="deleteOne" parameterType="string">
+        DELETE FROM m_user WHERE user_id = #{userId}
+    </delete>
+</mapper>

@@ -61,6 +61,26 @@
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
 
+		<!-- Webjars -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<!-- TODO: version up 3.6.0 -->
+			<version>3.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<!-- TODO: version up 4.6.1 or  5.2.0 -->
+			<version>4.3.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>open-iconic</artifactId>			
+			<version>1.1.1</version>
+		</dependency>
+		
 		<!-- MyBatis -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
@@ -68,6 +88,7 @@
 			<version>${mybatis-spring-boot-starter.version}</version>
 		</dependency>
 
+		<!-- H2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

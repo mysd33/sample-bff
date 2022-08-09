@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" 
+    th:replace="~{layout/template :: layout(~{::title/content()},~{::.container/content()}, ~{::#headerButton/content()})}">
+    <head>    
+        <meta charset="utf-8">        
+        <title>ユーザ登録</title>        
+    </head>    
+    <body class="bg-light">
+        <span id="headerButton" class="d-none"><a class="btn btn-outline-primary" th:href="@{/userList}">ユーザ一覧に戻る</a></span>      
+        <div class="container">
+            <form method="post" th:action="@{/user}" th:object="${userForm}">
+                <!--/* メッセージ領域 */-->
+                <div th:replace="layout/parts :: part_validation_message"></div>             
+                <div th:replace="layout/parts :: part_message"></div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="userId">ユーザID<span class="badge badge-danger">必須</span></label>                    
+                        <input id="userId" type="text" class="form-control" th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'" autofocus/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>                       
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="password">パスワード<span class="badge badge-danger">必須</span></label>                    
+                        <input id="password" type="password" class="form-control" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" maxlength="100"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>                       
+                    </div>            
+                    <!-- TODO:パスワード（確認）の入力エリア -->
+                    <div class="form-group col-md-6">
+                        <label for="userName">ユーザ名<span class="badge badge-danger">必須</span></label>                    
+                        <input id="userName" type="text" class="form-control" th:field="*{userName}" th:classappend="${#fields.hasErrors('userName')} ? 'is-invalid'" />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>                       
+                    </div>            
+                    <div class="form-group col-md-6">
+                        <label for="birthday">生年月日<span class="badge badge-danger">必須</span></label>
+                        <input id="birthday" type="date" class="form-control" th:field="*{birthday}" th:classappend="${#fields.hasErrors('birthday')} ? 'is-invalid'" min="1900-01-01" max="2100-12-31" />
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
+                    </div>
+                    <!-- TODO:削除予定 -->
+                    <div class="form-group col-md-6">
+                        <label for="age">年齢：削除予定</label>                    
+                        <input id="age" type="text" class="form-control" th:field="*{age}" th:classappend="${#fields.hasErrors('age')} ? 'is-invalid'" maxlength="3"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>                       
+                    </div> 
+                </div>
+                <button class="btn btn-primary" type="submit">ユーザー登録</button>
+            </form>
+        </div>
+    </body>
+</html>
