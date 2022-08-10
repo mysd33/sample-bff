@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.example.bff.app.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
 import com.example.bff.domain.service.UserService;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
+	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log); 
 
 	/**
 	 * ユーザー登録画面のGETメソッド用処理.
@@ -56,9 +59,9 @@ public class UserController {
 		boolean result = userService.insert(user);
 
 		if (result == true) {
-			log.debug("insert成功");
+			appLogger.debug("insert成功");
 		} else {
-			log.debug("insert失敗");
+			appLogger.debug("insert失敗");
 		}
 
 		return "redirect:/userList";
@@ -85,7 +88,7 @@ public class UserController {
 	@GetMapping("/userDetail/{id:.+}")
 	public String getUserDetail(@ModelAttribute UserForm form, Model model, @PathVariable("id") String userId) {
 
-		log.debug("userId = " + userId);
+		appLogger.debug("userId = " + userId);
 		// ユーザーIDのチェック
 		if (userId != null && userId.length() > 0) {
 
@@ -106,7 +109,7 @@ public class UserController {
 	public String postUserDetailUpdate(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
 			BindingResult bindingResult, Model model) {
 
-		log.debug("更新ボタンの処理");
+		appLogger.debug("更新ボタンの処理");
 		if (bindingResult.hasErrors()) {
 			return "/user/userDetail";
 		}
@@ -136,7 +139,7 @@ public class UserController {
 	 */
 	@PostMapping(value = "/userDetail", params = "delete")
 	public String postUserDetailDelete(@ModelAttribute UserForm form, Model model) {
-		log.debug("削除ボタンの処理");
+		appLogger.debug("削除ボタンの処理");
 
 		// TODO:自分のユーザ情報は削除できないようにする
 		// 削除実行
