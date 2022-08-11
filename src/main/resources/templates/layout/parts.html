@@ -68,7 +68,7 @@
 				<use
 					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}"
 					class="ok"></use></svg>
-			<span th:text="#{${resultMessage.code}}"></span>
+			<span th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
 		</div>
 		<div class="alert alert-warning" role="alert"
 			th:if="${(resultMessage != null) and resultMessage.warn}">
@@ -76,7 +76,7 @@
 				<use
 					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#eye}"
 					class="warn"></use></svg>
-			<span th:text="#{${resultMessage.code}}"></span>
+            <span th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>                    			
 		</div>
 		<div class="alert alert-danger" role="alert"
 			th:if="${(resultMessage != null) and resultMessage.error}">
@@ -84,7 +84,7 @@
 				<use
 					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
 					class="error"></use></svg>
-			<span th:text="#{${resultMessage.code}}"></span>
+            <span th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>                                                  			
 		</div>
 	</div>
 	

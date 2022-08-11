@@ -1,3 +1,15 @@
+li {
+margin-bottom: 5px;
+}
+
+.strike {
+    text-decoration: line-through;
+}
+
+.inline {
+    display: inline-block;
+}
+
 .form-login {
   width: 100%;
   max-width: 330px;

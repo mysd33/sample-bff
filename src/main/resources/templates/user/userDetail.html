@@ -15,7 +15,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="userId">ユーザID</label>                    
-                        <input id="userId" type="text" readonly class="form-control-plaintext" th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'"s/>
+                        <input id="userId" type="text" readonly class="form-control-plaintext" th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'" />
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>                       
                     </div>
                     <div class="form-group col-md-6">
