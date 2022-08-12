@@ -10,7 +10,6 @@ import com.example.bff.domain.model.Todo;
 /**
  * TodoのRepositoryインタフェース 
  */
-@Mapper
 public interface TodoRepository {
 	/**
 	 * Todoを取得する
