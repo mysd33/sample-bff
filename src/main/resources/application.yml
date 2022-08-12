@@ -1,4 +1,5 @@
 spring:    
+  application:    name: sample-bff
   profiles:
     active:
     - dev
