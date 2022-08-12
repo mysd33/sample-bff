@@ -3,8 +3,6 @@ package com.example.bff.domain.repository;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.example.bff.domain.model.Todo;
 
 /**
@@ -43,10 +41,4 @@ public interface TodoRepository {
     */
     void delete(Todo todo);
 
-    /**
-     * 指定した完了ステータスのTodoの件数を取得
-     * @param finished 完了ステータス
-     * @return 件数
-     */
-    long countByFinished(boolean finished);
 }

@@ -34,7 +34,7 @@ public interface TodoService {
      * @param todoId 完了するTodoのID
      * @return 完了したTodo
      */
-    Todo finish(String todoId);
+    void finish(String todoId);
 
     /**
      * Todoを削除する

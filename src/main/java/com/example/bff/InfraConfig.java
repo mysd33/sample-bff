@@ -9,9 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.bff.domain.repository.TodoRepository;
-import com.example.bff.infra.repository.TodoRepositoryStub;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
+import com.example.fw.common.httpclient.RestTemplateResponseErrorHandler;
 
 /**
  * 
@@ -21,22 +20,17 @@ import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 @Configuration
 public class InfraConfig {
 
-	//REST APIでアクセスしない場合のスタブ	
-	@Bean
-	public TodoRepository todoRepository() {
-		return new TodoRepositoryStub();
-		//return new TodoRepositoryImpl();
-	}
-	
 	/**
 	 * Restクライアントの設定
-	 * 
 	 */
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		//ログの設定
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add(new RestTemplateLoggingInterceptor());
 		return restTemplateBuilder
+				//エラーハンドラーの設定
+				.errorHandler(new RestTemplateResponseErrorHandler())
 				.interceptors(interceptors)				
 				.build();
 	}

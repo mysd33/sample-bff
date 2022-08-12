@@ -14,3 +14,7 @@ logging:
     org.springframework.jdbc: INFO
 #    org.thymeleaf: DEBUG
     com.example: DEBUG
+    
+api:
+  backend:
+    url: http://localhost:8000   
