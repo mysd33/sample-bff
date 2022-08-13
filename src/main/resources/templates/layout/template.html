@@ -17,14 +17,13 @@
             <h3 class="mr-md-auto font-weight-normal">
                 <svg viewBox="0 0 8 8" class="icon"><use th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}" class="person"></use></svg>
                 <span th:replace="${title}" th:remove="tag">タイトル</span>
-            </h3>            
-            <!-- 
+            </h3>                        
             <div sec:authorize="isAuthenticated()">
                 <p class="text-right">
-                ようこそ, <strong th:text="${#authentication.name}"></strong>さん!
-                </p>
-            </div> -->           
-            <a th:replace="${headerButton}"></a>
+                ようこそ, <strong><span sec:authentication="principal.user.userName"></span></strong>さん!
+                <a th:replace="${headerButton}"></a>
+                </p>                
+            </div>                  
         </div>
         <!--/* ボディ部 */-->
         <div class="container">

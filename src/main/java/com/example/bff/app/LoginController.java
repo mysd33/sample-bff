@@ -13,7 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
 	
 	/**
-	 * メニュー画面遷移処理
+	 * ログイン画面のGETメソッド用処理
+	 */
+	@GetMapping("/login")
+	public String getLogin(Model model) {
+		// ログイン画面へ遷移
+		return "login/login";
+	}
+	
+	/**
+	 * ログイン成功後のメニュー画面遷移処理
 	 */
 	@GetMapping("/menu")
 	public String menu(Model model) {

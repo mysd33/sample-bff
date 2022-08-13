@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
     
-	//TODO: 一旦メニュー画面へ遷移
+	//ログイン画面へ遷移
 	@GetMapping("/")
     public String home() {
-        return "redirect:/menu";
+        return "redirect:/login";
     }
 }

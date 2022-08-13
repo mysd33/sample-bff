@@ -10,7 +10,10 @@
 	    	<div class="text-center">
 		        <div class ="container" >
 		            <a class="mt-5 btn btn-primary btn-lg btn-block" th:href="@{/todo/list}" >TODO管理</a>    		            		            
-                    <a class="mt-5 btn btn-primary btn-lg btn-block" th:href="@{/admin}" >ユーザ管理</a>                    
+                    <a class="mt-5 btn btn-primary btn-lg btn-block" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">ユーザ管理</a>
+                    <form method="post" th:action="@{/logout}">
+                        <button class="mt-5 btn btn-primary btn-lg btn-block" type="submit">ログアウト</button>
+                    </form>                    
 		        </div>
 	        </div>
 		</div>

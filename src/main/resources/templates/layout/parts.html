@@ -37,7 +37,6 @@
     </nav>
     
 	<!--/* ログイン　エラーメッセージ領域 */-->
-    <!-- 
 	<div th:fragment="part_login_error" class="alert alert-danger"
 		role="alert"
 		th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
@@ -46,7 +45,7 @@
 				th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
 				class="error"></use></svg>
 		<span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
-	</div> -->
+	</div>
     
 	<!--/* 入力エラーメッセージ領域 */-->
 	<div th:fragment="part_validation_message">

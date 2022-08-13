@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,7 @@ import com.example.bff.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-//import org.springframework.security.crypto.password.PasswordEncoder;
+
 /**
  * 
  * ユーザ管理機能のサービス実装クラス
@@ -25,15 +26,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository repository;
-
-	// TODO:サンプル最小化のためコメント
-	// private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public boolean insert(User user) {
-		// TODO:サンプル最小化のためコメント
-		// String password = passwordEncoder.encode(user.getPassword());
-		String password = user.getPassword();
+	public boolean insert(User user) {		
+		String password = passwordEncoder.encode(user.getPassword());
 		user.setPassword(password);
 		return repository.insert(user);
 	}
@@ -85,10 +82,8 @@ public class UserServiceImpl implements UserService {
 	 * １件更新用メソッド.
 	 */
 	@Override
-	public boolean updateOne(User user) {
-		// TODO: サンプル最小化のためコメント
-		// String password = passwordEncoder.encode(user.getPassword());
-		String password = user.getPassword();
+	public boolean updateOne(User user) {		
+		String password = passwordEncoder.encode(user.getPassword());		
 		user.setPassword(password);
 		return repository.updateOne(user);
 	}
