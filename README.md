@@ -30,7 +30,8 @@
     * [Mapstruct](https://mapstruct.org/)
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
 
-# 動作確認
+## EclipseやIntelliJ等での動作確認
+* MainクラスをSampleBffApplicationとして、Spring Bootアプリケーションを起動します。
 * ブラウザまたは、REST APIクライアントツールを使って、ヘルスチェックポイントエンドポイントをAPIを呼び出す。ローカル実行の場合8080でポートで起動する。
     * GET http://localhost:8080/actuator/health
         * 正常に起動していれば、以下返却する。
@@ -50,6 +51,32 @@
 * ログイン後、メニューが表示される。
     * 「Todo管理」ボタンを押下するとTodo管理の画面を表示する。
     * 「管理者」ロールでログインしている場合のみ「ユーザ管理」ボタンが表示され、ボタンを押下すると、ユーザ管理画面を表示する。
+
+## Dockerでのアプリ起動
+* Mavenビルド
+```sh
+#Windows
+.\mvnw.cmd package
+#Linux/Mac
+./mvnw package
+```
+* ローカルでDockerビルド
+```sh
+docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
+```
+
+* ローカルでDocker実行（ProfileをdevでSpringBoot実行）
+```sh
+docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+
+#logをjson形式に変更する場合
+docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_container --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+```
+* ECRプッシュ
+```sh
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
+docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+
 
 ## ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。

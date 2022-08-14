@@ -43,7 +43,6 @@ public class TodoController {
 		return form;
 	}
 
-	// TODO: url再考
 	/**
 	 * Todoリストの表示
 	 */
@@ -51,7 +50,7 @@ public class TodoController {
 	public String list(Model model) {
 		Collection<Todo> todos = todoService.findAll();
 		model.addAttribute("todos", todos);
-		return "/todo/todoList";
+		return "todo/todoList";
 	}
 
 	/**

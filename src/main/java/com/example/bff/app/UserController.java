@@ -111,7 +111,7 @@ public class UserController {
 
 		appLogger.debug("更新ボタンの処理");
 		if (bindingResult.hasErrors()) {
-			return "/user/userDetail";
+			return "user/userDetail";
 		}
 		// TODO:ロールの更新
 		User user = UserMapper.INSTANCE.formToModel(form);
