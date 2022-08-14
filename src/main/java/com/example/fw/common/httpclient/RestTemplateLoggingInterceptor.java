@@ -27,7 +27,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
 	@Override
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)
 			throws IOException {
-		appLoger.info(I_FW_0003, URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
+		appLoger.info(I_FW_0003, request.getMethod(), URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
 		return execution.execute(request, body);
 	}
 

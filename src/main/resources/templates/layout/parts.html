@@ -42,7 +42,7 @@
 		th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
 		<svg viewBox="0 0 8 8" class="icon">
 				<use
-				th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
+				th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
 				class="error"></use></svg>
 		<span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
 	</div>
@@ -53,7 +53,7 @@
 			th:if="${#fields.hasAnyErrors()}">
 			<svg viewBox="0 0 8 8" class="icon">
 				<use
-					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
+					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
 					class="error"></use></svg>
 			入力エラーです。
 		</div>
@@ -65,7 +65,7 @@
 			th:if="${(resultMessage != null) and resultMessage.info}">
 			<svg viewBox="0 0 8 8" class="icon">
 				<use
-					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}"
+					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}"
 					class="ok"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>
 			<span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
@@ -74,7 +74,7 @@
 			th:if="${(resultMessage != null) and resultMessage.warn}">
 			<svg viewBox="0 0 8 8" class="icon">
 				<use
-					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#eye}"
+					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#eye}"
 					class="warn"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>                                
             <span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
@@ -83,7 +83,7 @@
 			th:if="${(resultMessage != null) and resultMessage.error}">
 			<svg viewBox="0 0 8 8" class="icon">
 				<use
-					th:xlink:href="@{webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
+					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
 					class="error"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>            
             <span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
