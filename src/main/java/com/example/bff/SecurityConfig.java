@@ -38,14 +38,15 @@ public class SecurityConfig {
 
 		// フォーム認証によるログイン処理
 		http.formLogin(login -> login
-				.loginProcessingUrl("/login") // ログイン処理のパス
+				.loginProcessingUrl("/authenticate") // ログイン処理のパス
 				.loginPage("/login") // ログインページの指定
-				.failureUrl("/login") // ログイン失敗時の遷移先
-				.usernameParameter("userId") // ログインページのユーザーID
+				.failureUrl("/login?error") // ログイン失敗時の遷移先
+			.usernameParameter("userId") // ログインページのユーザーID
 				.passwordParameter("password") // ログインページのパスワード
 				.defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
 				.permitAll()
 		)
+		
 				// ログアウト処理
 				.logout(logout -> logout
 						.logoutUrl("/logout") // ログアウトのURL						

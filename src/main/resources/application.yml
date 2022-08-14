@@ -5,6 +5,11 @@ spring:
     - dev
     - log_default  #logging in default format
 #    - log_container  #logging in json format
+  security:    filter:      dispatcher-types:
+        - async
+        - error
+        - request        
+        - forward 
 
   jackson:
     property-naming-strategy: SNAKE_CASE

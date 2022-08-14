@@ -38,8 +38,7 @@
     
 	<!--/* ログイン　エラーメッセージ領域 */-->
 	<div th:fragment="part_login_error" class="alert alert-danger"
-		role="alert"
-		th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
+		role="alert" th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
 		<svg viewBox="0 0 8 8" class="icon">
 				<use
 				th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
