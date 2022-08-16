@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.bff.domain.model.Todo;
@@ -16,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す
  */
-//@Repository
+//WebClient（WebFulx）版のTodoRepository実装を使用しているためコメントアウト
+//@Repository  
 @RequiredArgsConstructor
 public class TodoRepositoryImplByRestTemplate implements TodoRepository {
 

@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	//TODO: DI
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override
@@ -60,11 +61,11 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 				// ErrorResponseに変換できない場合
 				throwBussinessExceptionForUnknownErrorResponse(httpStatus, statusText, responseBody, charset);
 			}
-			// ErrorResponseをもとにエラーメッセージを画面表示する
+			// サーバ側のErrorResponseに含まれるメッセージをもとにエラーメッセージを画面表示する
 			code = errorResponse.getCode();
 			message = errorResponse.getMessage();
 			throw new BusinessException(
-					ResultMessage.builder().type(ResultMessageType.WARN).code(code).message(message).build());
+					ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8001).message(message).build());
 		case SERVER_ERROR:
 			try {
 				errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
