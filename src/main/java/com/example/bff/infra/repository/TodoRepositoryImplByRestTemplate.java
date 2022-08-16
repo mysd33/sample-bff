@@ -16,11 +16,10 @@ import lombok.RequiredArgsConstructor;
 /**
  * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す
  */
-@Repository
+//@Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplByRestTemplate implements TodoRepository {
 
-	// TODO: WebClientに変更
 	private final RestTemplate restTemplate;
 	 
 	@Value("${api.backend.url}/api/v1/todos")
@@ -28,12 +27,9 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
 	
 	@Value("${api.backend.url}/api/v1/todos/{todoId}")
 	private String urlTodoById;
-
-	//TODO: ステータス400（業務エラー）やステータス500（システムエラー）の対応
 	
 	@Override
 	public Optional<Todo> findById(String todoId) {
-		//REST APIの呼び出し
 		Todo todo = restTemplate.getForObject(urlTodoById, Todo.class, todoId);
 		return Optional.ofNullable(todo);		
 	}

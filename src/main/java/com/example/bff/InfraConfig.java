@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.RestTemplateResponseErrorHandler;
+import com.example.fw.common.httpclient.WebClientLoggingFilter;
 
 /**
  * 
@@ -21,18 +22,25 @@ import com.example.fw.common.httpclient.RestTemplateResponseErrorHandler;
 public class InfraConfig {
 
 	/**
-	 * Restクライアントの設定
+	 * WebClientでのログ出力クラス
+	 * @return
+	 */
+	@Bean 
+	public WebClientLoggingFilter webClientLoggingFilter() {
+		return new WebClientLoggingFilter();
+	}
+
+	/**
+	 * RestTemplateの設定
 	 */
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-		//ログの設定
+		// ログ出力クラスの設定
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add(new RestTemplateLoggingInterceptor());
 		return restTemplateBuilder
-				//エラーハンドラーの設定
-				.errorHandler(new RestTemplateResponseErrorHandler())
-				.interceptors(interceptors)				
-				.build();
+				// エラーハンドラークラスの設定
+				.errorHandler(new RestTemplateResponseErrorHandler()).interceptors(interceptors).build();
 	}
 
 }
