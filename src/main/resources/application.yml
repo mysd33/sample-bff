@@ -1,3 +1,6 @@
+server:
+  shutdown: graceful
+
 spring:    
   application:    name: sample-bff
   profiles:
@@ -14,6 +17,8 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
     
+  lifecycle:
+    timeout-per-shutdown-phase: 20s    
     
 mybatis:
   type-aliases-package: com.example.bff.domain.model     
