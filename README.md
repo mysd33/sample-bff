@@ -52,6 +52,23 @@
     * 「Todo管理」ボタンを押下するとTodo管理の画面を表示する。
     * 「管理者」ロールでログインしている場合のみ「ユーザ管理」ボタンが表示され、ボタンを押下すると、ユーザ管理画面を表示する。
 
+## redisのローカル起動
+* sample-bffのProfi「prod」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
+    * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
+* APをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+    * DockerによるRedisのローカル実行手順
+        * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
+        ```sh
+        docker run --name test-redis -p 6379:6379 -d redis
+        ```
+        * redisコンテナに入ってredis cliにより接続
+        ```sh
+        docker exec -i -t test-redis /bin/bash
+        #コンテナ内のターミナルにログイン
+        > redis-cli
+        #「keys *」コマンド等で、redisにセッション情報が格納されたか確認できる
+        > keys *
+        ```
 ## Dockerでのアプリ起動
 * Mavenビルド
 ```sh
@@ -65,13 +82,19 @@
 docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
 ```
 
-* ローカルでDocker実行（ProfileをdevでSpringBoot実行）
+* ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
 ```sh
 docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
 docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_container --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
+
+* ローカルでDocker実行（Profileを「prod」でSpringBoot実行）　※Redisのローカル起動も必要
+```sh
+docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=prod,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env REDIS_CLUSTER_ENDPOINT=(ローカルPCのプライベートIP) XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+```
+
 * ECRプッシュ
 ```sh
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
@@ -91,6 +114,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 | | ページネーション | Thymeleafの機能を利用し、一覧表示する際のページネーションの画面部品を提供する。 | ○ | com.example.fw.web.page |
 | | 入力チェック| Java BeanValidationとSpringのValidation機能を利用し、単項目チェックや相関項目チェックといった画面の入力項目に対する形式的なチェックを実施する。 | - | - |
 |  | 認証・認可| Spring Securityを利用し、DBで管理するユーザ情報をもとに認証、認可を行う。 | - | - |
+| | セッション管理 | 通常、SpringMVCのセッション管理機能で管理するが、オートスケーリング等の対応のため、APサーバ上で保持していたセッション情報をRedisサーバ（AWSの場合、ElastiCache for Redis）に外部化するためにSpring Session Data Redisを利用する。 | - | - |
 | | 集約例外ハンドリング | SpringMVCのControllerAdviceやAOPを利用し、エラー（例外）発生時、エラーログの出力、DBのロールバック、エラー画面やエラー電文の返却といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.web.advice、com.example.fw.web.aspect |
 | | 分散トレーシング | Spring Cloud Sleathを利用して、トレースIDやスパンIDをAP間でのREST API呼び出しで引継ぎログに記録することで、分散トレーシングを実現する。 | - | - |
 | | ヘルスチェック | Spring Boot Actuatorを利用して、ヘルスチェックエンドポイントを提供する。その他、Micrometerメトリックの情報提供も行う。 | - | - |
@@ -110,8 +134,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| オンライン | セッション管理 | オートスケーリング等の対応のため、APサーバ上で保持していたセッション情報をElastiCacheに外部化し、Spring Session Data Redisを利用してアクセスする。 | - | - |
-| | OIDC認証 | Spring Securityの機能でOIDCの認証を行う。 | - | - |
+| オンライン | OIDC認証 | Spring Securityの機能でOIDCの認証を行う。 | - | - |
 | オン・バッチ共通 | リトライ・サーキットブレーカ | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対するリトライやフォールバック処理等を制御する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによるリトライ処理を提供済。 | - | - |
 | | 非同期実行依頼 | Spring JMS、AWS SQS Java Messaging Libraryを利用し、SQSの標準キューを介した非同期実行依頼のメッセージを送信する。 | - | - |
 | | プロパティ管理（SSM） | Spring Cloud for AWS機能により、APから環境依存のパラメータをAWSのSSMパラメータストアに切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |

@@ -1,0 +1,37 @@
+#TODO: PostgreSQL
+spring:
+  sql:
+    init:
+      platform: h2
+  datasource:    
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver 
+    username: sa
+    password:
+
+#Spring Session Data Redis
+  session:
+    store-type: redis
+    redis:
+      configure-action: none      
+  redis:
+    host: localhost
+    port: 6379
+    
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*" 
+          
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.jdbc: INFO
+#    org.thymeleaf: DEBUG
+#    com.example: DEBUG
+    com.example: INFO
+    
+api:
+  backend:
+    url: http://localhost:8000   
