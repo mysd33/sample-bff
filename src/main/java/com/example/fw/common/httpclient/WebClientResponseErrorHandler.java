@@ -9,6 +9,7 @@ import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.message.FrameworkMessageIds;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
+import com.example.fw.common.resource.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
