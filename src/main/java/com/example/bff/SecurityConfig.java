@@ -34,6 +34,7 @@ public class SecurityConfig {
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
 				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
+				.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
 				.anyRequest().authenticated(); // それ以外は認証・認可が必要
 
 		// フォーム認証によるログイン処理
