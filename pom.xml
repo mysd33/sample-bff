@@ -24,6 +24,8 @@
 		<jquery.version>3.6.0</jquery.version>
 		<bootstrap.version>4.6.1</bootstrap.version>
 		<open-iconic.version>1.1.1</open-iconic.version>
+		<awssdk.bom.version>2.17.247</awssdk.bom.version>
+		<amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
 	</properties>
 
 	<dependencies>
@@ -72,7 +74,6 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
 
-
 		<!-- Spring Data Commons -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -96,7 +97,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>		
+			<artifactId>lettuce-core</artifactId>
 		</dependency>
 
 		<!-- Spring AOP -->
@@ -154,6 +155,7 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
+		
 		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
@@ -167,10 +169,43 @@
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
 
+		<!-- Spring JMS -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+		</dependency>
+
+		<!-- Amazon SQS Java Messaging Library -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>amazon-sqs-java-messaging-lib</artifactId>
+			<version>${amazon-sqs-java-messaging-lib.version}</version>
+			<type>jar</type>
+		</dependency>
+
+		<!-- AWS SDK SQS -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>sqs</artifactId>
+		</dependency>
+
+		<!-- JMS API -->
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>			
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- AWS SDK -->
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${awssdk.bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<!-- Spring Cloud -->
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>

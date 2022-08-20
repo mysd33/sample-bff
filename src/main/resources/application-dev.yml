@@ -25,4 +25,11 @@ logging:
     
 api:
   backend:
-    url: http://localhost:8000   
+    url: http://localhost:8000
+    
+aws:
+  sqs:
+    queue:
+      name: SampleQueue      
+  sqslocal:    
+    port: 18001       

@@ -32,6 +32,7 @@ public class SecurityConfig {
 		http.authorizeRequests().antMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
 				.antMatchers("/css/**").permitAll()// cssへアクセス許可
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
+				.antMatchers("/api/**").permitAll()// REST APIへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
 				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
 				.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
