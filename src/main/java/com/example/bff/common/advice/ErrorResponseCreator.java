@@ -1,4 +1,4 @@
-package com.example.fw.web.advice;
+package com.example.bff.common.advice;
 
 import java.util.ArrayList;
 

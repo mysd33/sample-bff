@@ -1,4 +1,4 @@
-package com.example.fw.web.advice;
+package com.example.bff.common.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
@@ -13,19 +14,19 @@ import com.example.fw.common.message.ResultMessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+
 /**
  * 
  * 集約例外ハンドリングのためのControllerAdviceクラス
  *
  */
-@ControllerAdvice
+@ControllerAdvice(basePackages = "com.example.bff.app")
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 	/**
 	 * 例外発生時のデフォルトのメッセージID
 	 */
-	@Setter
-	private String defaultExceptionMessageId;
+	private static final String defaultExceptionMessageId = MessageIds.E_EX_9001;
 	/**
 	 * エラーページ表示用にModelに格納されるHTTPステータスの属性名
 	 */
@@ -40,6 +41,7 @@ public class GlobalControllerAdvice {
 	@ExceptionHandler(SystemException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public String systemExceptionHandler(final SystemException e, final Model model) {
+		
 		// 例外クラスのメッセージをModelに登録
 		model.addAttribute(ResultMessage.builder().type(ResultMessageType.ERROR).code(e.getCode()).build());
 		// HTTPのエラーコード（500）をModelに登録

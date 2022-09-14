@@ -1,4 +1,4 @@
-package com.example.bff.app;
+package com.example.bff.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

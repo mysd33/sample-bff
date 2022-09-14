@@ -3,6 +3,7 @@ package com.example.bff;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
@@ -10,8 +11,8 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.example.bff.common.advice.ErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
-import com.example.fw.web.advice.GlobalControllerAdvice;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.PageInfoDialect;
 
@@ -43,15 +44,15 @@ public class WebConfig  implements WebMvcConfigurer{
 		return new PageInfoDialect();
 	}
 	
+	
 	/**
-	 * 集約例外ハンドリング機能
+	 * エラーレスポンス作成クラス
 	 */
 	@Bean
-	public GlobalControllerAdvice globalRestControllerAdvice() {
-		GlobalControllerAdvice advice = new GlobalControllerAdvice();
-		advice.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
-		return advice;
+	public ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
+		return new ErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
 	}
+	
 	/**
 	 * ロギング機能
 	 */
