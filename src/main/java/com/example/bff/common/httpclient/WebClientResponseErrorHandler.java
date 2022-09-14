@@ -1,15 +1,15 @@
-package com.example.fw.common.httpclient;
+package com.example.bff.common.httpclient;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
+import com.example.bff.common.resource.ErrorResponse;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.message.FrameworkMessageIds;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
-import com.example.fw.common.resource.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.example.bff.app.AppPackage;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.message.ResultMessage;
@@ -20,7 +21,7 @@ import lombok.Setter;
  * 集約例外ハンドリングのためのControllerAdviceクラス
  *
  */
-@ControllerAdvice(basePackages = "com.example.bff.app")
+@ControllerAdvice(basePackageClasses = { AppPackage.class })
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 	/**

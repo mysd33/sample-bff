@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.bff.common.httpclient.RestTemplateResponseErrorHandler;
+import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
-import com.example.fw.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
-import com.example.fw.common.httpclient.WebClientResponseErrorHandler;
 
 /**
  * 

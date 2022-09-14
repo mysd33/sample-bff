@@ -8,8 +8,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.context.request.WebRequest;
 
+import com.example.bff.common.resource.ErrorResponse;
 import com.example.fw.common.exception.ErrorCodeProvider;
-import com.example.fw.common.resource.ErrorResponse;
 
 import lombok.AllArgsConstructor;
 
