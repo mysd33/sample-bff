@@ -34,6 +34,7 @@ public class SecurityConfig {
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
 				.antMatchers("/api/**").permitAll()// REST APIへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
+				.antMatchers("/actuator/**").permitAll() //actuatorのAPIへアクセス許可
 				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
 				.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
 				.anyRequest().authenticated(); // それ以外は認証・認可が必要
