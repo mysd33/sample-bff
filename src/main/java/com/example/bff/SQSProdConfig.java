@@ -13,7 +13,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
  * SQS本番向けの設定クラス
  */
 @Configuration
-@Profile("prod")
+@Profile("production")
 public class SQSProdConfig {
 	@Value("${aws.sqs.region}")
 	private String region;
