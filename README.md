@@ -95,7 +95,7 @@ docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_container --e
 
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　※Redisのローカル起動も必要
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=production,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env REDIS_CLUSTER_ENDPOINT=(ローカルPCのプライベートIP) XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=production,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ECRプッシュ
