@@ -56,7 +56,7 @@
   * 本アプリから非同期処理/バッチアプリ（sample-batch）への非同期処理実行依頼が可能である。動作手順は、sample-batchのREADME.mdを参照すること。
 
 ## redisのローカル起動
-* sample-bffのProfi「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
+* sample-bffのProfile「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * APをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
@@ -87,15 +87,15 @@ docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:lat
 
 * ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
-docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=dev,log_container --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_container --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　※Redisのローカル起動も必要
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env ENV_TYPE=production,log_default --env BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ECRプッシュ
