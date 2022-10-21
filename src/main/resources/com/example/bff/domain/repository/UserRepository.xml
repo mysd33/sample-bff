@@ -13,16 +13,12 @@
             password,
             user_name,
             birthday,
-            age,
-            marriage,
             role)
         VALUES (
             #{userId},
             #{password},
             #{userName},
             #{birthday},
-            #{age},
-            #{marriage},
             #{role})
     </insert>
 
@@ -33,8 +29,6 @@
             password,
             user_name,
             birthday,
-            age,
-            marriage,
             role
         FROM
             m_user
@@ -49,8 +43,6 @@
             password,
             user_name,
             birthday,
-            age,
-            marriage,
             role
         FROM
             m_user
@@ -63,8 +55,6 @@
             password,
             user_name,
             birthday,
-            age,
-            marriage,
             role
         FROM
             m_user
@@ -99,8 +89,7 @@
             password = #{password},
             user_name = #{userName},
             birthday = #{birthday},
-            age = #{age},
-            marriage = #{marriage}
+            role = #{role}
         WHERE user_id = #{userId}
     </update>
 

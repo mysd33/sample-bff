@@ -163,6 +163,12 @@
 			<version>${org.mapstruct.version}</version>
 		</dependency>
 		
+		<!-- Jackson Dataformat CSV -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-csv</artifactId>
+		</dependency>
+		
 		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>

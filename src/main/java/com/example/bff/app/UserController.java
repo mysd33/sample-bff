@@ -1,5 +1,8 @@
 package com.example.bff.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,12 +14,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.example.bff.app.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
 import com.example.bff.domain.service.UserService;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.web.view.CsvDownloadView;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log); 
+	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
 	/**
 	 * ユーザー登録画面のGETメソッド用処理.
@@ -49,11 +54,7 @@ public class UserController {
 		if (bindingResult.hasErrors()) {
 			return "user/regist";
 		}
-		// appLogger.debug(form.toString());
-
 		User user = UserMapper.INSTANCE.formToModel(form);
-		// TODO:画面からの登録
-		user.setRole("ROLE_GENERAL"); // ロール（一般）設定
 
 		// ユーザー登録処理
 		boolean result = userService.insert(user);
@@ -91,10 +92,9 @@ public class UserController {
 		appLogger.debug("userId = " + userId);
 		// ユーザーIDのチェック
 		if (userId != null && userId.length() > 0) {
-
 			// ユーザー情報を取得
 			User user = userService.findOne(userId);
-			form =  UserMapper.INSTANCE.modelToForm(user);
+			form = UserMapper.INSTANCE.modelToForm(user);
 			form.setPassword("");
 			model.addAttribute("userForm", form);
 		}
@@ -113,7 +113,7 @@ public class UserController {
 		if (bindingResult.hasErrors()) {
 			return "user/userDetail";
 		}
-		// TODO:ロールの更新
+
 		User user = UserMapper.INSTANCE.formToModel(form);
 
 		try {
@@ -158,15 +158,18 @@ public class UserController {
 	/**
 	 * ユーザー一覧のCSV出力用処理.
 	 */
-	/*
-	 * @GetMapping("/userList/csv") public ModelAndView getUserListCsv(Model model)
-	 * { String filename = "sample.csv"; List<User> users = userService.findAll();
-	 * //users.stream().forEach(u -> log.debug(u.toString())); List<UserCsv> csvList
-	 * = mapper.map(users,TypeUtils.toListType(UserCsv.class));
-	 * //csvList.stream().forEach(u -> log.debug(u.toString())); val view = new
-	 * CsvDownloadView(UserCsv.class, csvList, filename); return new
-	 * ModelAndView(view);
-	 * 
-	 * }
-	 */
+	
+	  @GetMapping("/userList/csv")
+	  public ModelAndView getUserListCsv(Model model){
+		  String filename = "userList.csv";
+		  List<User> users = userService.findAll();
+		  
+		  List<UserCsv> csvList = new ArrayList<>();
+		  users.forEach(user -> csvList.add(UserMapper.INSTANCE.modelToCsv(user)));
+		  
+		  CsvDownloadView view = new CsvDownloadView(UserCsv.class, csvList, filename); 
+		  return new ModelAndView(view);
+	  
+	  }
+
 }

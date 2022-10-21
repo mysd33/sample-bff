@@ -34,12 +34,11 @@
                         <input id="birthday" type="date" class="form-control" th:field="*{birthday}" th:classappend="${#fields.hasErrors('birthday')} ? 'is-invalid'" min="1900-01-01" max="2100-12-31" />
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
                     </div>
-                    <!-- TODO:削除予定 -->
-                    <div class="form-group col-md-6">
-                        <label for="age">年齢：削除予定</label>                    
-                        <input id="age" type="text" class="form-control" th:field="*{age}" th:classappend="${#fields.hasErrors('age')} ? 'is-invalid'" maxlength="3"/>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>                       
-                    </div> 
+                    <div class="form-group form-check  col-md-12">                        
+                        <input id="isAdmin" type="checkbox" th:field="*{admin}" th:classappend="${#fields.hasErrors('admin')} ? 'is-invalid'"  />
+                        <label for="isAdmin" class="form-check-label">管理者</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('admin')}" th:errors="*{admin}"></div>
+                    </div>
                 </div>
                 <!-- 更新ボタン -->
                 <button class="btn btn-primary btn-lg pull-right" type="submit" name="update">更新</button>

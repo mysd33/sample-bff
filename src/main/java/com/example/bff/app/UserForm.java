@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.validation.GroupSequence;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -51,9 +49,7 @@ public class UserForm {
 	@NotNull(groups = ValidGroup1.class)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday; // 誕生日
-
-	@Min(value = 20, groups = ValidGroup2.class)
-	@Max(value = 100, groups = ValidGroup2.class)
-	private int age; // 年齢
-
+	
+	private boolean admin;	
+	
 }
