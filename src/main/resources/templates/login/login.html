@@ -14,11 +14,11 @@
                 <!--/* 入力エラー時メッセージ領域 */-->
                 <div th:replace="layout/parts :: part_validation_message"></div>                             
 				<!-- ユーザーID -->
-				<label for="userId" class="sr-only">ユーザーID</label> 
+				<label for="userId" class="visually-hidden">ユーザーID</label> 
                 <input type="text"
-					name="userId" class="form-control" placeholder="ユーザID"  th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'" autofocus>
+					name="userId" class="form-control rounded-top" placeholder="ユーザID"  th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'" autofocus>
 				<!-- パスワード -->
-				<label for="password" class="sr-only">パスワード</label> <input
+				<label for="password" class="visually-hidden">パスワード</label> <input
 					type="password" name="password" class="form-control"
 					placeholder="パスワード" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
 				<!-- CSRF対策用トークン -->
@@ -28,7 +28,9 @@
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>          
                 <!-- ログインボタン -->
-				<button class="btn btn-lg btn-primary btn-block" type="submit">ログイン</button>                
+                <div class="d-grid">
+				    <button class="btn btn-lg btn-primary" type="submit">ログイン</button>
+                </div>                
 			</form>
 		</div>
 	</div>

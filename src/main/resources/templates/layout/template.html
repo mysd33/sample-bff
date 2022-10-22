@@ -4,22 +4,20 @@
         <meta charset="utf-8">
         <meta name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no">        
-        <link th:href="@{/webjars/bootstrap/4.6.1/css/bootstrap.min.css}" rel="stylesheet"></link>
-        <link th:href="@{/css/common.css}" rel="stylesheet"></link>
-        <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
-        <script th:src="@{/webjars/popper.js/1.16.0/umd/popper.min.js}"></script>
-        <script th:src="@{/webjars/bootstrap/4.6.1/js/bootstrap.min.js}"></script>
+        <link th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css}" rel="stylesheet"></link>
+        <link th:href="@{/css/common.css}" rel="stylesheet"></link>                
+        <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.bundle.min.js}"></script>
         <title th:text="${title}">タイトル</title>
     </head>
     <body class="bg-light">
         <!--/* ヘッダー部 */-->
         <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">        
-            <h3 class="mr-md-auto font-weight-normal">
+            <h3 class="me-md-auto fw-normal">
                 <svg viewBox="0 0 8 8" class="icon"><use th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}" class="person"></use></svg>
                 <span th:replace="${title}" th:remove="tag">タイトル</span>
             </h3>                        
             <div sec:authorize="isAuthenticated()">
-                <p class="text-right">
+                <p class="text-end">
                 ようこそ, <strong><span sec:authentication="principal.user.userName"></span></strong>さん!
                 <a th:replace="${headerButton}"></a>
                 </p>                

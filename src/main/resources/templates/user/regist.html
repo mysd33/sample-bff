@@ -12,33 +12,39 @@
                 <!--/* メッセージ領域 */-->
                 <div th:replace="layout/parts :: part_validation_message"></div>             
                 <div th:replace="layout/parts :: part_message"></div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="userId">ユーザID<span class="badge badge-danger">必須</span></label>                    
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="userId" class="form-label">ユーザID<span class="badge bg-danger">必須</span></label>                    
                         <input id="userId" type="text" class="form-control" th:field="*{userId}" th:classappend="${#fields.hasErrors('userId')} ? 'is-invalid'" autofocus/>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>                       
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="password">パスワード<span class="badge badge-danger">必須</span></label>                    
+                    <div class="col">
+                        <label for="password" class="form-label">パスワード<span class="badge bg-danger">必須</span></label>                    
                         <input id="password" type="password" class="form-control" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" maxlength="100"/>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>                       
-                    </div>            
+                    </div>          
+                </div>
+                <div class="row mb-3">                
                     <!-- TODO:パスワード（確認）の入力エリア -->
-                    <div class="form-group col-md-6">
-                        <label for="userName">ユーザ名<span class="badge badge-danger">必須</span></label>                    
+                    <div class="col">
+                        <label for="userName" class="form-label">ユーザ名<span class="badge bg-danger">必須</span></label>                    
                         <input id="userName" type="text" class="form-control" th:field="*{userName}" th:classappend="${#fields.hasErrors('userName')} ? 'is-invalid'" />
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></div>                       
                     </div>            
-                    <div class="form-group col-md-6">
-                        <label for="birthday">生年月日<span class="badge badge-danger">必須</span></label>
+                    <div class="col">
+                        <label for="birthday" class="form-label">生年月日<span class="badge bg-danger">必須</span></label>
                         <input id="birthday" type="date" class="form-control" th:field="*{birthday}" th:classappend="${#fields.hasErrors('birthday')} ? 'is-invalid'" min="1900-01-01" max="2100-12-31" />
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
                     </div>
-                    <div class="form-group form-check  col-md-12">                        
-                        <input id="isAdmin" type="checkbox" th:field="*{admin}" th:classappend="${#fields.hasErrors('admin')} ? 'is-invalid'"  />
-                        <label for="isAdmin" class="form-check-label">管理者</label>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('admin')}" th:errors="*{admin}"></div>
-                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <div class="form-check form-switch">                        
+                            <input id="isAdmin" type="checkbox" class="form-check-input" th:field="*{admin}" th:classappend="${#fields.hasErrors('admin')} ? 'is-invalid'"  />
+                            <label for="isAdmin" class="form-check-label">管理者</label>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('admin')}" th:errors="*{admin}"></div>
+                        </div>
+                    </div>                      
                 </div>
                 <button class="btn btn-primary" type="submit">ユーザー登録</button>
             </form>
