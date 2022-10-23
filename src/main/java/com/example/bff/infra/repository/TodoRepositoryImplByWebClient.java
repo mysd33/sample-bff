@@ -4,11 +4,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.bff.common.httpclient.CircutiBreakerErrorFallback;
 import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
@@ -27,6 +29,12 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 	private final WebClientLoggingFilter loggingFilter;
 	private final WebClientResponseErrorHandler responseErrorHandler;
 
+	//サーキットブレーカ
+	//（参考）https://spring.io/projects/spring-cloud-circuitbreaker
+	@SuppressWarnings("rawtypes")
+	private final ReactiveCircuitBreakerFactory cbFactory;
+	
+	
 	@Value("${api.backend.url}/api/v1/todos")
 	private String urlTodos;
 
@@ -50,8 +58,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.onStatus(HttpStatus::is5xxServerError,response -> {
 					return  responseErrorHandler.createServerErrorException(response);
 				}) 
-				.bodyToMono(Todo.class);				
-				
+				.bodyToMono(Todo.class)
+				.transform(it -> cbFactory.create("todo_findById")
+						.run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
 		return todoMono.blockOptional();
 	}
 
@@ -66,7 +75,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.onStatus(HttpStatus::is5xxServerError,response -> {
 					return  responseErrorHandler.createServerErrorException(response);
 				}) 
-				.bodyToMono(TodoList.class);
+				.bodyToMono(TodoList.class)
+				// Fallback時にエラーとせずに空のリストを例
+				.transform(it -> cbFactory.create("todo_findAll")
+						.run(it, throwable -> Mono.just(new TodoList())));
 		TodoList list = todoListMono.block();
 		return list;
 	}
@@ -83,7 +95,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.onStatus(HttpStatus::is5xxServerError,response -> {
 					return  responseErrorHandler.createServerErrorException(response);
 				}) 
-				.bodyToMono(Todo.class).block();
+				.bodyToMono(Todo.class)
+				.transform(it -> cbFactory.create("todo_create").run(it,
+						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+				.block();
 	}
 
 	@Override
@@ -97,7 +112,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.onStatus(HttpStatus::is5xxServerError,response -> {
 					return  responseErrorHandler.createServerErrorException(response);
 				}) 
-				.bodyToMono(Todo.class).block();
+				.bodyToMono(Todo.class)
+				.transform(it -> cbFactory.create("todo_update").run(it,
+						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+				.block();
 		return true;
 	}
 
@@ -112,7 +130,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.onStatus(HttpStatus::is5xxServerError,response -> {
 					return  responseErrorHandler.createServerErrorException(response);
 				})  
-				.bodyToMono(Void.class).block();
+				.bodyToMono(Void.class)
+				.transform(it -> cbFactory.create("todo_delete").run(it,
+						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+				.block();
 	}
 
 }

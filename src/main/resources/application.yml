@@ -18,9 +18,10 @@ spring:
     property-naming-strategy: SNAKE_CASE
     
   lifecycle:
-    timeout-per-shutdown-phase: 20s    
-    
+    timeout-per-shutdown-phase: 20s          
+     
 mybatis:
   type-aliases-package: com.example.bff.domain.model     
   configuration:
     map-underscore-to-camel-case: true    
+    
