@@ -43,7 +43,7 @@ WHERE NOT EXISTS (SELECT 1 FROM m_user WHERE user_id = 'tamura9@xxx.co.jp');
 
 INSERT INTO m_user (user_id, password, user_name, birthday, role)
 SELECT 'tamura10@xxx.co.jp', '$2a$10$xRTXvpMWly0oGiu65WZlm.3YL95LGVV2ASFjDhe6WF4.Qji1huIPa', '田村10', '1986-11-05', 'ROLE_GENERAL'
-HERE NOT EXISTS (SELECT 1 FROM m_user WHERE user_id = 'tamura10@xxx.co.jp');
+WHERE NOT EXISTS (SELECT 1 FROM m_user WHERE user_id = 'tamura10@xxx.co.jp');
 
 
 
