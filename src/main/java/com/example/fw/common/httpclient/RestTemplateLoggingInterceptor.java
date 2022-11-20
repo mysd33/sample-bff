@@ -22,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
-	private final static ApplicationLogger appLoger = LoggerFactory.getApplicationLogger(log);
+	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 	
 	@Override
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)
 			throws IOException {
-		appLoger.info(I_FW_0003, request.getMethod(), URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
+		appLogger.info(I_FW_0003, request.getMethod(), URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
 		return execution.execute(request, body);
 	}
 
