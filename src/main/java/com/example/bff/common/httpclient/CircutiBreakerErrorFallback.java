@@ -2,8 +2,8 @@ package com.example.bff.common.httpclient;
 
 import java.util.function.Function;
 
+import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.BusinessException;
-import com.example.fw.common.message.FrameworkMessageIds;
 
 import reactor.core.publisher.Mono;
 
@@ -29,7 +29,7 @@ public class CircutiBreakerErrorFallback {
 				throw (BusinessException) throwable;
 			}
 			// 業務例外で返却
-			throw new BusinessException(throwable, FrameworkMessageIds.W_FW_8002);
+			throw new BusinessException(throwable, MessageIds.W_EX_8002);
 		};
 	}
 
@@ -39,7 +39,7 @@ public class CircutiBreakerErrorFallback {
 			if (throwable.getClass().isAssignableFrom(BusinessException.class)) {
 				return Mono.error(throwable);
 			}			
-			return Mono.error(new BusinessException(throwable, FrameworkMessageIds.W_FW_8002));
+			return Mono.error(new BusinessException(throwable, MessageIds.W_EX_8002));
 		};
 	}
 }

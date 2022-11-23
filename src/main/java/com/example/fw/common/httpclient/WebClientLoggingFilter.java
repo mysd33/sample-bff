@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.FrameworkMessageIds;
+import com.example.fw.common.message.CommonFrameworkMessageIds;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,10 +25,10 @@ public class WebClientLoggingFilter {
 	public ExchangeFilterFunction filter() {
 		return (request, next) -> {
 			try {
-				appLogger.info(FrameworkMessageIds.I_FW_0003, request.method(),
+				appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0001, request.method(),
 						URLDecoder.decode(request.url().toASCIIString(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				throw new SystemException(e, FrameworkMessageIds.E_FW_9001);
+				throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
 			}
 			return next.exchange(request);
 		};

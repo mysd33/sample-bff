@@ -1,6 +1,6 @@
 package com.example.fw.common.httpclient;
 
-import static com.example.fw.common.message.FrameworkMessageIds.*;
+import com.example.fw.common.message.CommonFrameworkMessageIds;
 import java.io.IOException;
 import java.net.URLDecoder;
 
@@ -27,7 +27,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
 	@Override
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)
 			throws IOException {
-		appLogger.info(I_FW_0003, request.getMethod(), URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
+		appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0001, request.getMethod(), URLDecoder.decode(request.getURI().toASCIIString(), "UTF-8"));
 		return execution.execute(request, body);
 	}
 

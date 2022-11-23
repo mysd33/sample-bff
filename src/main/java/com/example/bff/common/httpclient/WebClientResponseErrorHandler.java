@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 import com.example.bff.common.resource.ErrorResponse;
+import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.FrameworkMessageIds;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
 
@@ -34,7 +34,7 @@ public class WebClientResponseErrorHandler {
 						String code = body.getCode();
 						String message = body.getMessage();
 						return Mono.error(new BusinessException(
-								ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8001)
+								ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
 									.args(new Object[]  { code })
 									.message(message).build()));						
 					});			
@@ -42,9 +42,9 @@ public class WebClientResponseErrorHandler {
 			HttpStatus statusCode = response.statusCode();
 			// TODO: ErrorResponseに変換できない場合のエラーメッセージ
 			String logMessage = statusCode.getReasonPhrase();
-			appLogger.warn(FrameworkMessageIds.W_FW_8001, logMessage);
+			appLogger.warn(MessageIds.W_EX_8001, logMessage);
 			return Mono.error(new BusinessException(
-					ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8002).build()));
+					ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build()));
 		}
 	}
 	
@@ -59,17 +59,17 @@ public class WebClientResponseErrorHandler {
 						String message = body.getMessage();
 						// サービスから取得したErrorResponseを警告ログ出力し、定型的なメッセージを画面表示する
 						String logMessage = new StringBuilder("[").append(code).append("]").append(message).toString();
-						appLogger.warn(FrameworkMessageIds.W_FW_8001, logMessage);
+						appLogger.warn(MessageIds.W_EX_8001, logMessage);
 						return Mono.error(new BusinessException(
-								ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8002).build()));
+								ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build()));
 					});					
 		} catch (Exception e) {
 			HttpStatus statusCode = response.statusCode();
 			// TODO: ErrorResponseに変換できない場合のエラーメッセージ
 			String logMessage = statusCode.getReasonPhrase();
-			appLogger.warn(FrameworkMessageIds.W_FW_8001, logMessage);
+			appLogger.warn(MessageIds.W_EX_8001, logMessage);
 			return Mono.error(new BusinessException(
-					ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8002).build()));
+					ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build()));
 		}
 	}
 }

@@ -19,10 +19,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import com.example.bff.common.resource.ErrorResponse;
+import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.FrameworkMessageIds;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,7 +66,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 			code = errorResponse.getCode();
 			message = errorResponse.getMessage();
 			throw new BusinessException(
-					ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8001).message(message).build());
+					ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001).message(message).build());
 		case SERVER_ERROR:
 			try {
 				errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
@@ -78,9 +78,9 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 			message = errorResponse.getMessage();
 			// サービスから取得したErrorResponseを警告ログ出力し、定型的なメッセージを画面表示する
 			String logMessage = new StringBuilder("[").append(code).append("]").append(message).toString();
-			appLogger.warn(FrameworkMessageIds.W_FW_8001, logMessage);
+			appLogger.warn(MessageIds.W_EX_8001, logMessage);
 			throw new BusinessException(
-					ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8002).build());
+					ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());
 		default:
 			throwBussinessExceptionForUnknownErrorResponse(httpStatus, statusText, responseBody, charset);
 		}
@@ -97,9 +97,9 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 	private void throwBussinessExceptionForUnknownErrorResponse(HttpStatus httpStatus, String statusText,
 			byte[] responseBody, Charset charset) {
 		String logMessage = getErrorMessage(httpStatus.value(), statusText, responseBody, charset);
-		appLogger.warn(FrameworkMessageIds.W_FW_8001, logMessage);
+		appLogger.warn(MessageIds.W_EX_8001, logMessage);
 		throw new BusinessException(
-				ResultMessage.builder().type(ResultMessageType.WARN).code(FrameworkMessageIds.W_FW_8002).build());
+				ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());
 	}
 
 	protected byte[] getResponseBody(ClientHttpResponse response) {
