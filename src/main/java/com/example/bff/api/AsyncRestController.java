@@ -1,5 +1,8 @@
 package com.example.bff.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,11 +36,13 @@ public class AsyncRestController {
 			@PathVariable("jobId") final String jobId,
 			@RequestParam("param01") final String param01,
 			@RequestParam("param02") final String param02) {
+		Map<String, String > parameters = new HashMap<>();
+		parameters.put("param01", param01);
+		parameters.put("param02", param02);
 		asyncService.invokeAsync(
 				JobRequest.builder()
 				.jobId(jobId)
-				.param01(param01)
-				.param02(param02)
+				.parameters(parameters)
 				.build());
 		return AsyncResponse.ACCEPT;
 	}

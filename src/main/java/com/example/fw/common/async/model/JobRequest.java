@@ -1,6 +1,8 @@
 package com.example.fw.common.async.model;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,28 +19,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class JobRequest implements Serializable {
-
 	private static final long serialVersionUID = -7463515743016612451L;
 
-	// ジョブID（初回実行の場合）
+	// ジョブID
 	private String jobId;
-	// ジョブパラメータ1（初回実行の場合）
-	private String param01;
-	// ジョブパラメータ2（初回実行の場合）
-	private String param02;
-	
+	// ジョブパラメータ
+	private Map<String, String> parameters;
+
 	/**
 	 * パラメータ文字列を返却する
-	 * @return
+	 * 
+	 * @return パラメータ文字列
 	 */
 	public String toParameterString() {
-		return new StringBuilder()
-				.append("param01=")
-				.append(param01)
-				.append(",")
-				.append("param02=")
-				.append(param02)
-				.toString();
+		StringJoiner sj = new StringJoiner(",");
+		for (String key : parameters.keySet()) {
+			sj.add(String.format("%s=%s", key, parameters.get(key)));
+		}
+		return sj.toString();
 	}
-	
+
 }
