@@ -17,25 +17,25 @@ import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.PageInfoDialect;
 
 @Configuration
-public class WebConfig  implements WebMvcConfigurer{
+public class WebConfig implements WebMvcConfigurer {
 	@Value("${pagination.maxPageSize:100}")
 	private int maxPageSize;
 	@Value("${pagination.defaultPage:0}")
 	private int page;
 	@Value("${pagination.defaultPageSize:5}")
 	private int size;
-	
+
 	/**
 	 * ページネーションの設定
 	 */
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
-		resolver.setMaxPageSize(maxPageSize);		
+		resolver.setMaxPageSize(maxPageSize);
 		resolver.setFallbackPageable(PageRequest.of(page, size));
 		resolvers.add(resolver);
 	}
-	
+
 	/**
 	 * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
 	 */
@@ -43,8 +43,7 @@ public class WebConfig  implements WebMvcConfigurer{
 	public PageInfoDialect pageInfoDialect() {
 		return new PageInfoDialect();
 	}
-	
-	
+
 	/**
 	 * エラーレスポンス作成クラス
 	 */
@@ -52,12 +51,12 @@ public class WebConfig  implements WebMvcConfigurer{
 	public ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
 		return new ErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
 	}
-	
+
 	/**
 	 * ロギング機能
 	 */
 	@Bean
-	public LogAspect LogAspect() {
+	public LogAspect logAspect() {
 		LogAspect logAspect = new LogAspect();
 		logAspect.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
 		return logAspect;
