@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.bff.domain.model.Todo;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface TodoMapper {
 	TodoMapper INSTANCE = Mappers.getMapper(TodoMapper.class);
 		
