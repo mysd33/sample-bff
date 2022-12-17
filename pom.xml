@@ -20,6 +20,7 @@
 		<mybatis-spring-boot-starter.version>2.2.2</mybatis-spring-boot-starter.version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<bootstrap.version>5.2.2</bootstrap.version>
+		<bootstrap-icons.version>1.10.2</bootstrap-icons.version>
 		<open-iconic.version>1.1.1</open-iconic.version>
 		<awssdk.bom.version>2.17.247</awssdk.bom.version>
 		<amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
@@ -114,13 +115,13 @@
 		<!-- Webjars -->
 		<dependency>
 			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>			
+			<artifactId>bootstrap</artifactId>
 			<version>${bootstrap.version}</version>
-		</dependency>
+		</dependency>		
 		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>open-iconic</artifactId>
-			<version>${open-iconic.version}</version>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>bootstrap-icons</artifactId>
+			<version>${bootstrap-icons.version}</version>
 		</dependency>
 
 		<!-- MyBatis -->
@@ -139,11 +140,11 @@
 
 		<!-- PostgreSQL -->
 		<dependency>
-  			<groupId>org.postgresql</groupId>
-  			<artifactId>postgresql</artifactId>
-  			<scope>runtime</scope>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -157,13 +158,13 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
-		
+
 		<!-- Jackson Dataformat CSV -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-csv</artifactId>
 		</dependency>
-		
+
 		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
@@ -176,19 +177,19 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
-		
-		<!-- Spring Cloud Circuit Breaker Resilience4J -->		
+
+		<!-- Spring Cloud Circuit Breaker Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
-		</dependency>	
-		 
-		<!-- Spring Cloud Circuit Breaker Reactive Resilience4J -->		
+		</dependency>
+
+		<!-- Spring Cloud Circuit Breaker Reactive Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
 		</dependency>
- 		
+
 		<!-- Spring JMS -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -212,7 +213,7 @@
 		<!-- JMS API -->
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>javax.jms-api</artifactId>			
+			<artifactId>javax.jms-api</artifactId>
 		</dependency>
 	</dependencies>
 

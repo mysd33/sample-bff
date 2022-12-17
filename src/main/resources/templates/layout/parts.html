@@ -39,51 +39,32 @@
 	<!--/* ログイン　エラーメッセージ領域 */-->
 	<div th:fragment="part_login_error" class="alert alert-danger"
 		role="alert" th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
-		<svg viewBox="0 0 8 8" class="icon">
-				<use
-				th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
-				class="error"></use></svg>
-		<span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
+ <svg class="icon error"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#x-circle-fill}"></use></svg>
+ 		<span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
 	</div>
     
 	<!--/* 入力エラーメッセージ領域 */-->
 	<div th:fragment="part_validation_message">
-		<div class="alert alert-danger" role="alert"
-			th:if="${#fields.hasAnyErrors()}">
-			<svg viewBox="0 0 8 8" class="icon">
-				<use
-					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
-					class="error"></use></svg>
+		<div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">
+            <svg class="icon error"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#x-circle-fill}"></use></svg>
 			入力エラーです。
 		</div>
 	</div>
     
 	<!--/* メッセージ領域 */-->
 	<div th:fragment="part_message">
-		<div class="alert alert-success" role="alert"
-			th:if="${(resultMessage != null) and resultMessage.info}">
-			<svg viewBox="0 0 8 8" class="icon">
-				<use
-					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-check}"
-					class="ok"></use></svg>
+		<div class="alert alert-success" role="alert" th:if="${(resultMessage != null) and resultMessage.info}">
+            <svg class="icon ok"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#check-circle-fill}"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>
-			<span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
-		</div>
-		<div class="alert alert-warning" role="alert"
-			th:if="${(resultMessage != null) and resultMessage.warn}">
-			<svg viewBox="0 0 8 8" class="icon">
-				<use
-					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#eye}"
-					class="warn"></use></svg>
+            <span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
+        </div>            
+		<div class="alert alert-warning" role="alert" th:if="${(resultMessage != null) and resultMessage.warn}">
+            <svg class="icon warn"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#eye-fill}"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>                                
             <span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
 		</div>
-		<div class="alert alert-danger" role="alert"
-			th:if="${(resultMessage != null) and resultMessage.error}">
-			<svg viewBox="0 0 8 8" class="icon">
-				<use
-					th:xlink:href="@{/webjars/open-iconic/1.1.1/sprite/open-iconic.svg#circle-x}"
-					class="error"></use></svg>
+		<div class="alert alert-danger" role="alert" th:if="${(resultMessage != null) and resultMessage.error}">
+            <svg class="icon error"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#x-circle-fill}"></use></svg>
             <span th:if="${resultMessage.message != null}" th:text="${resultMessage.message}"></span>            
             <span th:if="${resultMessage.message == null}" th:text="${#messages.msgWithParams(resultMessage.code, resultMessage.args)}"></span>
 		</div>

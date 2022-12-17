@@ -41,7 +41,7 @@ margin-bottom: 5px;
   width: 32px;
   height: 32px;
 }
-.person {
+.logo {
   fill: steelblue;
 }
 .ok {
@@ -54,12 +54,4 @@ margin-bottom: 5px;
   fill: red;
 }
 
-
-#headingOne:after {    
-    content: "▲";
-    float: right; 
-}
-#headingOne.collapsed:after {    
-    content: "▼"; 
-}
 
