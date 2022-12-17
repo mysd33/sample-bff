@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 public class WebClientResponseErrorHandler {
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
 	/**
 	 * クライアント起因のエラー（4xx）の場合に例外オブジェクトを作成する

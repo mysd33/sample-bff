@@ -34,8 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 public class UserController {
-	private final UserService userService;
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private final UserService userService;	
 
 	/**
 	 * ユーザー登録画面のGETメソッド用処理.

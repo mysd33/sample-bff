@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 	
 	@Override
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, final ClientHttpRequestExecution execution)

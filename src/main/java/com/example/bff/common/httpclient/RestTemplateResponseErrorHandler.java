@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
-	private final static ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 	//TODO: DI
 	private final ObjectMapper mapper = new ObjectMapper();
 
