@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bff.domain.service.AsyncService;
 import com.example.fw.common.async.model.JobRequest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -24,18 +27,20 @@ import lombok.RequiredArgsConstructor;
  * 汎用的なAPIにするとジョブパラメータに意味を持たせれられないので
  * その場合は、通常のWebAPIを使用する
  */
+@Tag(name = "非同期実行管理", description = "非同期実行管理API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/async")
 public class AsyncRestController {	
 	private final AsyncService asyncService;
 	
+	@Operation(summary = "ジョブ実行依頼", description = "ジョブの実行を後方のバッチAPへ依頼します。")
 	@GetMapping("/{jobId:.+}")
     @ResponseStatus(HttpStatus.OK)	
 	public AsyncResponse executeBatch(			
-			@PathVariable("jobId") final String jobId,
-			@RequestParam("param01") final String param01,
-			@RequestParam("param02") final String param02) {
+			@Parameter(description = "ジョブID") @PathVariable("jobId") final String jobId,
+			@Parameter(description = "ジョブパラメータ1") @RequestParam("param01") final String param01,
+			@Parameter(description = "ジョブパラメータ2") @RequestParam("param02") final String param02) {
 		Map<String, String > parameters = new HashMap<>();
 		parameters.put("param01", param01);
 		parameters.put("param02", param02);
@@ -47,9 +52,10 @@ public class AsyncRestController {
 		return AsyncResponse.ACCEPT;
 	}
 	
+	@Operation(summary = "ジョブ実行依頼", description = "ジョブの実行を後方のバッチAPへ依頼します。")
 	@PostMapping
     @ResponseStatus(HttpStatus.OK)
-	public AsyncResponse executeBatch(@RequestBody final JobRequest jobRequest) {			
+	public AsyncResponse executeBatch(@Parameter(description = "ジョブリクエスト") @RequestBody final JobRequest jobRequest) {			
 		asyncService.invokeAsync(jobRequest);				
 		return AsyncResponse.ACCEPT;		
 	}

@@ -22,7 +22,7 @@ public class SecurityConfig {
 	//@Profile("dev")
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().antMatchers("/h2-console/**") // h2-consoleにアクセス許可
+		return (web) -> web.ignoring().antMatchers("/h2-console/**") // h2-consoleにアクセス許可				
 				.antMatchers("/api/**"); // REST APIにアクセス許可
 	}
 
@@ -34,6 +34,8 @@ public class SecurityConfig {
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
 				.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
+				.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+				.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				// .antMatchers("/api/**").permitAll()// REST APIへアクセス許可
 				// .antMatchers("/h2-console/**").permitAll() // H2 Consoleへのアクセス許可
 				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可

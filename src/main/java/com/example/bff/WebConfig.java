@@ -15,6 +15,11 @@ import com.example.bff.common.advice.ErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.PageInfoDialect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -60,5 +65,24 @@ public class WebConfig implements WebMvcConfigurer {
 		LogAspect logAspect = new LogAspect();
 		logAspect.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
 		return logAspect;
+	}
+	
+	/**
+	 * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
+	 */
+	@Bean
+	public ModelResolver modelResolver(ObjectMapper objectMapper) {
+	     return new ModelResolver(objectMapper);
+	}
+	
+	/**
+	 * Springdoc-openapiの定義
+	 */
+	@Bean
+	  public OpenAPI springShopOpenAPI() {
+	      return new OpenAPI()
+	              .info(new Info().title("非同期実行APIドキュメント")
+	              .description("非同期実行管理のためのAPIです。")
+	              .version("v1.0"));
 	}
 }

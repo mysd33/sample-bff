@@ -2,6 +2,7 @@ package com.example.bff.api;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Getter;
  */
 public class AsyncResponse implements Serializable {
 
+	@Schema(description = "受理結果")
 	@Getter
 	private final String result;
 

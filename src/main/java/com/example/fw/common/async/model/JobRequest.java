@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +23,10 @@ public class JobRequest implements Serializable {
 	private static final long serialVersionUID = -7463515743016612451L;
 
 	// ジョブID
+	@Schema(description = "ジョブID")
 	private String jobId;
 	// ジョブパラメータ
+	@Schema(description = "ジョブパラメータ")
 	private Map<String, String> parameters;
 
 	/**
