@@ -66,23 +66,23 @@ public class WebConfig implements WebMvcConfigurer {
 		logAspect.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
 		return logAspect;
 	}
-	
+
 	/**
 	 * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
 	 */
 	@Bean
 	public ModelResolver modelResolver(ObjectMapper objectMapper) {
-	     return new ModelResolver(objectMapper);
+		return new ModelResolver(objectMapper);
 	}
-	
+
 	/**
 	 * Springdoc-openapiの定義
 	 */
 	@Bean
-	  public OpenAPI springShopOpenAPI() {
-	      return new OpenAPI()
-	              .info(new Info().title("非同期実行APIドキュメント")
-	              .description("非同期実行管理のためのAPIです。")
-	              .version("v1.0"));
+	public OpenAPI springShopOpenAPI() {
+		return new OpenAPI().info(
+				new Info().title("非同期実行APIドキュメント")
+				.description("非同期実行管理のためのAPIです。")
+				.version("v1.0"));
 	}
 }

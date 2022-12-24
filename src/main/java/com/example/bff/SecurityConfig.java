@@ -36,6 +36,7 @@ public class SecurityConfig {
 				.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
 				.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+				.antMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				// .antMatchers("/api/**").permitAll()// REST APIへアクセス許可
 				// .antMatchers("/h2-console/**").permitAll() // H2 Consoleへのアクセス許可
 				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可

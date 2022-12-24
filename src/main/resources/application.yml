@@ -24,4 +24,3 @@ mybatis:
   type-aliases-package: com.example.bff.domain.model     
   configuration:
     map-underscore-to-camel-case: true    
-    
