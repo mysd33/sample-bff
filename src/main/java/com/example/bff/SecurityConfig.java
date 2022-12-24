@@ -34,6 +34,7 @@ public class SecurityConfig {
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
 				.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
+				.antMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
 				.antMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可

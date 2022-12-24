@@ -24,6 +24,7 @@
 		<awssdk.bom.version>2.17.247</awssdk.bom.version>
 		<amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
+		<springdoc-openapi-security.version>1.6.14</springdoc-openapi-security.version>
 		<!-- MapStruct -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
@@ -117,7 +118,7 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>${bootstrap.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>bootstrap-icons</artifactId>
@@ -215,12 +216,17 @@
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
 		</dependency>
-		
+
 		<!-- Springdoc-openapi -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>${springdoc-openapi-ui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-security</artifactId>
+			<version>${springdoc-openapi-security.version}</version>
 		</dependency>
 	</dependencies>
 
