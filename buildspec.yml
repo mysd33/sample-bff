@@ -46,7 +46,7 @@ artifacts:
 #For ECS Blue Green Deployment
     - imageDetail.json
     - taskdef.json
-    - appspec.yml
+    - appspec.yaml
 #For EKS Rolling Update    
     - buildspec-eks-cd.yml
     - imageTag.txt
