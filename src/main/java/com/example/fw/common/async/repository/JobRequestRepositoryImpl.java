@@ -1,6 +1,5 @@
 package com.example.fw.common.async.repository;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.Assert;
 
@@ -15,10 +14,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class JobRequestRepositoryImpl implements JobRequestRepository {
-	private final JmsTemplate jmsTemplate;
-	
-	@Value("${aws.sqs.queue.name}")
-	private String queueName;	
+	private final JmsTemplate jmsTemplate;	
+	private final String queueName;	
 
 	
 	@Override

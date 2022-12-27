@@ -1,4 +1,4 @@
-package com.example.bff;
+package com.example.fw.common.async.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
  */
 @Configuration
 @Profile("production")
-public class SQSProdConfig {
+public class SQSCommonProdConfig {
 	@Value("${aws.sqs.region}")
 	private String region;
 

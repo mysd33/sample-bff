@@ -1,4 +1,4 @@
-package com.example.bff;
+package com.example.fw.common.async.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
  */
 @Configuration
 @Profile("dev")
-public class SQSLocalConfig {
+public class SQSCommonLocalConfig {
 	private static final String HTTP_LOCALHOST = "http://localhost:";
 	private static final String ELASTICMQ = "elasticmq";
 
