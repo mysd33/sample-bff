@@ -23,6 +23,7 @@
 		<bootstrap-icons.version>1.10.2</bootstrap-icons.version>
 		<awssdk.bom.version>2.17.247</awssdk.bom.version>
 		<amazon-sqs-java-messaging-lib.version>1.0.4</amazon-sqs-java-messaging-lib.version>
+		<awsxray.bom.version>2.11.0</awsxray.bom.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
 		<springdoc-openapi-security.version>1.6.14</springdoc-openapi-security.version>
 		<!-- MapStruct -->
@@ -30,7 +31,6 @@
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 	</properties>
-
 	<dependencies>
 		<!-- Spring Boot Web -->
 		<dependency>
@@ -45,13 +45,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-
 		<!-- Spring Boot Webflux -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
-
 		<!-- Spring Boot Devtools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -59,14 +57,12 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Spring Boot Actuator -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -76,13 +72,11 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-
 		<!-- Spring Data Commons -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
 		</dependency>
-
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -92,7 +86,6 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 		</dependency>
-
 		<!-- Spring Session Data Redis -->
 		<dependency>
 			<groupId>org.springframework.session</groupId>
@@ -102,7 +95,6 @@
 			<groupId>io.lettuce</groupId>
 			<artifactId>lettuce-core</artifactId>
 		</dependency>
-
 		<!-- Spring AOP -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -112,7 +104,6 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
-
 		<!-- Webjars -->
 		<dependency>
 			<groupId>org.webjars</groupId>
@@ -124,79 +115,67 @@
 			<artifactId>bootstrap-icons</artifactId>
 			<version>${bootstrap-icons.version}</version>
 		</dependency>
-
 		<!-- MyBatis -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>${mybatis-spring-boot-starter.version}</version>
 		</dependency>
-
 		<!-- H2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<!-- PostgreSQL -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
-
 		<!-- Jackson Dataformat CSV -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-csv</artifactId>
 		</dependency>
-
 		<!-- Logstash Logback Encoder -->
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
 		</dependency>
-
 		<!-- Spring Cloud Sleuth -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
-
 		<!-- Spring Cloud Circuit Breaker Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
 		</dependency>
-
 		<!-- Spring Cloud Circuit Breaker Reactive Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
 		</dependency>
-
 		<!-- Spring JMS -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
 		</dependency>
-
 		<!-- Amazon SQS Java Messaging Library -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -204,19 +183,16 @@
 			<version>${amazon-sqs-java-messaging-lib.version}</version>
 			<type>jar</type>
 		</dependency>
-
 		<!-- AWS SDK SQS -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sqs</artifactId>
 		</dependency>
-
 		<!-- JMS API -->
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
 		</dependency>
-
 		<!-- Springdoc-openapi -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -228,10 +204,38 @@
 			<artifactId>springdoc-openapi-security</artifactId>
 			<version>${springdoc-openapi-security.version}</version>
 		</dependency>
+		<!-- AWS X-Ray -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-aws-sdk</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-apache-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-aws-sdk-instrumentor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-spring</artifactId>
+		</dependency>
 	</dependencies>
-
 	<dependencyManagement>
 		<dependencies>
+			<!-- AWS X-Ray -->
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-xray-recorder-sdk-bom</artifactId>
+				<version>${awsxray.bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<!-- AWS SDK -->
 			<dependency>
 				<groupId>software.amazon.awssdk</groupId>
@@ -250,7 +254,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<build>
 		<plugins>
 			<!-- MapStruct -->
@@ -295,5 +298,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

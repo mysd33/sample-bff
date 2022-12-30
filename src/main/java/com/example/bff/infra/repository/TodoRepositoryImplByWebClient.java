@@ -10,12 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.common.httpclient.CircutiBreakerErrorFallback;
 import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
+import com.example.fw.common.httpclient.WebClientXrayFilter;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -23,10 +25,12 @@ import reactor.core.publisher.Mono;
 /**
  * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す WebFlux実装
  */
+@XRayEnabled
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClient implements TodoRepository {
 	private final WebClientLoggingFilter loggingFilter;
+	private final WebClientXrayFilter xrayFilter;
 	private final WebClientResponseErrorHandler responseErrorHandler;
 
 	//サーキットブレーカ
@@ -49,7 +53,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public Optional<Todo> findById(String todoId) {
-		Mono<Todo> todoMono = WebClient.builder().filter(loggingFilter.filter()).build().get()
+		Mono<Todo> todoMono = createWebClient().get()
 				.uri(urlTodoById, todoId)				
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -66,7 +70,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public Collection<Todo> findAll() {
-		Mono<TodoList> todoListMono = WebClient.builder().filter(loggingFilter.filter()).build()
+		Mono<TodoList> todoListMono = createWebClient()
 				.get().uri(urlTodos)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -85,7 +89,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public void create(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
+		createWebClient()
 				.post().uri(urlTodos)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
 				.retrieve()
@@ -103,7 +107,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public boolean update(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
+		createWebClient()
 				.put().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -121,7 +125,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public void delete(Todo todo) {
-		WebClient.builder().filter(loggingFilter.filter()).build()
+		createWebClient()
 				.delete().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -134,6 +138,13 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.transform(it -> cbFactory.create("todo_delete").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
+	}
+	
+	private WebClient createWebClient() {
+		return WebClient.builder()
+				.filter(loggingFilter.filter())
+				.filter(xrayFilter.filter())
+				.build();
 	}
 
 }

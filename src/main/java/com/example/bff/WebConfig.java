@@ -67,6 +67,8 @@ public class WebConfig implements WebMvcConfigurer {
 		return logAspect;
 	}
 
+
+
 	/**
 	 * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
 	 */
@@ -85,4 +87,5 @@ public class WebConfig implements WebMvcConfigurer {
 				.description("非同期実行管理のためのAPIです。")
 				.version("v1.0"));
 	}
+	
 }

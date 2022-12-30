@@ -13,6 +13,7 @@ import com.example.bff.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
+import com.example.fw.common.httpclient.WebClientXrayFilter;
 
 /**
  * 
@@ -30,12 +31,24 @@ public class InfraConfig {
 	}
 
 	/**
+	 * WebClientでのX-Rayクラス
+	 * 
+	 */
+	@Bean
+	public WebClientXrayFilter webClientXrayFilter() {
+		return new WebClientXrayFilter();
+	}
+
+	
+	/**
 	 * WebClientでのエラーハンドラークラス
 	 */
 	@Bean 
 	public WebClientResponseErrorHandler webClientResponseErrorHandler() {
 		return new WebClientResponseErrorHandler();
 	}
+	
+	
 	/**
 	 * RestTemplateの設定
 	 */

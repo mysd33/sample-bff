@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.app.TodoForm.TodoCreate;
 import com.example.bff.app.TodoForm.TodoDelete;
 import com.example.bff.app.TodoForm.TodoFinish;
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  * Todo機能のコントローラクラス
  * 
  */
+@XRayEnabled
 @Controller
 @RequestMapping("todo")
 @RequiredArgsConstructor
