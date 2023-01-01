@@ -55,7 +55,17 @@
 ## 非同期処理実行の操作手順について
   * 本アプリから非同期処理/バッチアプリ（sample-batch）への非同期処理実行依頼が可能である。動作手順は、sample-batchのREADME.mdを参照すること。
 
-## redisのローカル起動
+## OpenAPI
+* Springdoc-openapiにより、RestControllerの実装からAPIドキュメントをリバースエンジニアリングできる
+    * アプリケーションを起動し、以下のURLへアクセスするとそれぞれjson、yaml、html形式のドキュメントを表示する。
+    * http://localhost:8000/v3/api-docs
+        * json形式のドキュメント
+    * http://localhost:8000/v3/api-docs.yaml    
+        * yaml形式のドキュメント
+    * http://localhost:8000/swagger-ui.html
+        * html形式（Swagger-UI）のドキュメント  
+
+## Redisのローカル起動
 * sample-bffのProfile「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * APをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
@@ -84,6 +94,14 @@ docker exec -i -t test-postgres /bin/bash
 # psqlで、testdbデータベースを作成
 postgres> CREATE DATABASE testdb;
 ```
+
+## X-Rayデーモンのローカル起動
+* Profileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
+* ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
+    * デーモンのダウンロード    
+        * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
+    * デーモンのローカル実行
+        * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon-local.html
 
 ## Dockerでのアプリ起動
 * Mavenビルド
@@ -138,6 +156,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 | | 集約例外ハンドリング | SpringMVCのControllerAdviceやAOPを利用し、エラー（例外）発生時、エラーログの出力、DBのロールバック、エラー画面やエラー電文の返却といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.web.advice、com.example.fw.web.aspect |
 | | トランザクション管理機能 | Spring Frameworkのトランザクション管理機能を利用して、@Transactionalアノテーションによる宣言的トランザクションを実現する機能を提供する。 | - | - |
 | | 分散トレーシング | Spring Cloud Sleathを利用して、トレースIDやスパンIDをAP間でのREST API呼び出しで引継ぎログに記録することで、分散トレーシングを実現する。 | - | - |
+| | 分散トレーシング（X-Ray） | AWS X-Rayを利用して、サービス間の分散トレーシング・可視化を実現する。 | - | - |
 | | ヘルスチェック | Spring Boot Actuatorを利用して、ヘルスチェックエンドポイントを提供する。その他、Micrometerメトリックの情報提供も行う。 | - | - |
 | | グレースフルシャットダウン | SpringBootの機能で、Webサーバ（組み込みTomcat）のグレースフルシャットダウン機能を提供する 。 | - | - |
 | オン・バッチ共通 | RDBアクセス | MyBatisやSpringとの統合機能を利用し、DBコネクション取得、SQLの実行等のRDBへのアクセスのため定型的な処理を実施し、ORマッピングやSQLマッピングと呼ばれるドメイン層とインフラ層のインピーダンスミスマッチを吸収する機能を提供する。 | - | - |
@@ -159,6 +178,5 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
 | オンライン | OIDC認証 | Spring Securityの機能でOIDCの認証を行う。 | - | - |
-| | 分散トレーシング（X-Ray） | AWS X-Rayを利用して、サービス間の分散トレーシング・可視化を実現する。 | - | - |
 | オン・バッチ共通 | プロパティ管理（SSM） | Spring Cloud for AWS機能により、APから環境依存のパラメータをAWSのSSMパラメータストアに切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |
 | | テストコード作成支援 | JUnit、Mockito、Springのテスト機能を利用して、単体テストコードや結合テストコードの実装を支援する機能を提供する。 | - | - |
