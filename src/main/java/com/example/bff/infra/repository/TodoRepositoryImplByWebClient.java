@@ -140,6 +140,8 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.block();
 	}
 	
+	
+	//TODO: Bean定義に切り出して、X-Rayのオン、オフをできるようにする。
 	private WebClient createWebClient() {
 		return WebClient.builder()
 				.filter(loggingFilter.filter())
