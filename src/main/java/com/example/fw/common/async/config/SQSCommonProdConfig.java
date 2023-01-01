@@ -21,8 +21,20 @@ public class SQSCommonProdConfig {
 	private String region;
 
 	/**
-	 * SQSConnectionFactoryの定義
+	 * SQSConnectionFactoryの定義(X-Rayトレーシングなし）
 	 */
+	@Profile("!xray")
+	@Bean
+	public SQSConnectionFactory sqsConnectionFactoryWithoutXRay() {
+		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard().withRegion(region);
+		SQSConnectionFactory connectionFactory = new SQSConnectionFactory(new ProviderConfiguration(), builder);
+		return connectionFactory;
+	}
+	
+	/**
+	 * SQSConnectionFactoryの定義(X-Rayトレーシングあり）
+	 */
+	@Profile("xray")
 	@Bean
 	public SQSConnectionFactory sqsConnectionFactory() {
 		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard().withRegion(region)

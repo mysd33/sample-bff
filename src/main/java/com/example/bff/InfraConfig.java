@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.bff.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
@@ -30,15 +32,6 @@ public class InfraConfig {
 		return new WebClientLoggingFilter();
 	}
 
-	/**
-	 * WebClientでのX-Rayクラス
-	 * 
-	 */
-	@Bean
-	public WebClientXrayFilter webClientXrayFilter() {
-		return new WebClientXrayFilter();
-	}
-
 	
 	/**
 	 * WebClientでのエラーハンドラークラス
@@ -47,6 +40,33 @@ public class InfraConfig {
 	public WebClientResponseErrorHandler webClientResponseErrorHandler() {
 		return new WebClientResponseErrorHandler();
 	}
+
+	/**
+	 * 
+	 * WebClientクラス（X-Rayトレーシングあり）
+	 * 
+	 */
+	@Profile("!xray")
+	@Bean
+	public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
+		return WebClient.builder()
+				.filter(loggingFilter.filter())				
+				.build();
+	}
+	
+	/**
+	 * 
+	 * WebClientクラス（X-Rayトレーシングあり）
+	 * 
+	 */
+	@Profile("xray")
+	@Bean
+	public WebClient webClientWithXRay(WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
+		return WebClient.builder()
+				.filter(loggingFilter.filter())
+				.filter(xrayFilter.filter())
+				.build();
+	}
 	
 	
 	/**
@@ -54,6 +74,7 @@ public class InfraConfig {
 	 */
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		//TODO: X-Rayのトレーシング設定
 		// ログ出力クラスの設定
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add(new RestTemplateLoggingInterceptor());

@@ -8,6 +8,7 @@ spring:
     - dev
     - log_default  #logging in default format
 #    - log_container  #logging in json format
+#    - xray  #X-Ray Enabled
   security:    filter:      dispatcher-types:
         - async
         - error

@@ -16,8 +16,6 @@ import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
-import com.example.fw.common.httpclient.WebClientLoggingFilter;
-import com.example.fw.common.httpclient.WebClientXrayFilter;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -29,8 +27,7 @@ import reactor.core.publisher.Mono;
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClient implements TodoRepository {
-	private final WebClientLoggingFilter loggingFilter;
-	private final WebClientXrayFilter xrayFilter;
+	private final WebClient webClient;
 	private final WebClientResponseErrorHandler responseErrorHandler;
 
 	//サーキットブレーカ
@@ -53,7 +50,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public Optional<Todo> findById(String todoId) {
-		Mono<Todo> todoMono = createWebClient().get()
+		Mono<Todo> todoMono = webClient.get()
 				.uri(urlTodoById, todoId)				
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -70,8 +67,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public Collection<Todo> findAll() {
-		Mono<TodoList> todoListMono = createWebClient()
-				.get().uri(urlTodos)
+		Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);
@@ -89,8 +85,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public void create(Todo todo) {
-		createWebClient()
-				.post().uri(urlTodos)
+		webClient.post().uri(urlTodos)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
@@ -107,8 +102,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public boolean update(Todo todo) {
-		createWebClient()
-				.put().uri(urlTodoById, todo.getTodoId())
+		webClient.put().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);
@@ -125,8 +119,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
 	@Override
 	public void delete(Todo todo) {
-		createWebClient()
-				.delete().uri(urlTodoById, todo.getTodoId())
+		webClient.delete().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,  response -> {
 					return  responseErrorHandler.createClientErrorException(response);
@@ -140,13 +133,4 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				.block();
 	}
 	
-	
-	//TODO: Bean定義に切り出して、X-Rayのオン、オフをできるようにする。
-	private WebClient createWebClient() {
-		return WebClient.builder()
-				.filter(loggingFilter.filter())
-				.filter(xrayFilter.filter())
-				.build();
-	}
-
 }

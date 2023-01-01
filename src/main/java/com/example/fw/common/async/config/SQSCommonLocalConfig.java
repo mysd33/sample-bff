@@ -27,15 +27,27 @@ public class SQSCommonLocalConfig {
 	private String port;
 
 	/**
-	 * ElastiqMQ(SQSLocal)起動する場合のSQSConnectionFactoryの定義
+	 * ElastiqMQ(SQSLocal)起動する場合のSQSConnectionFactoryの定義(X-Rayトレーシングなし）
 	 */
+	@Profile("!xray")
 	@Bean
-	public SQSConnectionFactory sqsConnectionFactoryLocal() {
+	public SQSConnectionFactory sqsConnectionFactoryLocalWithoutXRay() {
+		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard()
+				.withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));				
+		SQSConnectionFactory connectionFactory = new SQSConnectionFactory(new ProviderConfiguration(), builder);
+		return connectionFactory;
+	}
+	
+	/**
+	 * ElastiqMQ(SQSLocal)起動する場合のSQSConnectionFactoryの定義(X-Rayトレーシングあり）
+	 */
+	@Profile("xray")
+	@Bean
+	public SQSConnectionFactory sqsConnectionFactoryLocalWithXRay() {
 		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard()
 				//個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
 				.withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
-				.withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));
-				
+				.withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));				
 		SQSConnectionFactory connectionFactory = new SQSConnectionFactory(new ProviderConfiguration(), builder);
 		return connectionFactory;
 	}

@@ -10,12 +10,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.amazonaws.xray.javax.servlet.AWSXRayServletFilter;
 import com.amazonaws.xray.spring.aop.BaseAbstractXRayInterceptor;
 import com.amazonaws.xray.sql.TracingDataSource;
+import com.example.fw.common.httpclient.WebClientXrayFilter;
 import com.zaxxer.hikari.HikariDataSource;
 
+@Profile("xray")
 @Aspect
 @Configuration
 public class XRayConfig extends BaseAbstractXRayInterceptor {
@@ -26,7 +29,7 @@ public class XRayConfig extends BaseAbstractXRayInterceptor {
 	}
 
 	/**
-	 * AWS X-Rayによる分散トレーシングの設定
+	 * FilterでのAWS X-RayのHttpトレーシング設定
 	 * 
 	 */
 	@Bean
@@ -35,6 +38,15 @@ public class XRayConfig extends BaseAbstractXRayInterceptor {
 	}
 
 	/**
+	 * WebClientでのAWS X-RayのHttpクライアントトレーシング設定
+	 * 
+	 */
+	@Bean
+	public WebClientXrayFilter webClientXrayFilter() {
+		return new WebClientXrayFilter();
+	}
+	
+	/**
 	 * DataSourceプロパティの取得
 	 */
 	@Bean
@@ -42,9 +54,9 @@ public class XRayConfig extends BaseAbstractXRayInterceptor {
 	public DataSourceProperties dataSourceProperties() {
 		return new DataSourceProperties();
 	}
-	
+		
 	/**
-	 * AWS X-RayによるJDBCのトレーシング	 
+	 * DataSourceでのAWS X-RayのJDBCトレーシング設定	 
 	 */
 	@Bean
 	public DataSource dataSource(DataSourceProperties dataSourceProperties) {
