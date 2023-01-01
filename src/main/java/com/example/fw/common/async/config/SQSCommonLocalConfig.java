@@ -9,6 +9,8 @@ import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.handlers.TracingHandler;
 
 /**
  * 
@@ -30,7 +32,10 @@ public class SQSCommonLocalConfig {
 	@Bean
 	public SQSConnectionFactory sqsConnectionFactoryLocal() {
 		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard()
+				//個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
+				.withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
 				.withEndpointConfiguration(new EndpointConfiguration(HTTP_LOCALHOST + port, ELASTICMQ));
+				
 		SQSConnectionFactory connectionFactory = new SQSConnectionFactory(new ProviderConfiguration(), builder);
 		return connectionFactory;
 	}
