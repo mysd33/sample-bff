@@ -4,16 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no">        
-        <link th:href="@{/webjars/bootstrap/5.2.2/css/bootstrap.min.css}" rel="stylesheet"></link>
+        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"></link>
         <link th:href="@{/css/common.css}" rel="stylesheet"></link>                
-        <script th:src="@{/webjars/bootstrap/5.2.2/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
         <title th:text="${title}">タイトル</title>
     </head>
     <body class="bg-light">
         <!--/* ヘッダー部 */-->
         <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">        
             <h3 class="me-md-auto fw-normal">                
-                <svg class="icon logo"><use th:xlink:href="@{/webjars/bootstrap-icons/1.10.2/bootstrap-icons.svg#check-circle-fill}"></use></svg>
+                <svg class="icon logo"><use th:xlink:href="@{/webjars/bootstrap-icons/bootstrap-icons.svg#check-circle-fill}"></use></svg>
                 <span th:replace="${title}" th:remove="tag">タイトル</span>
             </h3>                        
             <div sec:authorize="isAuthenticated()">

@@ -115,6 +115,10 @@
 			<artifactId>bootstrap-icons</artifactId>
 			<version>${bootstrap-icons.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator-core</artifactId>
+		</dependency>
 		<!-- MyBatis -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
@@ -220,7 +224,7 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-xray-recorder-sdk-sql</artifactId>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
