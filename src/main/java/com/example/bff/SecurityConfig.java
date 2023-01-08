@@ -28,23 +28,6 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// ログイン不要ページの設定
-		http.authorizeHttpRequests()
-				.antMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
-				.antMatchers("/css/**").permitAll()// cssへアクセス許可
-				.antMatchers("/js/**").permitAll()// jsへアクセス許可
-				.antMatchers("/login").permitAll() // ログインページは直リンクOK
-				.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
-				.antMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-				.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-				.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-				.antMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-				// .antMatchers("/api/**").permitAll()// REST APIへアクセス許可
-				// .antMatchers("/h2-console/**").permitAll() // H2 Consoleへのアクセス許可
-				.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
-				.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
-				.anyRequest().authenticated(); // それ以外は認証・認可が必要
-
 		// フォーム認証によるログイン処理
 		http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
 				.loginPage("/login") // ログインページの指定
@@ -52,11 +35,28 @@ public class SecurityConfig {
 				.usernameParameter("userId") // ログインページのユーザーID
 				.passwordParameter("password") // ログインページのパスワード
 				.defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
-				.permitAll());
-		// ログアウト処理
-		http.logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
-				.logoutSuccessUrl("/") // ログアウト成功後のURL
+				.permitAll())
+			// ログアウト処理
+			.logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
+				.logoutSuccessUrl("/")) // ログアウト成功後のURL
+			// 認可設定
+			.authorizeHttpRequests(authz -> authz
+					.antMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
+					.antMatchers("/css/**").permitAll()// cssへアクセス許可
+					.antMatchers("/js/**").permitAll()// jsへアクセス許可
+					.antMatchers("/login").permitAll() // ログインページは直リンクOK
+					.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
+					.antMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+					.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+					.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+					.antMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+					// .antMatchers("/api/**").permitAll()// REST APIへアクセス許可
+					// .antMatchers("/h2-console/**").permitAll() // H2 Consoleへのアクセス許可
+					.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
+					.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
+					.anyRequest().authenticated() // それ以外は認証・認可が必要
 		);
+		
 		// H2 Console向け設定
 		// http.csrf().ignoringAntMatchers("/h2-console/**");
 		// http.antMatcher("/h2-console/**").headers().frameOptions().disable();
