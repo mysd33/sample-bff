@@ -29,7 +29,8 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// ログイン不要ページの設定
-		http.authorizeHttpRequests().mvcMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
+		http.authorizeHttpRequests()
+				.antMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
 				.antMatchers("/css/**").permitAll()// cssへアクセス許可
 				.antMatchers("/js/**").permitAll()// jsへアクセス許可
 				.antMatchers("/login").permitAll() // ログインページは直リンクOK
