@@ -1,8 +1,8 @@
 package com.example.bff;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * SpringSecurityの設定クラス
  *
  */
-@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 	// Spring Security5.7より大幅に設定方法が変更された
 	// https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
