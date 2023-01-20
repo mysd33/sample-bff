@@ -87,7 +87,7 @@
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
 		</dependency>
-		<!-- TERASOLUNA Web (for TransactionToken Check -->
+		<!-- TERASOLUNA Web (for TransactionToken Check) -->
 		<dependency>
 			<groupId>org.terasoluna.gfw</groupId>
 			<artifactId>terasoluna-gfw-web</artifactId>
