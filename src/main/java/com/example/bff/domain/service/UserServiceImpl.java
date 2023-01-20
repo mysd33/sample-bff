@@ -3,6 +3,7 @@ package com.example.bff.domain.service;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.bff.domain.message.MessageIds;
 import com.example.bff.domain.model.User;
 import com.example.bff.domain.repository.UserRepository;
+import com.example.fw.common.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
-
 
 /**
  * 
@@ -29,10 +31,14 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public boolean insert(User user) {		
+	public boolean insert(User user) {
 		String password = passwordEncoder.encode(user.getPassword());
 		user.setPassword(password);
-		return repository.insert(user);
+		try {
+			return repository.insert(user);
+		} catch (DuplicateKeyException e) {
+			throw new BusinessException(e, MessageIds.W_EX_8005, user.getUserId());
+		}
 	}
 
 	/**
@@ -82,8 +88,8 @@ public class UserServiceImpl implements UserService {
 	 * １件更新用メソッド.
 	 */
 	@Override
-	public boolean updateOne(User user) {		
-		String password = passwordEncoder.encode(user.getPassword());		
+	public boolean updateOne(User user) {
+		String password = passwordEncoder.encode(user.getPassword());
 		user.setPassword(password);
 		return repository.updateOne(user);
 	}

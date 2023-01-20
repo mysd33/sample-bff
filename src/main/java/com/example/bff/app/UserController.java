@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.bff.app.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
 import com.example.bff.domain.service.UserService;
+import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.web.view.CsvDownloadView;
@@ -57,12 +58,16 @@ public class UserController {
 		User user = UserMapper.INSTANCE.formToModel(form);
 
 		// ユーザー登録処理
-		boolean result = userService.insert(user);
-
-		if (result == true) {
-			appLogger.debug("insert成功");
-		} else {
-			appLogger.debug("insert失敗");
+		try {
+			boolean result = userService.insert(user);
+			if (result) {
+				appLogger.debug("insert成功");
+			} else {
+				appLogger.debug("insert失敗");
+			}
+		} catch (BusinessException e) {
+			model.addAttribute(e.getResultMessage());
+			return "user/regist";
 		}
 
 		return "redirect:/userList";
