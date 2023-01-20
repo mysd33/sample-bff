@@ -31,6 +31,8 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
 
 	/**
 	 * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
+	 * 
+	 * application.ymlで、spring.main.allow-bean-definition-overriding=true設定すること
 	 */ 
     @Bean
     public RequestDataValueProcessor requestDataValueProcessor() {
