@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
+import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
 import com.example.bff.app.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
@@ -34,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@TransactionTokenCheck("userTransactionToken")
 public class UserController {
 	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 	private final UserService userService;	
@@ -42,6 +45,7 @@ public class UserController {
 	 * ユーザー登録画面のGETメソッド用処理.
 	 */
 	@GetMapping("/user")
+	@TransactionTokenCheck(type = TransactionTokenType.BEGIN)
 	public String displayResistWindow(@ModelAttribute UserForm form, Model model) {
 		return "user/regist";
 	}
@@ -50,6 +54,7 @@ public class UserController {
 	 * ユーザー登録画面のPOSTメソッド用処理.
 	 */
 	@PostMapping("/user")
+	@TransactionTokenCheck()
 	public String postUserResist(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
 			BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {

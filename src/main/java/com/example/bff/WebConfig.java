@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -15,6 +16,7 @@ import com.example.bff.common.advice.ErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.PageInfoDialect;
+import com.example.fw.web.token.config.TransactionTokenConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.core.jackson.ModelResolver;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
+@Import(TransactionTokenConfig.class)
 public class WebConfig implements WebMvcConfigurer {
 	@Value("${pagination.maxPageSize:100}")
 	private int maxPageSize;

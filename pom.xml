@@ -26,6 +26,7 @@
 		<awsxray.bom.version>2.11.0</awsxray.bom.version>
 		<springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
 		<springdoc-openapi-security.version>1.6.14</springdoc-openapi-security.version>
+		<terasoluna.version>5.7.1.SP1.RELEASE</terasoluna.version>
 		<!-- MapStruct -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
@@ -85,6 +86,18 @@
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
+		</dependency>
+		<!-- TERASOLUNA Web (for TransactionToken Check -->
+		<dependency>
+			<groupId>org.terasoluna.gfw</groupId>
+			<artifactId>terasoluna-gfw-web</artifactId>
+			<version>${terasoluna.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Spring Session Data Redis -->
 		<dependency>
