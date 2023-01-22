@@ -37,72 +37,67 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("todo")
 @RequiredArgsConstructor
 public class TodoController {
-	private final TodoService todoService;
+    private final TodoService todoService;
 
-	@ModelAttribute
-	public TodoForm setUpForm() {
-		TodoForm form = new TodoForm();
-		return form;
-	}
+    @ModelAttribute
+    public TodoForm setUpForm() {
+        return new TodoForm();
+    }
 
-	/**
-	 * Todoリストの表示
-	 */
-	@GetMapping("list")
-	public String list(Model model) {
-		Collection<Todo> todos = todoService.findAll();
-		model.addAttribute("todos", todos);
-		return "todo/todoList";
-	}
+    /**
+     * Todoリストの表示
+     */
+    @GetMapping("list")
+    public String list(Model model) {
+        Collection<Todo> todos = todoService.findAll();
+        model.addAttribute("todos", todos);
+        return "todo/todoList";
+    }
 
-	/**
-	 * Todoの登録
-	 */
-	@PostMapping("create")
-	public String create(@Validated({ Default.class, TodoCreate.class }) TodoForm todoForm, BindingResult bindingResult,
-			Model model, RedirectAttributes attributes) {
-		if (bindingResult.hasErrors()) {
-			return list(model);
-		}
-		Todo todo = TodoMapper.INSTANCE.formToModel(todoForm);
-		try {
-			todoService.create(todo);
-		} catch (BusinessException e) {
-			model.addAttribute(e.getResultMessage());
-			return list(model);
-		}
-		attributes.addFlashAttribute(
-				ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0001).build());
-		return "redirect:/todo/list";
-	}
-	
-	/**
-	 * Todoの完了
-	 */
-    @PostMapping("finish") 
-    public String finish(
-            @Validated({ Default.class, TodoFinish.class }) TodoForm form, 
-            BindingResult bindingResult, Model model,
-            RedirectAttributes attributes) {
+    /**
+     * Todoの登録
+     */
+    @PostMapping("create")
+    public String create(@Validated({ Default.class, TodoCreate.class }) TodoForm todoForm, BindingResult bindingResult,
+            Model model, RedirectAttributes attributes) {
+        if (bindingResult.hasErrors()) {
+            return list(model);
+        }
+        Todo todo = TodoMapper.INSTANCE.formToModel(todoForm);
+        try {
+            todoService.create(todo);
+        } catch (BusinessException e) {
+            model.addAttribute(e.getResultMessage());
+            return list(model);
+        }
+        attributes.addFlashAttribute(
+                ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0001).build());
+        return "redirect:/todo/list";
+    }
+
+    /**
+     * Todoの完了
+     */
+    @PostMapping("finish")
+    public String finish(@Validated({ Default.class, TodoFinish.class }) TodoForm form, BindingResult bindingResult,
+            Model model, RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return list(model);
         }
         try {
             todoService.finish(form.getTodoId());
-        } catch (BusinessException e) {          
+        } catch (BusinessException e) {
             model.addAttribute(e.getResultMessage());
             return list(model);
         }
-		attributes.addFlashAttribute(
-				ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0002).build());
+        attributes.addFlashAttribute(
+                ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0002).build());
         return "redirect:/todo/list";
     }
-    
-    @PostMapping("delete") 
-    public String delete(
-            @Validated({ Default.class, TodoDelete.class }) TodoForm form,
-            BindingResult bindingResult, Model model,
-            RedirectAttributes attributes) {
+
+    @PostMapping("delete")
+    public String delete(@Validated({ Default.class, TodoDelete.class }) TodoForm form, BindingResult bindingResult,
+            Model model, RedirectAttributes attributes) {
 
         if (bindingResult.hasErrors()) {
             return list(model);
@@ -114,8 +109,8 @@ public class TodoController {
             model.addAttribute(e.getResultMessage());
             return list(model);
         }
-		attributes.addFlashAttribute(
-				ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0003).build());        
+        attributes.addFlashAttribute(
+                ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0003).build());
         return "redirect:/todo/list";
     }
 }

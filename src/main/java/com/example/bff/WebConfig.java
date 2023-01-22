@@ -24,71 +24,66 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
-@Import(TransactionTokenConfig.class)
+@Import(TransactionTokenConfig.class)   //トランザクショントークンチェック機能の追加
 public class WebConfig implements WebMvcConfigurer {
-	@Value("${pagination.maxPageSize:100}")
-	private int maxPageSize;
-	@Value("${pagination.defaultPage:0}")
-	private int page;
-	@Value("${pagination.defaultPageSize:5}")
-	private int size;
+    @Value("${pagination.maxPageSize:100}")
+    private int maxPageSize;
+    @Value("${pagination.defaultPage:0}")
+    private int page;
+    @Value("${pagination.defaultPageSize:5}")
+    private int size;
 
-	/**
-	 * ページネーションの設定
-	 */
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
-		resolver.setMaxPageSize(maxPageSize);
-		resolver.setFallbackPageable(PageRequest.of(page, size));
-		resolvers.add(resolver);
-	}
+    /**
+     * ページネーションの設定
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
+        resolver.setMaxPageSize(maxPageSize);
+        resolver.setFallbackPageable(PageRequest.of(page, size));
+        resolvers.add(resolver);
+    }
 
-	/**
-	 * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
-	 */
-	@Bean
-	public PageInfoDialect pageInfoDialect() {
-		return new PageInfoDialect();
-	}
+    /**
+     * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
+     */
+    @Bean
+    public PageInfoDialect pageInfoDialect() {
+        return new PageInfoDialect();
+    }
 
-	/**
-	 * エラーレスポンス作成クラス
-	 */
-	@Bean
-	public ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
-		return new ErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
-	}
+    /**
+     * エラーレスポンス作成クラス
+     */
+    @Bean
+    public ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
+        return new ErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
+    }
 
-	/**
-	 * ロギング機能
-	 */
-	@Bean
-	public LogAspect logAspect() {
-		LogAspect logAspect = new LogAspect();
-		logAspect.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
-		return logAspect;
-	}
+    /**
+     * ロギング機能
+     */
+    @Bean
+    public LogAspect logAspect() {
+        LogAspect logAspect = new LogAspect();
+        logAspect.setDefaultExceptionMessageId(MessageIds.E_EX_9001);
+        return logAspect;
+    }
 
+    /**
+     * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
+     */
+    @Bean
+    public ModelResolver modelResolver(ObjectMapper objectMapper) {
+        return new ModelResolver(objectMapper);
+    }
 
+    /**
+     * Springdoc-openapiの定義
+     */
+    @Bean
+    public OpenAPI springShopOpenAPI() {
+        return new OpenAPI().info(new Info().title("非同期実行APIドキュメント").description("非同期実行管理のためのAPIです。").version("v1.0"));
+    }
 
-	/**
-	 * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
-	 */
-	@Bean
-	public ModelResolver modelResolver(ObjectMapper objectMapper) {
-		return new ModelResolver(objectMapper);
-	}
-
-	/**
-	 * Springdoc-openapiの定義
-	 */
-	@Bean
-	public OpenAPI springShopOpenAPI() {
-		return new OpenAPI().info(
-				new Info().title("非同期実行APIドキュメント")
-				.description("非同期実行管理のためのAPIです。")
-				.version("v1.0"));
-	}
-	
 }

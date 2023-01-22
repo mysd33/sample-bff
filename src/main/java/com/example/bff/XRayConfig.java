@@ -27,56 +27,55 @@ import com.zaxxer.hikari.HikariDataSource;
 @Aspect
 @Configuration
 public class XRayConfig extends BaseAbstractXRayInterceptor {
-	static {
-		// サービスプラグインの設定
-		AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard()
-				.withPlugin(new EKSPlugin())
-				.withPlugin(new ECSPlugin())
-				.withPlugin(new EC2Plugin());
-		// TODO: サンプリングルール
-		// URL ruleFile = WebConfig.class.getResource("/sampling-rules.json");
-		// builder.withSamplingStrategy(new LocalizedSamplingStrategy(ruleFile));
+    static {
+        // サービスプラグインの設定
+        AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard().withPlugin(new EKSPlugin())
+                .withPlugin(new ECSPlugin()).withPlugin(new EC2Plugin());
+        // TODO: サンプリングルール
+        // URL ruleFile = WebConfig.class.getResource("/sampling-rules.json");
+        // builder.withSamplingStrategy(new LocalizedSamplingStrategy(ruleFile));
 
-		AWSXRay.setGlobalRecorder(builder.build());
-	}
+        AWSXRay.setGlobalRecorder(builder.build());
+    }
 
-	@Override
-	@Pointcut("@within(com.amazonaws.xray.spring.aop.XRayEnabled) " + " && execution(* com.example..*.*(..))")
-	protected void xrayEnabledClasses() {
-	}
+    @Override
+    @Pointcut("@within(com.amazonaws.xray.spring.aop.XRayEnabled) " + " && execution(* com.example..*.*(..))")
+    protected void xrayEnabledClasses() {
+    }
 
-	/**
-	 * FilterでのAWS X-RayのHttpトレーシング設定
-	 * 
-	 */
-	@Bean
-	public Filter tracingFilter() {
-		return new AWSXRayServletFilter("sample-bff");
-	}
+    /**
+     * FilterでのAWS X-RayのHttpトレーシング設定
+     * 
+     */
+    @Bean
+    public Filter tracingFilter() {
+        return new AWSXRayServletFilter("sample-bff");
+    }
 
-	/**
-	 * WebClientでのAWS X-RayのHttpクライアントトレーシング設定
-	 * 
-	 */
-	@Bean
-	public WebClientXrayFilter webClientXrayFilter() {
-		return new WebClientXrayFilter();
-	}
-	
-	/**
-	 * DataSourceプロパティの取得
-	 */
-	@Bean
-	@ConfigurationProperties(prefix = "spring.datasource")
-	public DataSourceProperties dataSourceProperties() {
-		return new DataSourceProperties();
-	}
-		
-	/**
-	 * DataSourceでのAWS X-RayのJDBCトレーシング設定	 
-	 */
-	@Bean
-	public DataSource dataSource(DataSourceProperties dataSourceProperties) {
+    /**
+     * WebClientでのAWS X-RayのHttpクライアントトレーシング設定
+     * 
+     */
+    @Bean
+    public WebClientXrayFilter webClientXrayFilter() {
+        return new WebClientXrayFilter();
+    }
+
+    /**
+     * DataSourceプロパティの取得
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSourceProperties dataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    /**
+     * DataSourceでのAWS X-RayのJDBCトレーシング設定
+     */
+    @Bean
+    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
+        // @formatter:off
 		return TracingDataSource.decorate(
 				DataSourceBuilder.create()
 				.type(HikariDataSource.class)
@@ -85,5 +84,6 @@ public class XRayConfig extends BaseAbstractXRayInterceptor {
 				.username(dataSourceProperties.getUsername())
 				.password(dataSourceProperties.getPassword())				
 				.build());
-	}
+        // @formatter:on		
+    }
 }

@@ -35,7 +35,7 @@ public class WebClientResponseErrorHandler {
 						String message = body.getMessage();
 						return Mono.error(new BusinessException(
 								ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
-									.args(new Object[]  { code })
+									.args(new String[]  { code })
 									.message(message).build()));						
 					});			
 		} catch (Exception e) {			

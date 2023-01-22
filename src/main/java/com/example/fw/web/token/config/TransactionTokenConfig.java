@@ -19,45 +19,44 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
  */
 @Configuration
 public class TransactionTokenConfig implements WebMvcConfigurer {
-	/**
-	 * トランザクショントークンの設定
-	 * 
-	 */
-	@ConfigurationProperties(prefix = "transaction.token")
-	@Bean
-	public TransactionTokenProperties transactionTokenProperties() {
-		return new TransactionTokenProperties();
-	}
+    /**
+     * トランザクショントークンの設定
+     * 
+     */
+    @ConfigurationProperties(prefix = "transaction.token")
+    @Bean
+    public TransactionTokenProperties transactionTokenProperties() {
+        return new TransactionTokenProperties();
+    }
 
-	/**
-	 * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
-	 * 
-	 * application.ymlで、spring.main.allow-bean-definition-overriding=true設定すること
-	 */ 
+    /**
+     * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
+     * 
+     * application.ymlで、spring.main.allow-bean-definition-overriding=true設定すること
+     */
     @Bean
     public RequestDataValueProcessor requestDataValueProcessor() {
         return new CompositeRequestDataValueProcessor(
-        		//CSRFとTransactionTokenの両方のRequestDataValueProcessorを指定
-        		new CsrfRequestDataValueProcessor(),
-        		new TransactionTokenRequestDataValueProcessor());        		
+                // CSRFとTransactionTokenの両方のRequestDataValueProcessorを指定
+                new CsrfRequestDataValueProcessor(), new TransactionTokenRequestDataValueProcessor());
     }
-    
+
     /**
      * 
-     * TransactionTokenInterceptorクラスの設定 
+     * TransactionTokenInterceptorクラスの設定
      * 
      */
-	@Bean
-	public TransactionTokenInterceptor transactionTokenInterceptor() {
-		return new TransactionTokenInterceptor();
-	}
+    @Bean
+    public TransactionTokenInterceptor transactionTokenInterceptor() {
+        return new TransactionTokenInterceptor();
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(transactionTokenInterceptor())
-				.addPathPatterns(transactionTokenProperties().getPathPatterns())
-				.excludePathPatterns(transactionTokenProperties().getExcludePathPatterns())
-				.order(Ordered.LOWEST_PRECEDENCE - 10);
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(transactionTokenInterceptor())
+                .addPathPatterns(transactionTokenProperties().getPathPatterns())
+                .excludePathPatterns(transactionTokenProperties().getExcludePathPatterns())
+                .order(Ordered.LOWEST_PRECEDENCE - 10);
+    }
 
 }

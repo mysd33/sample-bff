@@ -24,63 +24,56 @@ import com.example.fw.common.httpclient.WebClientXrayFilter;
  */
 @Configuration
 public class InfraConfig {
-	/**
-	 * WebClientでのログ出力クラス
-	 */
-	@Bean 
-	public WebClientLoggingFilter webClientLoggingFilter() {
-		return new WebClientLoggingFilter();
-	}
+    /**
+     * WebClientでのログ出力クラス
+     */
+    @Bean
+    public WebClientLoggingFilter webClientLoggingFilter() {
+        return new WebClientLoggingFilter();
+    }
 
-	
-	/**
-	 * WebClientでのエラーハンドラークラス
-	 */
-	@Bean 
-	public WebClientResponseErrorHandler webClientResponseErrorHandler() {
-		return new WebClientResponseErrorHandler();
-	}
+    /**
+     * WebClientでのエラーハンドラークラス
+     */
+    @Bean
+    public WebClientResponseErrorHandler webClientResponseErrorHandler() {
+        return new WebClientResponseErrorHandler();
+    }
 
-	/**
-	 * 
-	 * WebClientクラス（X-Rayトレーシングあり）
-	 * 
-	 */
-	@Profile("!xray")
-	@Bean
-	public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
-		return WebClient.builder()
-				.filter(loggingFilter.filter())				
-				.build();
-	}
-	
-	/**
-	 * 
-	 * WebClientクラス（X-Rayトレーシングあり）
-	 * 
-	 */
-	@Profile("xray")
-	@Bean
-	public WebClient webClientWithXRay(WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
-		return WebClient.builder()
-				.filter(loggingFilter.filter())
-				.filter(xrayFilter.filter())
-				.build();
-	}
-	
-	
-	/**
-	 * RestTemplateの設定
-	 */
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-		//TODO: X-Rayのトレーシング設定
-		// ログ出力クラスの設定
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-		interceptors.add(new RestTemplateLoggingInterceptor());
-		return restTemplateBuilder
-				// エラーハンドラークラスの設定
-				.errorHandler(new RestTemplateResponseErrorHandler()).interceptors(interceptors).build();
-	}
+    /**
+     * 
+     * WebClientクラス（X-Rayトレーシングあり）
+     * 
+     */
+    @Profile("!xray")
+    @Bean
+    public WebClient webClientWithoutXRay(WebClientLoggingFilter loggingFilter) {
+        return WebClient.builder().filter(loggingFilter.filter()).build();
+    }
+
+    /**
+     * 
+     * WebClientクラス（X-Rayトレーシングあり）
+     * 
+     */
+    @Profile("xray")
+    @Bean
+    public WebClient webClientWithXRay(WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
+        return WebClient.builder().filter(loggingFilter.filter()).filter(xrayFilter.filter()).build();
+    }
+
+    /**
+     * RestTemplateの設定
+     */
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+        // TODO: X-Rayのトレーシング設定
+        // ログ出力クラスの設定
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+        interceptors.add(new RestTemplateLoggingInterceptor());
+        return restTemplateBuilder
+                // エラーハンドラークラスの設定
+                .errorHandler(new RestTemplateResponseErrorHandler()).interceptors(interceptors).build();
+    }
 
 }

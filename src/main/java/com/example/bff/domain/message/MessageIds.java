@@ -4,6 +4,7 @@ package com.example.bff.domain.message;
  * Auto-Generarted By MessageKeysGen Class
  */
 public class MessageIds {
+    private MessageIds() {}
     public static final String I_EX_0001 = "i.ex.0001";
     public static final String I_EX_0002 = "i.ex.0002";
     public static final String I_EX_0003 = "i.ex.0003";

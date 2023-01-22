@@ -1,6 +1,10 @@
 package com.example.fw.common.async.config;
 
-public class SQSCommonConfigPackage {
-	private SQSCommonConfigPackage() {
-	}
+/**
+ * 
+ * SQSの共通設定をコンポーネントスキャンするためのパッケージインタフェース
+ *
+ */
+public interface SQSCommonConfigPackage {
+
 }

@@ -13,16 +13,16 @@ import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
 @Configuration
 @ComponentScan(basePackageClasses = { SQSCommonConfigPackage.class })
 public class SQSConfig {
-	@Value("${aws.sqs.queue.name}")
-	private String queueName;
+    @Value("${aws.sqs.queue.name}")
+    private String queueName;
 
-	/**
-	 * JobRequestRepository（非同期実行）の設定
-	 * 
-	 * @param jmsTemplate
-	 */
-	@Bean
-	public JobRequestRepository jobRequestRepository(JmsTemplate jmsTemplate) {
-		return new JobRequestRepositoryImpl(jmsTemplate, queueName);
-	}
+    /**
+     * JobRequestRepository（非同期実行）の設定
+     * 
+     * @param jmsTemplate
+     */
+    @Bean
+    public JobRequestRepository jobRequestRepository(JmsTemplate jmsTemplate) {
+        return new JobRequestRepositoryImpl(jmsTemplate, queueName);
+    }
 }

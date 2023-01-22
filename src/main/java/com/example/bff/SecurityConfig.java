@@ -16,15 +16,16 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @EnableWebSecurity
 public class SecurityConfig {
-	// Spring Security5.7より大幅に設定方法が変更された
-	// https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
-	// https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
+    // Spring Security5.7より大幅に設定方法が変更された
+    // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
+    // https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
 
-	/**
-	 * Spring Securityによる認証認可設定
-	 */
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    /**
+     * Spring Securityによる認証認可設定
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // @formatter:off
 		// フォーム認証によるログイン処理
 		http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
 				.loginPage("/login") // ログインページの指定
@@ -53,16 +54,18 @@ public class SecurityConfig {
 				)
 				// REST APIはCSRF保護不要
 				.csrf().ignoringAntMatchers("/api/**");
-		return http.build();
-	}
+		// @formatter:on
+        return http.build();
+    }
 
-	/**
-	 * H2 Consoleのアクセス許可対応
-	 */
-	@Profile("dev")
-	@Order(1)
-	@Bean
-	public SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
+    /**
+     * H2 Consoleのアクセス許可対応
+     */
+    @Profile("dev")
+    @Order(1)
+    @Bean
+    public SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
+        // @formatter:off
 		//H2 ConsoleのURLに対して
 		http.antMatcher("/h2-console/**")
 			.authorizeHttpRequests(
@@ -72,15 +75,16 @@ public class SecurityConfig {
 			.csrf().disable()
 			// H2 Consoleの表示ではframeタグを使用しているのでX-FrameOptionsを無効化
 			.headers().frameOptions().disable();
-		return http.build();
-	}
+        // @formatter:on		
+        return http.build();
+    }
 
-	/**
-	 * パスワードエンコーダ
-	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    /**
+     * パスワードエンコーダ
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }

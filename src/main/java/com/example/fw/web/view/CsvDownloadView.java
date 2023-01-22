@@ -30,65 +30,65 @@ import lombok.val;
  */
 public class CsvDownloadView extends AbstractView {
 
-	protected static final CsvMapper csvMapper = createCsvMapper();
+    protected static final CsvMapper csvMapper = createCsvMapper();
 
-	protected Class<?> clazz;
+    protected Class<?> clazz;
 
-	protected Collection<?> data;
+    protected Collection<?> data;
 
-	@Setter
-	protected String filename;
+    @Setter
+    protected String filename;
 
-	@Setter
-	protected List<String> columns;
+    @Setter
+    protected List<String> columns;
 
-	/**
-	 * CSVマッパーを生成する。
-	 *
-	 * @return
-	 */
-	static CsvMapper createCsvMapper() {
-		CsvMapper mapper = new CsvMapper();
-		mapper.configure(ALWAYS_QUOTE_STRINGS, true);
-		mapper.findAndRegisterModules();
-		return mapper;
-	}
+    /**
+     * CSVマッパーを生成する。
+     *
+     * @return
+     */
+    static CsvMapper createCsvMapper() {
+        CsvMapper mapper = new CsvMapper();
+        mapper.configure(ALWAYS_QUOTE_STRINGS, true);
+        mapper.findAndRegisterModules();
+        return mapper;
+    }
 
-	/**
-	 * コンストラクタ
-	 *
-	 * @param clazz    CSVにマッピングするデータクラス
-	 * @param data     対象のデータ
-	 * @param fileName ファイル名
-	 */
-	public CsvDownloadView(final Class<?> clazz, final Collection<?> data, final String fileName) {
-		Assert.notNull(clazz, "clazzがNullです");
-		Assert.notNull(data, "dataがNullです");
-		Assert.notNull(fileName, "fileNameがNullです");
-		setContentType("application/octet-stream; charset=Windows-31J;");
-		this.clazz = clazz;
-		this.data = data;
-		this.filename = fileName;
-	}
+    /**
+     * コンストラクタ
+     *
+     * @param clazz    CSVにマッピングするデータクラス
+     * @param data     対象のデータ
+     * @param fileName ファイル名
+     */
+    public CsvDownloadView(final Class<?> clazz, final Collection<?> data, final String fileName) {
+        Assert.notNull(clazz, "clazzがNullです");
+        Assert.notNull(data, "dataがNullです");
+        Assert.notNull(fileName, "fileNameがNullです");
+        setContentType("application/octet-stream; charset=Windows-31J;");
+        this.clazz = clazz;
+        this.data = data;
+        this.filename = fileName;
+    }
 
-	@Override
-	protected boolean generatesDownloadContent() {
-		return true;
-	}
+    @Override
+    protected boolean generatesDownloadContent() {
+        return true;
+    }
 
-	@Override
-	protected final void renderMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
+    @Override
+    protected final void renderMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request,
+            final HttpServletResponse response) throws Exception {
 
-		// ファイル名に日本語を含めても文字化けしないようにUTF-8にエンコードする
-		val encodedFilename = encodeUtf8(filename);
-		val contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFilename);
+        // ファイル名に日本語を含めても文字化けしないようにUTF-8にエンコードする
+        val encodedFilename = encodeUtf8(filename);
+        val contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFilename);
 
-		response.setHeader(CONTENT_TYPE, getContentType());
-		response.setHeader(CONTENT_DISPOSITION, contentDisposition);
+        response.setHeader(CONTENT_TYPE, getContentType());
+        response.setHeader(CONTENT_DISPOSITION, contentDisposition);
 
-		// CSVヘッダをオブジェクトから作成する
-		CsvSchema schema = csvMapper.schemaFor(clazz).withHeader();
+        // CSVヘッダをオブジェクトから作成する
+        CsvSchema schema = csvMapper.schemaFor(clazz).withHeader();
 
         if (columns != null && columns.isEmpty()) {
             // カラムが指定された場合は、スキーマを再構築する
@@ -99,22 +99,22 @@ public class CsvDownloadView extends AbstractView {
             schema = builder.build();
         }
 
-		// 書き出し
-		val outputStream = new BufferedOutputStream(response.getOutputStream());
-		try (Writer writer = new OutputStreamWriter(outputStream, "Windows-31J")) {
-			csvMapper.writer(schema).writeValue(writer, data);
-		}
-	}
+        // 書き出し
+        val outputStream = new BufferedOutputStream(response.getOutputStream());
+        try (Writer writer = new OutputStreamWriter(outputStream, "Windows-31J")) {
+            csvMapper.writer(schema).writeValue(writer, data);
+        }
+    }
 
-	private String encodeUtf8(final String filename) {
-		String encoded = null;
+    private String encodeUtf8(final String filename) {
+        String encoded = null;
 
-		try {
-			encoded = URLEncoder.encode(filename, "UTF-8");
-		} catch (UnsupportedEncodingException ignore) {
-			// 例外は発生しない
-		}
+        try {
+            encoded = URLEncoder.encode(filename, "UTF-8");
+        } catch (UnsupportedEncodingException ignore) {
+            // 例外は発生しない
+        }
 
-		return encoded;
-	}
+        return encoded;
+    }
 }

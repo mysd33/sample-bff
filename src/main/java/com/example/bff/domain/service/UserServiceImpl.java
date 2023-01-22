@@ -27,79 +27,82 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-	private final UserRepository repository;
-	private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
+    
+    /**
+     * ユーザ登録
+     */
+    @Override
+    public boolean insert(User user) {
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
+        try {
+            return repository.insert(user);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException(e, MessageIds.W_EX_8005, user.getUserId());
+        }
+    }
 
-	@Override
-	public boolean insert(User user) {
-		String password = passwordEncoder.encode(user.getPassword());
-		user.setPassword(password);
-		try {
-			return repository.insert(user);
-		} catch (DuplicateKeyException e) {
-			throw new BusinessException(e, MessageIds.W_EX_8005, user.getUserId());
-		}
-	}
+    /**
+     * カウント用メソッド.
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public int count() {
+        return repository.count();
+    }
 
-	/**
-	 * カウント用メソッド.
-	 */
-	@Transactional(readOnly = true)
-	@Override
-	public int count() {
-		return repository.count();
-	}
+    /**
+     * 全件取得用メソッド.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findAll() {
+        return repository.findAll();
+    }
 
-	/**
-	 * 全件取得用メソッド.
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> findAll() {
-		return repository.findAll();
-	}
+    /**
+     * 全件取得（ページネーション）用メソッド.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<User> findAllForPagination(Pageable pageable) {
+        int total = repository.count();
+        List<User> users;
+        if (total > 0) {
+            users = repository.findAllForPagination(pageable);
+        } else {
+            users = Collections.emptyList();
+        }
+        return new PageImpl<>(users, pageable, total);
+    }
 
-	/**
-	 * 全件取得（ページネーション）用メソッド.
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Page<User> findAllForPagination(Pageable pageable) {
-		int total = repository.count();
-		List<User> users;
-		if (total > 0) {
-			users = repository.findAllForPagination(pageable);
-		} else {
-			users = Collections.emptyList();
-		}
-		return new PageImpl<>(users, pageable, total);
-	}
+    /**
+     * １件取得用メソッド.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public User findOne(String userId) {
+        return repository.findOne(userId);
+    }
 
-	/**
-	 * １件取得用メソッド.
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public User findOne(String userId) {
-		return repository.findOne(userId);
-	}
+    /**
+     * １件更新用メソッド.
+     */
+    @Override
+    public boolean updateOne(User user) {
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
+        return repository.updateOne(user);
+    }
 
-	/**
-	 * １件更新用メソッド.
-	 */
-	@Override
-	public boolean updateOne(User user) {
-		String password = passwordEncoder.encode(user.getPassword());
-		user.setPassword(password);
-		return repository.updateOne(user);
-	}
-
-	/**
-	 * １件削除用メソッド.
-	 */
-	@Override
-	public boolean deleteOne(String userId) {
-		return repository.deleteOne(userId);
-	}
+    /**
+     * １件削除用メソッド.
+     */
+    @Override
+    public boolean deleteOne(String userId) {
+        return repository.deleteOne(userId);
+    }
 
 }

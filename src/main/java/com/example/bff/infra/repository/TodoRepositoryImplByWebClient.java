@@ -27,110 +27,118 @@ import reactor.core.publisher.Mono;
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClient implements TodoRepository {
-	private final WebClient webClient;
-	private final WebClientResponseErrorHandler responseErrorHandler;
+    private final WebClient webClient;
+    private final WebClientResponseErrorHandler responseErrorHandler;
 
-	//サーキットブレーカ
-	//（参考）https://spring.io/projects/spring-cloud-circuitbreaker
-	@SuppressWarnings("rawtypes")
-	private final ReactiveCircuitBreakerFactory cbFactory;
-	
-	
-	@Value("${api.backend.url}/api/v1/todos")
-	private String urlTodos;
+    // サーキットブレーカ
+    // （参考）https://spring.io/projects/spring-cloud-circuitbreaker
+    @SuppressWarnings("rawtypes")
+    private final ReactiveCircuitBreakerFactory cbFactory;
 
-	@Value("${api.backend.url}/api/v1/todos/{todoId}")
-	private String urlTodoById;
+    @Value("${api.backend.url}/api/v1/todos")
+    private String urlTodos;
 
-	// WebClient(WebFlux)版の実装の参考ページ
-	// https://news.mynavi.jp/techplus/article/techp5348/
-	// https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
-	// https://spring.pleiades.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
-	// https://medium.com/a-developers-odyssey/spring-web-client-exception-handling-cd93cf05b76
+    @Value("${api.backend.url}/api/v1/todos/{todoId}")
+    private String urlTodoById;
 
-	@Override
-	public Optional<Todo> findById(String todoId) {
+    // WebClient(WebFlux)版の実装の参考ページ
+    // https://news.mynavi.jp/techplus/article/techp5348/
+    // https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
+    // https://spring.pleiades.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
+    // https://medium.com/a-developers-odyssey/spring-web-client-exception-handling-cd93cf05b76
+
+    @Override
+    public Optional<Todo> findById(String todoId) {
+        // @formatter:off 
 		Mono<Todo> todoMono = webClient.get()
 				.uri(urlTodoById, todoId)				
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError,  response -> {
-					return  responseErrorHandler.createClientErrorException(response);
-				})
-				.onStatus(HttpStatus::is5xxServerError,response -> {
-					return  responseErrorHandler.createServerErrorException(response);
-				}) 
+				.onStatus(HttpStatus::is4xxClientError,  
+				        responseErrorHandler::createClientErrorException
+				)
+				.onStatus(HttpStatus::is5xxServerError,
+				        responseErrorHandler::createServerErrorException
+				) 
 				.bodyToMono(Todo.class)
 				.transform(it -> cbFactory.create("todo_findById")
 						.run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
 		return todoMono.blockOptional();
-	}
+		// @formatter:on
+    }
 
-	@Override
-	public Collection<Todo> findAll() {
+    @Override
+    public Collection<Todo> findAll() {
+        // @formatter:off 
 		Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError,  response -> {
-					return  responseErrorHandler.createClientErrorException(response);
-				})
-				.onStatus(HttpStatus::is5xxServerError,response -> {
-					return  responseErrorHandler.createServerErrorException(response);
-				}) 
+				.onStatus(HttpStatus::is4xxClientError,
+				        responseErrorHandler::createClientErrorException
+				)
+				.onStatus(HttpStatus::is5xxServerError,
+				        responseErrorHandler::createServerErrorException
+				) 
 				.bodyToMono(TodoList.class)
 				// Fallback時にエラーとせずに空のリストを例
 				.transform(it -> cbFactory.create("todo_findAll")
 						.run(it, throwable -> Mono.just(new TodoList())));
-		TodoList list = todoListMono.block();
-		return list;
-	}
+		// @formatter:on 
+        return todoListMono.block();
+    }
 
-	@Override
-	public void create(Todo todo) {
+    @Override
+    public void create(Todo todo) {
+        // @formatter:off 
 		webClient.post().uri(urlTodos)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError,  response -> {
-					return  responseErrorHandler.createClientErrorException(response);
-				})
-				.onStatus(HttpStatus::is5xxServerError,response -> {
-					return  responseErrorHandler.createServerErrorException(response);
-				}) 
+				.onStatus(HttpStatus::is4xxClientError,
+				        responseErrorHandler::createClientErrorException
+				)
+				.onStatus(HttpStatus::is5xxServerError,
+				        responseErrorHandler::createServerErrorException
+				) 
 				.bodyToMono(Todo.class)
 				.transform(it -> cbFactory.create("todo_create").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
-	}
+		// @formatter:on
+    }
 
-	@Override
-	public boolean update(Todo todo) {
-		webClient.put().uri(urlTodoById, todo.getTodoId())
+    @Override
+    public boolean update(Todo todo) {
+        // @formatter:off 
+	    webClient.put().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError,  response -> {
-					return  responseErrorHandler.createClientErrorException(response);
-				})
-				.onStatus(HttpStatus::is5xxServerError,response -> {
-					return  responseErrorHandler.createServerErrorException(response);
-				}) 
+				.onStatus(HttpStatus::is4xxClientError, 
+				        responseErrorHandler::createClientErrorException
+				)
+				.onStatus(HttpStatus::is5xxServerError,
+				        responseErrorHandler::createServerErrorException
+				) 
 				.bodyToMono(Todo.class)
 				.transform(it -> cbFactory.create("todo_update").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
-		return true;
-	}
+	    // @formatter:on 
+        return true;
+    }
 
-	@Override
-	public void delete(Todo todo) {
+    @Override
+    public void delete(Todo todo) {
+        // @formatter:off 	    
 		webClient.delete().uri(urlTodoById, todo.getTodoId())
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError,  response -> {
-					return  responseErrorHandler.createClientErrorException(response);
-				})
-				.onStatus(HttpStatus::is5xxServerError,response -> {
-					return  responseErrorHandler.createServerErrorException(response);
-				})  
+				.onStatus(HttpStatus::is4xxClientError,
+				        responseErrorHandler::createClientErrorException
+				)
+				.onStatus(HttpStatus::is5xxServerError,
+				        responseErrorHandler::createServerErrorException
+				)  
 				.bodyToMono(Void.class)
 				.transform(it -> cbFactory.create("todo_delete").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
-	}
-	
+		// @formatter:on 		
+    }
+
 }

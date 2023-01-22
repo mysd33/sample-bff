@@ -1,6 +1,9 @@
 package com.example.bff.api;
 
-public class APIPackage {
-	private APIPackage() {
-	}
+/**
+ * 
+ * apiパッケージを表すインタフェース
+ *
+ */
+public interface APIPackage {
 }

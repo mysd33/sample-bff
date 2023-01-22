@@ -12,17 +12,18 @@ import org.springframework.jms.support.converter.MessageConverter;
  */
 @Configuration
 public class SQSClientConfig {
-	
-	/**
-	 * JMSTemplateの定義
-	 * @param connectionFactory
-	 */
-	@Bean
-	public JmsTemplate defaultJmsTemplate(ConnectionFactory connectionFactory, MessageConverter jacksonJmsMessageConverter) {
-		JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-		jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
-		return jmsTemplate;
-	}
 
+    /**
+     * JMSTemplateの定義
+     * 
+     * @param connectionFactory
+     */
+    @Bean
+    public JmsTemplate defaultJmsTemplate(ConnectionFactory connectionFactory,
+            MessageConverter jacksonJmsMessageConverter) {
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
+        return jmsTemplate;
+    }
 
 }

@@ -13,19 +13,19 @@ import com.example.bff.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * JDBCによる認証処理用UserDetailService実装クラス 
+ * JDBCによる認証処理用UserDetailService実装クラス
  */
 @Transactional
 @Service
 @RequiredArgsConstructor
 public class LoginUserDetailService implements UserDetailsService {
-	private final UserRepository repository;
-	
-	@Transactional(readOnly = true)
-	@Override
-	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-		User user = repository.findOne(userId);
-		return new LoginUserDetails(user);
-	}
+    private final UserRepository repository;
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        User user = repository.findOne(userId);
+        return new LoginUserDetails(user);
+    }
 
 }

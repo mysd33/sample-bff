@@ -18,38 +18,38 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TodoServiceImpl implements TodoService {	
+public class TodoServiceImpl implements TodoService {
 
-	private final TodoRepository todoRepository;
+    private final TodoRepository todoRepository;
 
-	@Override
-	@Transactional(readOnly = true)
-	public Collection<Todo> findAll() {
-		return todoRepository.findAll();
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public Collection<Todo> findAll() {
+        return todoRepository.findAll();
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public Todo findOne(String todoId) {		
-		return todoRepository.findById(todoId).orElse(null);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public Todo findOne(String todoId) {
+        return todoRepository.findById(todoId).orElse(null);
+    }
 
-	@Override
-	public Todo create(Todo todo) {
-		todoRepository.create(todo);
+    @Override
+    public Todo create(Todo todo) {
+        todoRepository.create(todo);
 
-		return todo;
-	}
+        return todo;
+    }
 
-	@Override
-	public void finish(String todoId) {
-		todoRepository.update(Todo.builder().todoId(todoId).build());		
-	}
+    @Override
+    public void finish(String todoId) {
+        todoRepository.update(Todo.builder().todoId(todoId).build());
+    }
 
-	@Override
-	public void delete(String todoId) {
-		Todo todo = findOne(todoId);
-		todoRepository.delete(todo);
-	}
+    @Override
+    public void delete(String todoId) {
+        Todo todo = findOne(todoId);
+        todoRepository.delete(todo);
+    }
 
 }

@@ -11,19 +11,14 @@ import org.springframework.jms.support.converter.MessageType;
  */
 @Configuration
 public class SQSCommonConfig {
-	/**
-	 * JMSのメッセージコンバータの定義
-	 */
-	@Bean
-	public MessageConverter jacksonJmsMessageConverter() {
-		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-		converter.setTargetType(MessageType.TEXT);
-		converter.setTypeIdPropertyName("_type");
-		return converter;
-	}
+    /**
+     * JMSのメッセージコンバータの定義
+     */
+    @Bean
+    public MessageConverter jacksonJmsMessageConverter() {
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setTargetType(MessageType.TEXT);
+        converter.setTypeIdPropertyName("_type");
+        return converter;
+    }
 }
-	
-
-
-	
-

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
 
-
 /**
  * 
  * ユーザ情報のCSVファイルデータクラス
@@ -24,16 +23,16 @@ public class UserCsv implements Serializable {
     private static final long serialVersionUID = -1883999589975469540L;
 
     @JsonProperty("ユーザーID")
-    private String userId; //ユーザーID    
-    
+    private String userId; // ユーザーID
+
     @JsonProperty("氏名")
-    private String userName; //ユーザー名
+    private String userName; // ユーザー名
 
     @JsonProperty("誕生日")
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "Asia/Tokyo")
-    private Date birthday; //誕生日
-    
+    private Date birthday; // 誕生日
+
     @JsonProperty("ロール")
-    private String role; //ロール
+    private String role; // ロール
 
 }

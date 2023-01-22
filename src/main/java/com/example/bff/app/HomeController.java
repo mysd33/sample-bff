@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
-    
-	//ログイン画面へ遷移
-	@GetMapping("/")
+
+    // ログイン画面へ遷移
+    @GetMapping("/")
     public String home() {
         return "redirect:/login";
     }
