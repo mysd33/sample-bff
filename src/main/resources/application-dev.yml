@@ -9,6 +9,9 @@ spring:
     password:
   session:
     store-type: none
+# Spring Security Debug Mode    
+#  websecurity:
+#    debug: true
     
 management:
   endpoints:
@@ -22,6 +25,7 @@ logging:
   level:
     org.springframework: INFO
     org.springframework.jdbc: INFO
+#    org.springframework.security: DEBUG
 #    org.thymeleaf: DEBUG
     com.example: DEBUG
     

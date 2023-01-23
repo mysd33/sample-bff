@@ -1,10 +1,12 @@
 package com.example.bff;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,6 +22,19 @@ public class SecurityConfig {
     // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
     // https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
 
+    // Spring Securityのデバッグモード
+    @Value("${spring.websecurity.debug:false}")
+    boolean webSecurityDebug;
+    
+    /**
+     * Spring Securityのデバッグモードの設定
+     * 
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.debug(webSecurityDebug);
+    }
+    
     /**
      * Spring Securityによる認証認可設定
      */
