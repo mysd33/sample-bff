@@ -32,6 +32,11 @@ logging:
 #    com.example: DEBUG
     com.example: INFO
     
+resilience4j.timelimiter:
+  configs:
+    default:
+      timeoutDuration: 3s    
+    
 api:
   backend:
     url: http://localhost:8000   
