@@ -3,7 +3,6 @@ package com.example.bff.app;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
-import org.mapstruct.factory.Mappers;
 
 import com.example.bff.domain.model.Todo;
 
@@ -14,15 +13,14 @@ import com.example.bff.domain.model.Todo;
  */
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface TodoMapper {
-    TodoMapper INSTANCE = Mappers.getMapper(TodoMapper.class);
 
     /**
      * ModelからFormへ変換する
      * 
-     * @param todo Model
+     * @param model Model
      * @return Form
      */
-    TodoForm modelToForm(Todo todo);
+    TodoForm modelToForm(Todo model);
 
     /**
      * FormからModelへ変換する

@@ -1,9 +1,10 @@
 package com.example.bff.app;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
-import org.mapstruct.factory.Mappers;
 
 import com.example.bff.domain.model.User;
 
@@ -14,7 +15,6 @@ import com.example.bff.domain.model.User;
  */
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     /**
      * ModelからFormに変換
@@ -40,5 +40,15 @@ public interface UserMapper {
      * @return UserCsv
      */
     UserCsv modelToCsv(User user);
+    
+    /**
+     * ModelのリストからCSV出力用格納データ(UserCsv)のリストに変換
+     * 
+     * @param users Model
+     * @return UserCsvのリスト
+     */
+    default List<UserCsv> modelsToCsvs(List<User> users) {                
+        return users.stream().map(this::modelToCsv).toList();        
+    }
 
 }

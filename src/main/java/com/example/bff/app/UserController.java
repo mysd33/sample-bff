@@ -1,6 +1,5 @@
 package com.example.bff.app;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -40,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final UserService userService;
+    private final UserMapper userMapper;
 
     /**
      * ユーザー登録画面のGETメソッド用処理.
@@ -60,7 +60,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "user/regist";
         }
-        User user = UserMapper.INSTANCE.formToModel(form);
+        User user = userMapper.formToModel(form);
 
         // ユーザー登録処理
         try {
@@ -102,7 +102,7 @@ public class UserController {
         if (userId != null && userId.length() > 0) {
             // ユーザー情報を取得
             User user = userService.findOne(userId);
-            UserForm newForm = UserMapper.INSTANCE.modelToForm(user);
+            UserForm newForm = userMapper.modelToForm(user);
             newForm.setPassword("");
             model.addAttribute("userForm", newForm);
         }
@@ -122,7 +122,7 @@ public class UserController {
             return "user/userDetail";
         }
 
-        User user = UserMapper.INSTANCE.formToModel(form);
+        User user = userMapper.formToModel(form);
 
         try {
             // 更新実行
@@ -172,8 +172,7 @@ public class UserController {
         String filename = "userList.csv";
         List<User> users = userService.findAll();
 
-        List<UserCsv> csvList = new ArrayList<>();
-        users.forEach(user -> csvList.add(UserMapper.INSTANCE.modelToCsv(user)));
+        List<UserCsv> csvList = userMapper.modelsToCsvs(users);
 
         CsvDownloadView view = new CsvDownloadView(UserCsv.class, csvList, filename);
         return new ModelAndView(view);

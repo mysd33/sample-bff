@@ -38,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TodoController {
     private final TodoService todoService;
+    private final TodoMapper todoMapper;
 
     @ModelAttribute
     public TodoForm setUpForm() {
@@ -63,7 +64,7 @@ public class TodoController {
         if (bindingResult.hasErrors()) {
             return list(model);
         }
-        Todo todo = TodoMapper.INSTANCE.formToModel(todoForm);
+        Todo todo = todoMapper.formToModel(todoForm);
         try {
             todoService.create(todo);
         } catch (BusinessException e) {
