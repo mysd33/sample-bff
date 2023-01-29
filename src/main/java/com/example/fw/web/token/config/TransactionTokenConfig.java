@@ -1,5 +1,6 @@
 package com.example.fw.web.token.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
  *
  */
 @Configuration
+@ConditionalOnProperty(prefix = "transaction.token", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TransactionTokenConfig implements WebMvcConfigurer {
     /**
      * トランザクショントークンの設定

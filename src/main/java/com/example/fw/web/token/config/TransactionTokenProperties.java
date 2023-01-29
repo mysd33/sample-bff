@@ -12,6 +12,9 @@ import lombok.Data;
  */
 @Data
 public class TransactionTokenProperties {
+    //　トランザクショントークン機能の有効化フラグ
+    private boolean enabled = true;
+    
     // トランザクショントークンチェックを適用するパス
     private List<String> pathPatterns = Collections.emptyList();
 
