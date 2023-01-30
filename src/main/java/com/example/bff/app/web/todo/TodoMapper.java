@@ -1,4 +1,4 @@
-package com.example.bff.app;
+package com.example.bff.app.web.todo;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

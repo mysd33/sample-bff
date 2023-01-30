@@ -1,4 +1,4 @@
-package com.example.bff.app;
+package com.example.bff.app.web.todo;
 
 import java.util.Collection;
 
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.example.bff.app.TodoForm.TodoCreate;
-import com.example.bff.app.TodoForm.TodoDelete;
-import com.example.bff.app.TodoForm.TodoFinish;
+import com.example.bff.app.web.todo.TodoForm.TodoCreate;
+import com.example.bff.app.web.todo.TodoForm.TodoDelete;
+import com.example.bff.app.web.todo.TodoForm.TodoFinish;
 import com.example.bff.domain.message.MessageIds;
 import com.example.bff.domain.model.Todo;
-import com.example.bff.domain.service.TodoService;
+import com.example.bff.domain.service.todo.TodoService;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;

@@ -1,4 +1,4 @@
-package com.example.bff.common.advice;
+package com.example.bff.app.web.common.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.terasoluna.gfw.web.token.transaction.InvalidTransactionTokenException;
 
-import com.example.bff.app.AppPackage;
+import com.example.bff.app.web.WebPackage;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.message.ResultMessage;
@@ -21,7 +21,7 @@ import lombok.Setter;
  * 集約例外ハンドリングのためのControllerAdviceクラス
  *
  */
-@ControllerAdvice(basePackageClasses = { AppPackage.class })
+@ControllerAdvice(basePackageClasses = { WebPackage.class })
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
     /**

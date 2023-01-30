@@ -1,4 +1,4 @@
-package com.example.bff.app;
+package com.example.bff.app.web;
 
 /**
  * 
@@ -6,5 +6,5 @@ package com.example.bff.app;
  * 
  *
  */
-public interface AppPackage {
+public interface WebPackage {
 }

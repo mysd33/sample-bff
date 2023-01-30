@@ -12,7 +12,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.example.bff.common.advice.ErrorResponseCreator;
+import com.example.bff.app.api.common.advice.ErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.PageInfoDialect;

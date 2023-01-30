@@ -1,4 +1,4 @@
-package com.example.bff.app;
+package com.example.bff.app.web.user;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
-import com.example.bff.app.UserForm.GroupOrder;
+import com.example.bff.app.web.user.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
-import com.example.bff.domain.service.UserService;
+import com.example.bff.domain.service.user.UserService;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;

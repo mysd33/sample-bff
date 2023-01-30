@@ -1,4 +1,4 @@
-package com.example.bff.common.resource;
+package com.example.bff.infra.common.resource;
 
 import java.io.Serializable;
 import java.util.List;

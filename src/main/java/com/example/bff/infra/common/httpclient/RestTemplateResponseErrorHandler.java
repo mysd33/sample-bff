@@ -1,4 +1,4 @@
-package com.example.bff.common.httpclient;
+package com.example.bff.infra.common.httpclient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.example.bff.common.resource.ErrorResponse;
 import com.example.bff.domain.message.MessageIds;
+import com.example.bff.infra.common.resource.ErrorResponse;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.example.bff.domain.service;
+package com.example.bff.domain.service.async;
 
 import com.example.fw.common.async.model.JobRequest;
 

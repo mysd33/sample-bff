@@ -1,4 +1,4 @@
-package com.example.bff.common.advice;
+package com.example.bff.app.api.common.advice;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.context.request.WebRequest;
 
-import com.example.bff.common.resource.ErrorResponse;
+import com.example.bff.infra.common.resource.ErrorResponse;
 import com.example.fw.common.exception.ErrorCodeProvider;
 
 import lombok.AllArgsConstructor;

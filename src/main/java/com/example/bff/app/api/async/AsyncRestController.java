@@ -1,4 +1,4 @@
-package com.example.bff.api;
+package com.example.bff.app.api.async;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bff.domain.message.MessageIds;
-import com.example.bff.domain.service.AsyncService;
+import com.example.bff.domain.service.async.AsyncService;
 import com.example.fw.common.async.model.JobRequest;
 import com.example.fw.common.exception.BusinessException;
 

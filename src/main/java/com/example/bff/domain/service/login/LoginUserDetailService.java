@@ -1,4 +1,4 @@
-package com.example.bff.domain.service;
+package com.example.bff.domain.service.login;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

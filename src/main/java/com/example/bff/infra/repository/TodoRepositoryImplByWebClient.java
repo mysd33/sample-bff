@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.example.bff.common.httpclient.CircutiBreakerErrorFallback;
-import com.example.bff.common.httpclient.WebClientResponseErrorHandler;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
+import com.example.bff.infra.common.httpclient.CircutiBreakerErrorFallback;
+import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;

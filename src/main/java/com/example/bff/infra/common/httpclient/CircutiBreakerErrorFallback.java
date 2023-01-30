@@ -1,4 +1,4 @@
-package com.example.bff.common.httpclient;
+package com.example.bff.infra.common.httpclient;
 
 import java.util.function.Function;
 

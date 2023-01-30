@@ -1,4 +1,4 @@
-package com.example.bff.domain.service;
+package com.example.bff.domain.service.todo;
 
 import java.util.Collection;
 

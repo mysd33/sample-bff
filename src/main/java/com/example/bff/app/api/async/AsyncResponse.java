@@ -1,4 +1,4 @@
-package com.example.bff.api;
+package com.example.bff.app.api.async;
 
 import java.io.Serializable;
 

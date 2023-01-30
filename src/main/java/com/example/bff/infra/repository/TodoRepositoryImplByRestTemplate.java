@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.bff.common.httpclient.CircutiBreakerErrorFallback;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
+import com.example.bff.infra.common.httpclient.CircutiBreakerErrorFallback;
 
 import lombok.RequiredArgsConstructor;
 
