@@ -26,11 +26,11 @@
 				<tbody>
 					<tr th:each="user : ${userPage.content}" th:object="${user}">
 						<td th:text="${userStat.count}"></td>
-						<td th:text="${user.userId}"></td>
-						<td th:text="${user.userName}"></td>
-						<td th:text="${#dates.format(user.birthday, 'YYYY/MM/dd')}"></td>
-                        <td th:text="${user.age}"></td>                     						
-                        <td th:text="${user.role == 'ROLE_ADMIN'} ? '○' : '-'"></td>                        						
+						<td th:text="*{userId}"></td>
+						<td th:text="*{userName}"></td>
+						<td th:text="*{#dates.format(birthday, 'YYYY/MM/dd')}"></td>
+                        <td th:text="*{age}"></td>                     						
+                        <td th:text="*{role == 'ROLE_ADMIN'} ? '○' : '-'"></td>                        						
 						<td>
 							<!-- ユーザー詳細画面へのリンク --> <a class="btn btn-primary"
 							th:href="@{'/userDetail/' + ${user.userId}}">詳細</a>
