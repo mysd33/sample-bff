@@ -1,11 +1,11 @@
-package com.example.fw.common.file.config;
+package com.example.fw.common.objectstorage.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.example.fw.common.file.ObjectStorageFileAccessor;
-import com.example.fw.common.file.ObjectStorageFileAccessorFake;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessorFake;
 
 /**
  * 

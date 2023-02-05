@@ -1,4 +1,4 @@
-package com.example.fw.common.file;
+package com.example.fw.common.objectstorage;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;

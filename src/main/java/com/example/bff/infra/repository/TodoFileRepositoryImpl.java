@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.bff.domain.model.TodoFile;
 import com.example.bff.domain.repository.TodoFileRepository;
-import com.example.fw.common.file.ObjectStorageFileAccessor;
-import com.example.fw.common.file.UploadObject;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
+import com.example.fw.common.objectstorage.UploadObject;
 
 import lombok.RequiredArgsConstructor;
 

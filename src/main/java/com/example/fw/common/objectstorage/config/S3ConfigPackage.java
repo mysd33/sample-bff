@@ -1,4 +1,4 @@
-package com.example.fw.common.file.config;
+package com.example.fw.common.objectstorage.config;
 
 /**
  * 

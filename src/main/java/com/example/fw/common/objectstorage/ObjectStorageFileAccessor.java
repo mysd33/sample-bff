@@ -1,4 +1,4 @@
-package com.example.fw.common.file;
+package com.example.fw.common.objectstorage;
 
 public interface ObjectStorageFileAccessor {
 

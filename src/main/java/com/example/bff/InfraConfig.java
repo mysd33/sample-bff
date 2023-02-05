@@ -14,10 +14,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.bff.infra.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
-import com.example.fw.common.file.config.S3ConfigPackage;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
+import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 
 /**
  * 
