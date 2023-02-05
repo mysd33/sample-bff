@@ -1,7 +1,6 @@
 package com.example.fw.common.file;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
@@ -17,13 +16,15 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
  */
 public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor {
     //ローカル保存する際のファイルパス
-    @Value("${objectstorage.localfake.baseDir}")
+    @Value("${aws.s3.localfake.baseDir}")
     private String baseDir;
         
     @Override
-    public void save(InputStream inputStream, String targetFilePath) {
+    public void upload(UploadObject uploadObject) {
+        Path destinationPath = Path.of(baseDir).resolve(uploadObject.getTargetFilePath()); 
+        
         try {
-            FileUtils.copyInputStreamToFile(inputStream, Path.of(baseDir, targetFilePath).toFile());
+            FileUtils.copyInputStreamToFile(uploadObject.getInputStream(), destinationPath.toFile());
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
         }

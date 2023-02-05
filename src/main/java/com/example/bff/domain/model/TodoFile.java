@@ -7,4 +7,5 @@ import lombok.Data;
 @Data
 public class TodoFile {
     private InputStream fileInputStream;
+    private long size;
 }

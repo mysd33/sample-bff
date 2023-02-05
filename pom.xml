@@ -206,6 +206,11 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sqs</artifactId>
 		</dependency>
+		<!-- AWS SDK S3 -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+		</dependency>
 		<!-- JMS API -->
 		<dependency>
 			<groupId>javax.jms</groupId>

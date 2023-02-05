@@ -1,15 +1,26 @@
 package com.example.fw.common.file;
 
-import java.io.InputStream;
+import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 /**
- * ObjectStorageFileAccessorのS3実装 
+ * ObjectStorageFileAccessorのS3実装
  *
  */
+@RequiredArgsConstructor
 public class S3ObjectStorageFileAccessor implements ObjectStorageFileAccessor {
+    private final S3Client s3Client;
+    private final String bucket;
+
     @Override
-    public void save(InputStream inputStream, String targetFilePath) {
-        //TODO: 実装
-        throw new UnsupportedOperationException();
+    public void upload(UploadObject uploadObject) {
+        s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(uploadObject.getTargetFilePath())
+                    .build(),
+                RequestBody.fromInputStream(uploadObject.getInputStream(), uploadObject.getSize()));
     }
 }

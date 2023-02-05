@@ -39,7 +39,6 @@ aws:
       name: SampleQueue      
   sqslocal:    
     port: 18001
-
-objectstorage:
-  localfake:
-    baseDir: C:\tmp          
+  s3:
+    localfake:
+      baseDir: C:\tmp

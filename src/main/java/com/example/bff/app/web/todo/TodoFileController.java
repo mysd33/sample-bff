@@ -41,6 +41,7 @@ public class TodoFileController {
         }
         TodoFile todoFile = new TodoFile();
         todoFile.setFileInputStream(form.getTodoFile().getInputStream());
+        todoFile.setSize(form.getTodoFile().getSize());
         todoFileService.save(todoFile);
         redirectAttributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
                 .code(MessageIds.I_EX_0004).build());
