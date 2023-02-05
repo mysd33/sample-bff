@@ -23,6 +23,13 @@ spring:
     
   lifecycle:
     timeout-per-shutdown-phase: 20s          
+    
+# Servicet File Upload Max Size
+  servlet:
+    multipart:
+      file-size-threshold: 512KB
+      max-file-size: 3MB
+      max-request-size: 10MB            
      
 mybatis:
   type-aliases-package: com.example.bff.domain.model     

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout/template :: layout(~{::title/content()},~{::.container/content()}, ~{::#headerButton/content()})}">
+
+<head>
+	<meta charset="utf-8">
+	<title>Todo一括登録</title>
+</head>
+
+<body class="bg-light">
+	<span id="headerButton" class="d-none"><a class="btn btn-outline-primary" th:href="@{/menu}">メニューに戻る</a></span>
+	<div class="container">
+		<form method="post" enctype="multipart/form-data" th:action="@{/todoFile/upload}" th:object="${todoFileForm}">
+			<!--/* メッセージ領域 */-->
+			<div th:replace="layout/parts :: part_validation_message"></div>
+			<div th:replace="layout/parts :: part_message"></div>
+			<div class="row mb-3">
+				<div class="col">
+					<label for="todoFile" class="form-label">Todoファイル<span class="badge bg-danger">必須</span></label>
+					<input id="todoFile" type="file" class="form-control" th:field="*{todoFile}"
+						th:classappend="${#fields.hasErrors('todoFile')} ? 'is-invalid'" autofocus />
+					<div class="invalid-feedback" th:if="${#fields.hasErrors('todoFile')}" th:errors="*{todoFile}"></div>
+				</div>
+			</div>
+			<button class="btn btn-primary" type="submit">登録</button>
+		</form>
+	</div>
+</body>
+
+</html>

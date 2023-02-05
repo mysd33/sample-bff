@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.bff.infra.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
+import com.example.fw.common.file.ObjectStorageFileAccessor;
+import com.example.fw.common.file.ObjectStorageFileAccessorFake;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
@@ -24,6 +26,30 @@ import com.example.fw.common.httpclient.WebClientXrayFilter;
  */
 @Configuration
 public class InfraConfig {
+    
+    /**
+     * オブジェクトストレージアクセスのローカル実行用のFake
+     * 
+     */
+    //@Profile("dev")
+    @Bean
+    public ObjectStorageFileAccessor objectStorageFileAccessorFake() {
+        return new ObjectStorageFileAccessorFake();
+    }
+    
+    /**
+     * オブジェクトストレージアクセスの本番環境用実行用
+     */
+    //TODO: 実装
+    /*
+    @Profile("production")    
+    @Bean
+    public ObjectStorageFileAccessor objectStorageFileAccessor() {
+        return new DefaultObjectStorageFileAccessor();
+    }
+    */
+    
+    
     /**
      * WebClientでのログ出力クラス
      */

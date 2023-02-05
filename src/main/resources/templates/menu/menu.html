@@ -10,7 +10,8 @@
 	    	<div class="text-center">
 		        <div class ="container" >
                     <div class="d-grid gap-2">
-    		            <a class="mt-5 btn btn-primary btn-lg" th:href="@{/todo/list}" >TODO管理</a>    		            		            
+    		            <a class="mt-5 btn btn-primary btn-lg" th:href="@{/todo/list}">TODO管理</a>
+    		            <a class="mt-5 btn btn-primary btn-lg" th:href="@{/todoFile/upload}">TODO一括登録</a>    		            		                		            		            
                         <a class="mt-5 btn btn-primary btn-lg" th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">ユーザ管理</a>                        
                         <form method="post" th:action="@{/logout}">
                             <div class="d-grid">
