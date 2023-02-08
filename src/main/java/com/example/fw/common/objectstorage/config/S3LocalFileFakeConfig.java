@@ -1,5 +1,6 @@
 package com.example.fw.common.objectstorage.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,16 +15,18 @@ import com.example.fw.common.objectstorage.ObjectStorageFileAccessorFake;
  *
  */
 @Profile("dev")
+@ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "file", matchIfMissing = true)
 @Configuration
-public class S3LocalConfig {    
+public class S3LocalFileFakeConfig {    
    
     /**
      * ローカル実行用のFake
      * 
      */
-    @Bean
+    @Bean    
     public ObjectStorageFileAccessor objectStorageFileAccessorFake() {
         return new ObjectStorageFileAccessorFake();
-    }    
+    }
+    
 
 }

@@ -41,4 +41,9 @@ aws:
     port: 18001
   s3:
     localfake:
-      baseDir: C:\tmp
+      type: s3rver
+      port: 4568
+#      type: file
+#      baseDir: C:\tmp
+    bucket: mysd33bucket123
+    region: ap-northeast-1

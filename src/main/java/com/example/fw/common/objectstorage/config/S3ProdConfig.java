@@ -25,15 +25,16 @@ public class S3ProdConfig {
     private String bucket;
       
     /**
-     * オブジェクトストレージアクセスの本番環境用実行用
-     */    
-    @Profile("production")    
+     * オブジェクトストレージアクセスクラス
+     */        
     @Bean
     public ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, bucket);
     } 
     
-    @Profile("production")    
+    /**
+     * S3クライアント
+     */
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
