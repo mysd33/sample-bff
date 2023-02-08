@@ -41,11 +41,11 @@ aws:
     port: 18001
   s3:
     localfake:
-#S3 Fake by s3rver    
-#      type: s3rver
-#      port: 4568
 #S3 Fake by local file system
       type: file
       baseDir: C:\tmp
-    bucket: mysd33bucket123
-    region: ap-northeast-1
+#S3 Fake by s3rver    
+#      type: s3rver
+#      port: 4568
+#    bucket: mysd33bucket123
+#    region: ap-northeast-1
