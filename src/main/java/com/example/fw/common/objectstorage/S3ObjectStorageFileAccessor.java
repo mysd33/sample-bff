@@ -1,8 +1,12 @@
 package com.example.fw.common.objectstorage;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -24,24 +28,27 @@ public class S3ObjectStorageFileAccessor implements ObjectStorageFileAccessor {
         s3Client.putObject(
                 PutObjectRequest.builder()
                     .bucket(bucket)
-                    .key(uploadObject.getTargetFilePath())
+                    .key(uploadObject.getPrefix())
                     .build(),
                 RequestBody.fromInputStream(uploadObject.getInputStream(), uploadObject.getSize()));
     }
     
     @Override
-    public DownloadObject download(String targetFilePath) {        
+    public DownloadObject download(String prefix) {        
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
-                .key(targetFilePath)
+                .key(prefix)
                 .build();
-        ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(getObjectRequest);
-        
-        String fileName = Path.of(targetFilePath).getFileName().toString();
+        //https://docs.aws.amazon.com/ja_jp/sdk-for-java/latest/developer-guide/java_s3_code_examples.html
+        //TODO :S3TransferManagerを使って直接一時ディレクトリに、ローカルファイルにダウンロードする実装方法に変える
+        ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
+        InputStream responseInputStream = new BufferedInputStream(new ByteArrayInputStream(objectBytes.asByteArray()));
+        String fileName = Path.of(prefix).getFileName().toString();
+                        
         
         return DownloadObject.builder()
                 .inputStream(responseInputStream)   
-                .targetFilePath(targetFilePath)
+                .prefix(prefix)
                 .fileName(fileName)
                 .build();
         

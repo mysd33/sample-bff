@@ -24,7 +24,7 @@ public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor 
 
     @Override
     public void upload(UploadObject uploadObject) {
-        Path destinationPath = Path.of(baseDir).resolve(uploadObject.getTargetFilePath());
+        Path destinationPath = Path.of(baseDir).resolve(uploadObject.getPrefix());
 
         try {
             FileUtils.copyInputStreamToFile(uploadObject.getInputStream(), destinationPath.toFile());
@@ -34,13 +34,13 @@ public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor 
     }
 
     @Override
-    public DownloadObject download(String targetFilePath) {
-        Path destinationPath = Path.of(baseDir).resolve(targetFilePath);
+    public DownloadObject download(String prefix) {
+        Path destinationPath = Path.of(baseDir).resolve(prefix);
         String fileName = destinationPath.getFileName().toString();
         try {
             return DownloadObject.builder()
                     .inputStream(new BufferedInputStream(new FileInputStream(destinationPath.toFile())))
-                    .targetFilePath(targetFilePath)
+                    .prefix(prefix)
                     .fileName(fileName)
                     .build();
         } catch (FileNotFoundException e) {

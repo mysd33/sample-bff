@@ -49,4 +49,3 @@ aws:
 #      type: s3rver
 #      port: 4568
 #    bucket: mysd33bucket123
-#    region: ap-northeast-1

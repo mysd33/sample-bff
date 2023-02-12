@@ -22,12 +22,12 @@ public class TodoFileRepositoryImpl implements TodoFileRepository {
 
     @Override
     public void save(TodoFile todoFile) {
-        String filePath = TODO_FILES_DIR + UUID.randomUUID().toString() + ".csv";              
-        todoFile.setTargetFilePath(filePath);
+        String prefix = TODO_FILES_DIR + UUID.randomUUID().toString() + ".csv";              
+        todoFile.setTargetFilePath(prefix);
         
         objectStorageFileAccessor.upload(UploadObject.builder()
                 .inputStream(todoFile.getFileInputStream())
-                .targetFilePath(filePath)
+                .prefix(prefix)
                 .build());  
 
     }

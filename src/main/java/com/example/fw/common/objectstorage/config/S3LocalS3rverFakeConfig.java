@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 @ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "s3rver")
 @Configuration
 public class S3LocalS3rverFakeConfig {    
-    @Value("${aws.s3.region}")
+    @Value("${aws.s3.region:ap-northeast-1}")
     private String region;
     @Value("${aws.s3.bucket}")
     private String bucket;

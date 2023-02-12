@@ -14,6 +14,6 @@ import lombok.Data;
 @Builder
 public class DownloadObject {
     private InputStream inputStream;
-    private String targetFilePath;
+    private String prefix;
     private String fileName;
 }

@@ -16,8 +16,8 @@ public interface ObjectStorageFileAccessor {
     
     /**
      * オブジェクト（ファイル）をダウンロードする。
-     * @param targetFilePath ターゲットファイルパス（バケット名を除く抽象的なパス）
+     * @param prefix プレフィックス（バケット名を除く抽象的な-ターゲットファイルパス）
      * @return ダウンロードしたオブジェクト
      */
-    DownloadObject download(String targetFilePath);
+    DownloadObject download(String prefix);
 }

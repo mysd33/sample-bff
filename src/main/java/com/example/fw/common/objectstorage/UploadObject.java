@@ -14,6 +14,6 @@ import lombok.Data;
 @Builder
 public class UploadObject {
     private InputStream inputStream;    
-    private long size;
-    private String targetFilePath;
+    private String prefix;
+    private long size;    
 }
