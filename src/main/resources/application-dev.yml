@@ -43,9 +43,9 @@ aws:
   s3:
     localfake:
 #S3 Fake by local file system
-      type: file
-      baseDir: C:\tmp\objectstorage
+#      type: file
+#      baseDir: C:\tmp\objectstorage
 #S3 Fake by s3rver    
-#      type: s3rver
-#      port: 4568
-#    bucket: mysd33bucket123
+      type: s3rver
+      port: 4568
+    bucket: mysd33bucket123
