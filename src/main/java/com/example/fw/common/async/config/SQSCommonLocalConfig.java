@@ -24,7 +24,7 @@ public class SQSCommonLocalConfig {
     private static final String ELASTICMQ = "elasticmq";
 
     // SQS Local起動時のポート
-    @Value("${aws.sqslocal.port}")
+    @Value("${aws.sqs.sqslocal.port}")
     private String port;
 
     /**

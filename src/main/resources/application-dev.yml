@@ -19,7 +19,8 @@ management:
       exposure:
         include: "*"
   health:
-    redis:       enabled: false 
+    redis:
+      enabled: false 
           
 logging:
   level:
@@ -37,8 +38,8 @@ aws:
   sqs:
     queue:
       name: SampleQueue      
-  sqslocal:    
-    port: 18001
+    sqslocal:    
+      port: 18001
   s3:
     localfake:
 #S3 Fake by local file system

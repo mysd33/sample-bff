@@ -5,14 +5,17 @@ spring:
   # SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書きするため設定
   main:
     allow-bean-definition-overriding: true
-  application:    name: sample-bff
+  application:
+    name: sample-bff
   profiles:
     active:
     - dev
     - log_default  #logging in default format
 #    - log_container  #logging in json format
 #    - xray  #X-Ray Enabled
-  security:    filter:      dispatcher-types:
+  security:
+    filter:
+      dispatcher-types:
         - async
         - error
         - request        
