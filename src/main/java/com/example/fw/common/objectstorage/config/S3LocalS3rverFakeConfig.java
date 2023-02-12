@@ -56,11 +56,13 @@ public class S3LocalS3rverFakeConfig {
                 .build();        
     }
 
-    
+    /**
+     * バケット初期作成クラス
+     * 
+     */
     @Bean
     public BucketCreateInitializer bucketCreateInitializer() {
-        return new BucketCreateInitializer(s3Client(), bucket);
-        
+        return new BucketCreateInitializer(s3Client(), bucket);       
     }
     
 

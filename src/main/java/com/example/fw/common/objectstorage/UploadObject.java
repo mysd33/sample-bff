@@ -5,6 +5,11 @@ import java.io.InputStream;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 
+ * オブジェクトストレージへアップロードするオブジェクトクラス
+ *
+ */
 @Data
 @Builder
 public class UploadObject {

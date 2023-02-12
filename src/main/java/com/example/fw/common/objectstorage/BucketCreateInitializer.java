@@ -13,6 +13,11 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
+/**
+ * 
+ * バケットを初期作成するクラス
+ *
+ */
 @RequiredArgsConstructor
 @Slf4j
 public class BucketCreateInitializer {    
