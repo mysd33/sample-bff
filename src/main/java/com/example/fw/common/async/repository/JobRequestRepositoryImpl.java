@@ -3,6 +3,7 @@ package com.example.fw.common.async.repository;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.Assert;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.fw.common.async.model.JobRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
  * JobRequestRepositoryの実装クラス キューにSQSを使用し、JobRequestを登録する
  *
  */
+@XRayEnabled
 @RequiredArgsConstructor
 public class JobRequestRepositoryImpl implements JobRequestRepository {
     private final JmsTemplate jmsTemplate;

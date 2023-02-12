@@ -2,6 +2,7 @@ package com.example.bff.domain.service.async;
 
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.fw.common.async.model.JobRequest;
 import com.example.fw.common.async.repository.JobRequestRepository;
 
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
  * 
  *
  */
+@XRayEnabled
 @Service
 @RequiredArgsConstructor
 public class AsynsServiceImpl implements AsyncService {

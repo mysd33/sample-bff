@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.domain.message.MessageIds;
 import com.example.bff.domain.service.async.AsyncService;
 import com.example.fw.common.async.model.JobRequest;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  * 
  * ジョブ登録を依頼する汎用的な Web API 汎用的なAPIにするとジョブパラメータに意味を持たせれられないので その場合は、通常のWebAPIを使用する
  */
+@XRayEnabled
 @Tag(name = "非同期実行管理", description = "非同期実行管理API")
 @RestController
 @RequiredArgsConstructor

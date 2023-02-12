@@ -238,6 +238,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-xray-recorder-sdk-aws-sdk-v2</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-xray-recorder-sdk-spring</artifactId>
 		</dependency>
 		<dependency>

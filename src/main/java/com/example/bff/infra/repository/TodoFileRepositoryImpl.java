@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.domain.model.TodoFile;
 import com.example.bff.domain.repository.TodoFileRepository;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Todoファイルを保存するリポジトリクラス
  */
+@XRayEnabled
 @Repository
 @RequiredArgsConstructor
 public class TodoFileRepositoryImpl implements TodoFileRepository {
