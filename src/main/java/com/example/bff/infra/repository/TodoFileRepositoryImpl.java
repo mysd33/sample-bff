@@ -28,6 +28,7 @@ public class TodoFileRepositoryImpl implements TodoFileRepository {
         objectStorageFileAccessor.upload(UploadObject.builder()
                 .inputStream(todoFile.getFileInputStream())
                 .prefix(prefix)
+                .size(todoFile.getSize())
                 .build());  
 
     }

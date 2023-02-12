@@ -1,12 +1,8 @@
 package com.example.fw.common.objectstorage;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.nio.file.Path;
 
 import lombok.RequiredArgsConstructor;
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -23,34 +19,31 @@ public class S3ObjectStorageFileAccessor implements ObjectStorageFileAccessor {
     private final S3Client s3Client;
     private final String bucket;
 
+    // 参考
+    // https://docs.aws.amazon.com/ja_jp/sdk-for-java/latest/developer-guide/java_s3_code_examples.html
+
     @Override
     public void upload(UploadObject uploadObject) {
-        s3Client.putObject(
-                PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(uploadObject.getPrefix())
-                    .build(),
+        // @formatter:off
+        s3Client.putObject(PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(uploadObject.getPrefix())
+                .build(),
                 RequestBody.fromInputStream(uploadObject.getInputStream(), uploadObject.getSize()));
+        // @formatter:on
     }
-    
+
     @Override
-    public DownloadObject download(String prefix) {        
+    public DownloadObject download(String prefix) {
+        // @formatter:off
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(prefix)
-                .build();
-        //https://docs.aws.amazon.com/ja_jp/sdk-for-java/latest/developer-guide/java_s3_code_examples.html
-        //TODO :S3TransferManagerを使って直接一時ディレクトリに、ローカルファイルにダウンロードする実装方法に変える
-        ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
-        InputStream responseInputStream = new BufferedInputStream(new ByteArrayInputStream(objectBytes.asByteArray()));
+                .build();        
+        // @formatter:on        
+        ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(getObjectRequest);
         String fileName = Path.of(prefix).getFileName().toString();
-                        
-        
-        return DownloadObject.builder()
-                .inputStream(responseInputStream)   
-                .prefix(prefix)
-                .fileName(fileName)
-                .build();
-        
+        return DownloadObject.builder().inputStream(responseInputStream).prefix(prefix).fileName(fileName).build();
+
     }
 }
