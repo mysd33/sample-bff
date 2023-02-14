@@ -51,3 +51,9 @@ aws:
 #      type: s3rver
 #      port: 4568
 #    bucket: mysd33bucket123
+#S3 Fake by MinIO
+#      type: minio
+#      port: 9000
+#      accessKeyId: minioadmin
+#      secretAccessKey: minioadmin
+#    bucket: mysd33bucket123

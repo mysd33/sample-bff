@@ -23,8 +23,12 @@ public class S3ConfigurationProperties {
         private String type;
         // typeがfileのときのベースディレクトリ
         private String baseDir;
-        // typeがs3rverのときのローカルサーバのポート
+        // typeがs3rver、minioのときのローカルサーバのポート
         private int port = 4568;
+        // typeがminioのときのクレデンシャル
+        private String accessKeyId = "";
+        private String secretAccessKey = "";
+        
     }
     
-}
+} 
