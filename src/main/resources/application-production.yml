@@ -39,12 +39,14 @@ resilience4j.timelimiter:
     
 api:
   backend:
-    url: http://localhost:8000   
-
+    url: http://localhost:8000
+      
+delayed:
+  batch:
+    queue: SampleQueue
+    
 aws:
   sqs:
-    queue:
-      name: SampleQueue      
     region: ap-northeast-1  
   s3:
   　　bucket: mysd33bucket123

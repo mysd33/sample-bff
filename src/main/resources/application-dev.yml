@@ -33,11 +33,13 @@ logging:
 api:
   backend:
     url: http://localhost:8000
+
+delayed:
+  batch:
+    queue: SampleQueue
     
 aws:
   sqs:
-    queue:
-      name: SampleQueue      
     sqslocal:    
       port: 18001
   s3:

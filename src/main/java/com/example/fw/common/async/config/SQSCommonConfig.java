@@ -1,6 +1,6 @@
 package com.example.fw.common.async.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -16,11 +16,9 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  * SQSの設定クラス
  */
 @Configuration
+@EnableConfigurationProperties({SQSCommonConfigurationProperties.class})
 public class SQSCommonConfig {
-    // SQSのメッセージプリフェッチ数の設定
-    @Value("${aws.sqs.numberOfMessagesToPrefetch:0}")
-    private int numberOfMessagesToPrefetch;
-    
+  
     /**
      * JMSのメッセージコンバータの定義
      */
@@ -36,8 +34,8 @@ public class SQSCommonConfig {
      * SQSConnectionFactoryのSQSのメッセージプリフェッチ数の設定
      */
     @Bean
-    public ProviderConfiguration providerConfiguration() {
-        return new ProviderConfiguration().withNumberOfMessagesToPrefetch(numberOfMessagesToPrefetch);
+    public ProviderConfiguration providerConfiguration(SQSCommonConfigurationProperties sqsCommonConfigurationProperties) {
+        return new ProviderConfiguration().withNumberOfMessagesToPrefetch(sqsCommonConfigurationProperties.getNumberOfMessagesToPrefetch());
     }
     
     /**

@@ -2,7 +2,8 @@ package com.example.fw.common.async.config;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,30 +21,28 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  * SQS Local起動の設定クラス（開発時のみ）
  *
  */
-@Configuration
 @Profile("dev")
+@Configuration
+@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
-    // SQS Local起動時のポート
-    @Value("${aws.sqs.sqslocal.port}")
-    private String port;
-    // ダミーのリージョン
-    @Value("${aws.sqs.region:ap-northeast-1}")
-    private String region;
     
+    @Autowired
+    private SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
+
     /**
      * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Rayトレーシングなし）
      */
     @Profile("!xray")
     @Bean
     public SqsClient sqsClientWithoutXRay() {
-        // ダミーのクレデンシャル        
+        // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
-        return SqsClient.builder()
-                .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(HTTP_LOCALHOST + port))
-                .build();                        
+        Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
+        return SqsClient.builder()//
+                .region(region).credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
+                .build();
     }
 
     /**
@@ -54,14 +53,15 @@ public class SQSCommonLocalConfig {
     public SqsClient sqsClientFactoryWithXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
+        Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .region(Region.of(region))
+                .region(region)//
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(HTTP_LOCALHOST + port))
-                .build();        
+                .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
+                .build();
     }
 
 }

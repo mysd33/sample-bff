@@ -13,7 +13,7 @@ import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
 @Configuration
 @ComponentScan(basePackageClasses = { SQSCommonConfigPackage.class })
 public class SQSConfig {
-    @Value("${aws.sqs.queue.name}")
+    @Value("${delayed.batch.queue}")
     private String queueName;
 
     /**
