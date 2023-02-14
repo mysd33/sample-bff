@@ -6,10 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
-import com.amazon.sqs.javamessaging.SQSConnectionFactory;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.handlers.TracingHandler;
+import com.amazonaws.xray.interceptors.TracingInterceptor;
+
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sqs.SqsClient;
 
 /**
  * SQS本番向けの設定クラス
@@ -17,29 +18,30 @@ import com.amazonaws.xray.handlers.TracingHandler;
 @Configuration
 @Profile("production")
 public class SQSCommonProdConfig {
-	@Value("${aws.sqs.region}")
-	private String region;
+    @Value("${aws.sqs.region}")
+    private String region;
 
-	/**
-	 * SQSConnectionFactoryの定義(X-Rayトレーシングなし）
-	 */
-	@Profile("!xray")
-	@Bean
-	public SQSConnectionFactory sqsConnectionFactoryWithoutXRay(ProviderConfiguration providerConfiguration) {
-		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard().withRegion(region);
-		return new SQSConnectionFactory(providerConfiguration, builder);		
-	}
-	
-	/**
-	 * SQSConnectionFactoryの定義(X-Rayトレーシングあり）
-	 */
-	@Profile("xray")
-	@Bean
-	public SQSConnectionFactory sqsConnectionFactory(ProviderConfiguration providerConfiguration) {
-		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard().withRegion(region)
-				//個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-				.withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()));
-		return new SQSConnectionFactory(providerConfiguration, builder);		
-	}
+    /**
+     * SQSClientの定義(X-Rayトレーシングなし）
+     */
+    @Profile("!xray")
+    @Bean
+    public SqsClient sqsClientWithoutXRay() {
+        return SqsClient.builder().region(Region.of(region)).build();
+    }
+
+    /**
+     * SQSConnectionFactoryの定義(X-Rayトレーシングあり）
+     */
+    @Profile("xray")
+    @Bean
+    public SqsClient sqsClientWithXRay(ProviderConfiguration providerConfiguration) {
+        return SqsClient.builder()
+                // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
+                .overrideConfiguration(
+                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .region(Region.of(region))
+                .build();
+    }
 
 }

@@ -8,6 +8,9 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
+import com.amazon.sqs.javamessaging.SQSConnectionFactory;
+
+import software.amazon.awssdk.services.sqs.SqsClient;
 
 /**
  * SQSの設定クラス
@@ -35,5 +38,13 @@ public class SQSCommonConfig {
     @Bean
     public ProviderConfiguration providerConfiguration() {
         return new ProviderConfiguration().withNumberOfMessagesToPrefetch(numberOfMessagesToPrefetch);
+    }
+    
+    /**
+     * SQSConnectionFactoryの定義
+     */
+    @Bean
+    public SQSConnectionFactory sqsConnectionFactory(ProviderConfiguration providerConfiguration, SqsClient sqsClient) {
+        return new SQSConnectionFactory(providerConfiguration, sqsClient);
     }
 }
