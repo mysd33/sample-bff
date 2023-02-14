@@ -7,20 +7,20 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.message.CommonFrameworkMessageIds;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 
  * ローカルファイルシステムへアクセスするObjectFileAccessorのFake
  *
  */
+@RequiredArgsConstructor
 public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor {
-    // ローカル保存する際のファイルパス
-    @Value("${aws.s3.localfake.baseDir}")
-    private String baseDir;
+    private final String baseDir;
 
     @Override
     public void upload(UploadObject uploadObject) {

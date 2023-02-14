@@ -2,7 +2,9 @@ package com.example.fw.common.objectstorage.config;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,23 +28,18 @@ import software.amazon.awssdk.services.s3.S3Configuration;
  */
 @Profile("dev")
 @ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "s3rver")
+@EnableConfigurationProperties({S3ConfigurationProperties.class})
 @Configuration
 public class S3LocalS3rverFakeConfig {
-    /**
-     * S3のプロパティクラス     
-     */
-    @Bean
-    public S3ConfigurationProperties s3ConfigurationProperties() {
-        return new S3ConfigurationProperties();
-    }
-    
+    @Autowired
+    private S3ConfigurationProperties s3ConfigurationProperties;    
 
     /**
      * オブジェクトストレージアクセスクラス
      */
     @Bean
     public ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
-        return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties().getBucket());
+        return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
     /**
@@ -54,12 +51,12 @@ public class S3LocalS3rverFakeConfig {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
         
-        Region region = Region.of(s3ConfigurationProperties().getRegion());
+        Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()                
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties().getLocalfake().getPort()))
+                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定
                 .serviceConfiguration(S3Configuration.builder()
                         .chunkedEncodingEnabled(false).build())
@@ -76,12 +73,12 @@ public class S3LocalS3rverFakeConfig {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
         
-        Region region = Region.of(s3ConfigurationProperties().getRegion());
+        Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()                
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties().getLocalfake().getPort()))
+                .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 //S3rverの場合、putしたファイルにchunk-signatureが入ってしまうため対処策として設定
                 .serviceConfiguration(S3Configuration.builder()
                         .chunkedEncodingEnabled(false).build())
@@ -98,7 +95,7 @@ public class S3LocalS3rverFakeConfig {
      */
     @Bean
     public BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
-        return new BucketCreateInitializer(s3Client, s3ConfigurationProperties().getBucket());
+        return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());
     }
 
 }
