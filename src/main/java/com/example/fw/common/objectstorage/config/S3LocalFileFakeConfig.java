@@ -1,6 +1,5 @@
 package com.example.fw.common.objectstorage.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,18 +20,13 @@ import com.example.fw.common.objectstorage.ObjectStorageFileAccessorFake;
 @EnableConfigurationProperties({S3ConfigurationProperties.class})
 @Configuration
 public class S3LocalFileFakeConfig {    
-    /**
-     * S3のプロパティクラス     
-     */
-    @Autowired
-    private S3ConfigurationProperties s3ConfigurationProperties;
     
     /**
      * ローカル実行用のFake
      * 
      */
     @Bean    
-    public ObjectStorageFileAccessor objectStorageFileAccessorFake() {
+    public ObjectStorageFileAccessor objectStorageFileAccessorFake(S3ConfigurationProperties s3ConfigurationProperties) {
         return new ObjectStorageFileAccessorFake(s3ConfigurationProperties.getLocalfake().getBaseDir());
     }
     
