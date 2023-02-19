@@ -80,9 +80,10 @@
         * html形式（Swagger-UI）のドキュメント  
 
 ## Redisのローカル起動
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
 * sample-bffのProfile「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
-* APをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+* Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
         * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
         ```sh
@@ -97,7 +98,10 @@
         > keys *
         ```
 ## PostgreSQLのローカル起動
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+    * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
+* Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
 ```sh
 #Postgres SQLの起動
 docker run --name test-postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
@@ -109,19 +113,67 @@ docker exec -i -t test-postgres /bin/bash
 postgres> CREATE DATABASE testdb;
 ```
 
+## SQSの設定
+* Profileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
+    * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
+        * 「sample-batch」アプリケーション側も変更が必要
+
 ## S3の設定
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    * application-dev.ymlの「aws.s3.localfake.base.baseDir」を一時保存するファイルシステムのディレクトリパスを設定する（現状、C:\tmpになっている）
-* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にS3のバケットを起動する必要がある。
-    * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
+    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.baseDir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+        * 「sample-batch」アプリケーション側も変更が必要
+* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
+    * MinIOの場合
+        * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
+        * 以下は、Windows版での起動例
+            * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
+        ```sh        
+        C:\minio\minio.exe server C:\minio\data --console-address ":9001"
+        ```
+        *  application-dev.ymlの「aws.s3.localfake.type」を「minio」に変更し、以下の通り設定
+        ```yaml
+        aws:
+          s3:
+            localfake:
+              type: minio
+              port: 9000
+              accessKeyId: minioadmin
+              secretAccessKey: minioadmin
+            bucket: mysd33bucket123
+        ```
+    * s3rverの場合
+        * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
+        * 以下、起動例
+        ```
+        s3rver -d C:\s3rver
+        ```
+        *  application-dev.ymlの「aws.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
+        ```yaml
+        aws:
+          s3:
+            localfake:
+              type: s3rver
+              port: 4568
+            bucket: mysd33bucket123
+        ```
 
-## X-Rayデーモンのローカル起動
+* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
+    * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
+    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+
+# X-Rayデーモンのローカル起動
 * Profileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
 * ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
     * デーモンのダウンロード    
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
     * デーモンのローカル実行
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon-local.html
+* Windows版の場合の起動例（C:\aws-xray-daemon-windows-process-3.xフォルダにxray_windows.exeを格納した例）
+    ```    
+    C:\aws-xray-daemon-windows-process-3.x\xray_windows.exe -o -n ap-northeast-1
+    ```    
 
 ## Dockerでのアプリ起動
 * Mavenビルド
@@ -145,12 +197,12 @@ docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log
 ```
 
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
-    * ※Redisのローカル起動、PostgreSQLのローカル起動も必要
+    * ※Redisのローカル起動、PostgreSQLのローカル起動、AWS上のSQS作成、S3作成も必要
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
-docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_container --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_container --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ECRプッシュ
