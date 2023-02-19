@@ -49,5 +49,5 @@ aws:
   sqs:
     region: ap-northeast-1  
   s3:
-  　　bucket: mysd33bucket123
-  　　region: ap-northeast-1
+    bucket: mysd33bucket123
+    region: ap-northeast-1
