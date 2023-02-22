@@ -1,3 +1,7 @@
+#server:
+#  servlet:
+#    session:
+#      timeout: 1m
 spring:
   sql:
     init:
@@ -9,7 +13,7 @@ spring:
     password:
   session:
     store-type: none
-# Spring Security Debug Mode    
+#    timeout: 1m
 #  websecurity:
 #    debug: true
     

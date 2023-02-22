@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.example.fw.web.token.StoredTransactionTokenRepository">
+	<resultMap id="storedTransactionTokenresultMap" type="StoredTransactionToken">
+		<id property="tokenName" column="token_name" />
+		<id property="tokenKey" column="token_key" />
+		<result property="tokenValue" column="token_value" />
+		<result property="sessionId" column="session_id" />
+		<result property="sequence" column="sequence" />
+	</resultMap>
+	<!-- (1) -->
+	<select id="findOneForUpdate" resultMap="storedTransactionTokenresultMap">
+		<![CDATA[
+                SELECT
+                    token_name,
+                    token_key,
+                    token_value,
+                    session_id,
+                    sequence
+                FROM
+                    transaction_token
+                WHERE
+                    token_name = #{tokenName}
+                AND
+                    token_key = #{tokenKey}
+                AND
+                    session_id = #{sessionId}
+                FOR UPDATE
+            ]]>
+	</select>
+	<!-- (2) -->
+	<delete id="delete">
+		<![CDATA[
+                DELETE FROM transaction_token
+                WHERE
+                    token_name = #{tokenName}
+                AND
+                    token_key = #{tokenKey}
+                AND
+                    session_id = #{sessionId}
+            ]]>
+	</delete>
+	<!-- (3) -->
+	<insert id="insert" parameterType="StoredTransactionToken">
+		<![CDATA[
+                INSERT INTO transaction_token
+                (
+                    token_name,
+                    token_key,
+                    token_value,
+                    session_id,
+                    sequence
+                )
+                VALUES
+                (
+                    #{tokenName},
+                    #{tokenKey},
+                    #{tokenValue},
+                    #{sessionId},
+                    nextval('transaction_token_sequence')
+                )
+            ]]>
+	</insert>
+	<!-- (4) -->
+	<delete id="deleteOlderThanLatest">
+		<![CDATA[
+                DELETE FROM transaction_token
+                WHERE sequence IN (
+                SELECT sequence FROM transaction_token
+                WHERE
+                    token_name = #{tokenName}
+                AND
+                    session_id = #{sessionId}
+                ORDER BY sequence DESC
+                OFFSET #{num}
+                )
+            ]]>
+	</delete>
+	<!-- (5) -->
+	<delete id="deleteBySessionId">
+		<![CDATA[
+                DELETE FROM transaction_token
+                WHERE
+                    session_id = #{sessionId}
+            ]]>
+	</delete>
+</mapper>

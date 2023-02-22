@@ -35,7 +35,7 @@ spring:
       max-request-size: 10MB            
      
 mybatis:
-  type-aliases-package: com.example.bff.domain.model     
+  type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
   configuration:
     map-underscore-to-camel-case: true    
 

@@ -3,6 +3,8 @@ package com.example.bff;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,12 +14,14 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.bff.domain.repository.RepositoryPackage;
 import com.example.bff.infra.common.httpclient.RestTemplateResponseErrorHandler;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.httpclient.RestTemplateLoggingInterceptor;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
+import com.example.fw.web.token.TransactionTokenPackage;
 
 /**
  * 
@@ -26,8 +30,10 @@ import com.example.fw.common.objectstorage.config.S3ConfigPackage;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { S3ConfigPackage.class })
-public class InfraConfig {        
-    
+//　トランザクショントークンチェックのMyBatisのMapperをスキャンさせるために、業務APのMapper含めて明示的にスキャンする設定を追加
+@MapperScan(basePackageClasses = { TransactionTokenPackage.class, RepositoryPackage.class }, annotationClass = Mapper.class)
+public class InfraConfig {
+
     /**
      * WebClientでのログ出力クラス
      */
