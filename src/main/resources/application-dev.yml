@@ -13,7 +13,6 @@ spring:
     password:
   session:
     store-type: none
-#    timeout: 1m
 #  websecurity:
 #    debug: true
     
