@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import com.amazonaws.xray.AWSXRay;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.web.message.WebFrameworkMessageIds;
@@ -24,8 +25,9 @@ public class TransactionTokenCleaningListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
+        AWSXRay.beginSegment("transaction-token-clean");
         String sessionId = se.getSession().getId();
-        try {
+        try {                        
             //対象のセッションのトランザクショントークンのレコードを削除
             int count = tokenRepository.deleteBySessionId(sessionId);
             if (count > 0) {
