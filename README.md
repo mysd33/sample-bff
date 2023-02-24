@@ -94,9 +94,29 @@
         docker exec -i -t test-redis /bin/bash
         #コンテナ内のターミナルにログイン
         > redis-cli
+        
         #「keys *」コマンド等で、redisにセッション情報が格納されたか確認できる
         > keys *
         ```
+    * RedisのKeyspace-Notificationを有効化して、キーの有効期限切れ（セッションタイムアウト）の検知ができるようにする
+        * https://redis.io/docs/manual/keyspace-notifications/
+            * Spring Session Data Redisはデフォルトで、Keyspace-Notificationを有効化してくれるが、Elasti Cache for Redisではconfigコマンドの実行が禁止されているため、当該サンプルAPでは、application-production.ymlに「spring.session.redis.configure-action」を「none」で設定しているため、redis-cliでconfigコマンド実行する手順としている。
+                * configコマンドでの「gxE」の意味                
+                    * g: DEL, EXPIRE, RENAMEのような一般的なコマンド。
+                    * x: 期限切れ（Expired）イベント。キーが有効期限切れになる毎に生成される
+                    * E: キーイベント
+        ```sh
+        #コンテナ内のターミナルにログイン
+        > redis-cli
+        #configコマンドでKeyspace-Notificationを有効化
+        > config set notify-keyspace-events gxE
+        #設定の確認        
+        > config get notify-keyspace-events
+        ```
+
+        * なお、ElastiCacheでKeyspace-Notificationを有効化するには、カスタムキャッシュパラメータグループで notify-keyspace-events パラメータを使用して、キースペース通知を有効にする。
+            * https://aws.amazon.com/jp/premiumsupport/knowledge-center/elasticache-redis-keyspace-notifications/
+
 ## PostgreSQLのローカル起動
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
