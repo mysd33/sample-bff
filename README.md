@@ -98,7 +98,8 @@
         #「keys *」コマンド等で、redisにセッション情報が格納されたか確認できる
         > keys *
         ```
-    * RedisのKeyspace-Notificationを有効化して、キーの有効期限切れ（セッションタイムアウト）の検知ができるようにする
+    * RedisのKeyspace-Notificationを有効化して、キーの有効期限切れ（セッションタイムアウト）の検知できるように設定する必要がある
+        * https://docs.spring.io/spring-session/reference/api.html#api-redisindexedsessionrepository-sessiondestroyedevent        
         * https://redis.io/docs/manual/keyspace-notifications/
             * Spring Session Data Redisはデフォルトで、Keyspace-Notificationを有効化してくれるが、Elasti Cache for Redisではconfigコマンドの実行が禁止されているため、当該サンプルAPでは、application-production.ymlに「spring.session.redis.configure-action」を「none」で設定しているため、redis-cliでconfigコマンド実行する手順としている。
                 * configコマンドでの「gxE」の意味                
