@@ -24,9 +24,13 @@ public class TransactionTokenCleaningListener implements HttpSessionListener {
     private StoredTransactionTokenRepository tokenRepository;
 
     @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
+    public void sessionDestroyed(HttpSessionEvent se) {        
         AWSXRay.beginSegment("transaction-token-clean");
         String sessionId = se.getSession().getId();
+
+        //TODO:削除
+        log.info("sessionDestroyed:" + sessionId);
+
         try {                        
             //対象のセッションのトランザクショントークンのレコードを削除
             int count = tokenRepository.deleteBySessionId(sessionId);
