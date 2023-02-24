@@ -17,6 +17,7 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
 import com.example.fw.web.token.MyBatisTransactionTokenStore;
+import com.example.fw.web.token.TraceableTransactionTokenRequestDataValueProcessor;
 import com.example.fw.web.token.TransactionTokenCleaningListener;
 
 /**
@@ -46,7 +47,8 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
     public RequestDataValueProcessor requestDataValueProcessor() {
         return new CompositeRequestDataValueProcessor(
                 // CSRFとTransactionTokenの両方のRequestDataValueProcessorを指定
-                new CsrfRequestDataValueProcessor(), new TransactionTokenRequestDataValueProcessor());
+                //new CsrfRequestDataValueProcessor(), new TransactionTokenRequestDataValueProcessor());
+                new CsrfRequestDataValueProcessor(), new TraceableTransactionTokenRequestDataValueProcessor());        
     }
 
     /**

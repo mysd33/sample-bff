@@ -29,8 +29,8 @@ logging:
     org.springframework: INFO
     org.springframework.jdbc: INFO
 #    org.thymeleaf: DEBUG
-#    com.example: DEBUG
-    com.example: INFO
+    com.example: DEBUG
+#    com.example: INFO
     
 resilience4j.timelimiter:
   configs:
