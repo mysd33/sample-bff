@@ -32,7 +32,7 @@ public class TransactionTokenCleaningListener implements HttpSessionListener {
                 appLogger.info(WebFrameworkMessageIds.I_ON_FW_0003, sessionId);
             }
         } catch (DataAccessException e) {
-            appLogger.warn(WebFrameworkMessageIds.W_ON_FW_0001, sessionId);
+            appLogger.warn(WebFrameworkMessageIds.W_ON_FW_0001, e, sessionId);
         }
     }
 
