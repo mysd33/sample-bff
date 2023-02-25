@@ -15,6 +15,9 @@ public class TransactionTokenProperties {
     //　トランザクショントークン機能の有効化フラグ
     private boolean enabled = true;
     
+    // トランザクショントークンの保存先（db、session)
+    private String storeType;
+    
     // トランザクショントークンチェックを適用するパス
     private List<String> pathPatterns = Collections.emptyList();
 

@@ -39,5 +39,7 @@ mybatis:
 
 transaction:
   token:
+    store-type: db
+#    store-type: session 
     path-partterns: /**
 #    exclude-path-patterns:    
