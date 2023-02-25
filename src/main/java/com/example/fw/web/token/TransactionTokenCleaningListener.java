@@ -43,8 +43,7 @@ public class TransactionTokenCleaningListener implements HttpSessionListener {
         AWSXRay.beginSegment("transaction-token-clean");
         String sessionId = se.getSession().getId();
 
-        //TODO:削除
-        log.info("sessionDestroyed:" + sessionId);
+        appLogger.debug("sessionDestroyed:" + sessionId);
 
         try {                        
             //対象のセッションのトランザクショントークンのレコードを削除
