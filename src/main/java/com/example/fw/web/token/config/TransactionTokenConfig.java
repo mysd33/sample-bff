@@ -20,6 +20,7 @@ import org.terasoluna.gfw.web.mvc.support.CompositeRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.TokenStringGenerator;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenInfoStore;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenInterceptor;
+import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
 import com.example.fw.web.token.TraceableTransactionTokenRequestDataValueProcessor;
@@ -64,8 +65,9 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
                 ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
                 RequestDataValueProcessor[] requestDataValueProcessors = new RequestDataValueProcessor[] {
                         new CsrfRequestDataValueProcessor(),
-                        // new TransactionTokenRequestDataValueProcessor()
-                        new TraceableTransactionTokenRequestDataValueProcessor() };
+                        new TransactionTokenRequestDataValueProcessor()
+                        //new TraceableTransactionTokenRequestDataValueProcessor() 
+                        };
                 constructorArgumentValues.addIndexedArgumentValue(0, requestDataValueProcessors);                
                 RootBeanDefinition rootBean = new RootBeanDefinition(CompositeRequestDataValueProcessor.class,
                         constructorArgumentValues, null);
