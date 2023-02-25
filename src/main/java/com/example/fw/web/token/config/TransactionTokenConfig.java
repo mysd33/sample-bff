@@ -1,9 +1,16 @@
 package com.example.fw.web.token.config;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -27,6 +34,7 @@ import com.example.fw.web.token.TransactionTokenCleaningListener;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "transaction.token", name = "enabled", havingValue = "true", matchIfMissing = true)
+@DependsOn()
 public class TransactionTokenConfig implements WebMvcConfigurer {
     /**
      * トランザクショントークンの設定
@@ -39,16 +47,32 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
     }
 
     /**
-     * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
-     * 
-     * application.ymlで、spring.main.allow-bean-definition-overriding=true設定すること
+     * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
+     * CompolistRequestDataValueProcessorによるBean定義に上書き
      */
     @Bean
-    public RequestDataValueProcessor requestDataValueProcessor() {
-        return new CompositeRequestDataValueProcessor(
-                // CSRFとTransactionTokenの両方のRequestDataValueProcessorを指定
-                //new CsrfRequestDataValueProcessor(), new TransactionTokenRequestDataValueProcessor());
-                new CsrfRequestDataValueProcessor(), new TraceableTransactionTokenRequestDataValueProcessor());        
+    public static BeanDefinitionRegistryPostProcessor requestDataValueProcessorPostProcessor() {
+        return new BeanDefinitionRegistryPostProcessor() {
+
+            @Override
+            public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+            }
+
+            @Override
+            public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+                // SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
+                ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+                RequestDataValueProcessor[] requestDataValueProcessors = new RequestDataValueProcessor[] {
+                        new CsrfRequestDataValueProcessor(),
+                        // new TransactionTokenRequestDataValueProcessor()
+                        new TraceableTransactionTokenRequestDataValueProcessor() };
+                constructorArgumentValues.addIndexedArgumentValue(0, requestDataValueProcessors);                
+                RootBeanDefinition rootBean = new RootBeanDefinition(CompositeRequestDataValueProcessor.class,
+                        constructorArgumentValues, null);
+                registry.removeBeanDefinition("requestDataValueProcessor");
+                registry.registerBeanDefinition("requestDataValueProcessor", rootBean);
+            }
+        };
     }
 
     /**

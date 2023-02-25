@@ -2,9 +2,6 @@ server:
   shutdown: graceful
 
 spring:    
-  # SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書きするため設定
-  main:
-    allow-bean-definition-overriding: true
   application:
     name: sample-bff
   profiles:
