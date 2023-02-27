@@ -1,5 +1,9 @@
 package com.example.fw.web.token.config;
 
+import java.util.List;
+
+import javax.servlet.http.HttpSessionListener;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -13,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor;
+import org.springframework.session.web.http.SessionEventHttpSessionListenerAdapter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
@@ -88,6 +93,14 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
                 transactionTokenStore);
     }
 
+    /**
+     * セッションタイムアウト時にHttpSessionListener（TransactionTokenCleaningListener）を動作させるための設定
+     */
+    @Bean
+    public SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
+            List<HttpSessionListener> listeners) {
+        return new SessionEventHttpSessionListenerAdapter(listeners);
+    }
     
     /**
      * セッションタイムアウト等のセッション破棄時にトークンを自動削除するHttpSessionListenerの設定
