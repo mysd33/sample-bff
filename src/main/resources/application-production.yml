@@ -1,3 +1,6 @@
+server:
+  tomcat:
+    use-relative-redirects: true
 spring:
   sql:
     init:
