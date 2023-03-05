@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.example.bff.app.api.common.advice.ErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.web.aspect.LogAspect;
-import com.example.fw.web.page.PageInfoDialect;
+import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,9 +23,14 @@ import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
+/**
+ * 
+ * アプリケーション層の設定クラス
+ *
+ */
 @Configuration
-@ComponentScan(basePackageClasses = { TransactionTokenConfigPackage.class }) // トランザクショントークンチェック機能の追加
-public class WebConfig implements WebMvcConfigurer {
+@ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class }) // トランザクショントークンチェック機能の追加
+public class AppConfig implements WebMvcConfigurer {
     @Value("${pagination.maxPageSize:100}")
     private int maxPageSize;
     @Value("${pagination.defaultPage:0}")
@@ -44,13 +49,6 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(resolver);
     }
 
-    /**
-     * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
-     */
-    @Bean
-    public PageInfoDialect pageInfoDialect() {
-        return new PageInfoDialect();
-    }
 
     /**
      * エラーレスポンス作成クラス
