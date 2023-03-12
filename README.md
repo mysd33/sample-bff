@@ -4,23 +4,29 @@
 * ユーザに画面を提供するSpringBootのサンプルアプリケーションである。
 * ログイン後、TODOの取得、TODOの登録、TODOの完了、TODOの削除を行える画面を提供する。
 * TODOの操作は別途作成されたTODOを管理するBackendアプリケーションのREST APIを利用している。
+* 非同期処理/バッチアプリケーションを利用して、TodoリストファイルからTodoを一括登録を行える画面も提供する。
 * ユーザはDBで管理されており、ユーザの登録、変更、削除の管理する画面も提供する。
 ![実装イメージ](img/sample-bff.png)
 
 ## プロジェクト構成
 * sample-bff
-    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、APIからsample-batchへの非同期実行依頼も可能である。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはh2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
 * sample-backend（またはsample-backend-dynamodb)
     * 別のプロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはh2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
         * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * sample-batch
-    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはh2DBによる組み込みDBになっている。
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
         * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。
+* sample-schedulelaunch
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+        * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
+
 ## 画面一覧
 * 作成している画面は以下の通り。
 
@@ -28,10 +34,11 @@
 | ---- | ---- | ---- |
 | ログイン画面 | トップページの画面で、ユーザがログインするための画面。 | [画面](img/screen/screen1.png) |
 | メニュー画面 | メニュー画面。ログインユーザのロールによって管理者メニューの表示有無が切り替わる。 |  [画面](img/screen/screen2.png) |
-| Todo管理画面 | Todoリストの一覧表示&CSVファイル出力、登録、完了、削除といった操作を実施できる画面。 | [画面](img/screen/screen3.png) |
-| ユーザ一覧画面 | 登録されているユーザを一覧表示する画面。 | [画面](img/screen/screen4.png) |
-| ユーザ登録画面 | ユーザを新規登録するための画面。 | [画面](img/screen/screen5.png) |
-| ユーザ詳細画面 | ユーザの詳細情報の表示と情報更新するための画面。 | [画面](img/screen/screen6.png) |
+| Todo管理画面 | Todoリストの一覧表示、登録、完了、削除といった操作を実施できる画面。 | [画面](img/screen/screen3.png) |
+| Todo一括登録画面 | Todoリストを記載したCSVファイルをアップロードし、非同期でTodoリストを登録できる画面。 | [画面](img/screen/screen4.png) |
+| ユーザ一覧画面 | 登録されているユーザを一覧表示&CSVファイルダウンロードできる画面。 | [画面](img/screen/screen5.png) |
+| ユーザ登録画面 | ユーザを新規登録するための画面。 | [画面](img/screen/screen6.png) |
+| ユーザ詳細画面 | ユーザの詳細情報の表示と情報更新するための画面。 | [画面](img/screen/screen7.png) |
 
 ## 画面遷移図
 ![画面遷移図](img/screen-flow.png)
@@ -63,7 +70,7 @@
     | yamada@xxx.co.jp | password | 管理者 |
     | tamura@xxx.co.jp | password | 一般ユーザ |
 * ログイン後、メニューが表示される。
-    * 「Todo管理」ボタンを押下するとTodo管理の画面を表示する。
+    * 「Todo管理」ボタンを押下するとTodo管理、Todo一括登録の画面を表示する。
     * 「管理者」ロールでログインしている場合のみ「ユーザ管理」ボタンが表示され、ボタンを押下すると、ユーザ管理画面を表示する。
 
 ## 非同期処理実行の操作手順について
@@ -143,7 +150,7 @@ postgres> CREATE DATABASE testdb;
 
 ## S3の設定
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.baseDir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
     * MinIOの場合
@@ -160,8 +167,8 @@ postgres> CREATE DATABASE testdb;
             localfake:
               type: minio
               port: 9000
-              accessKeyId: minioadmin
-              secretAccessKey: minioadmin
+              access-key-id: minioadmin
+              secret-access-key: minioadmin
             bucket: mysd33bucket123
         ```
     * s3rverの場合
