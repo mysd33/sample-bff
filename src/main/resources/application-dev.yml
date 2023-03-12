@@ -49,7 +49,7 @@ aws:
     localfake:
 #S3 Fake by local file system
       type: file
-      baseDir: C:\tmp\objectstorage
+      base-dir: C:\tmp\objectstorage
 #S3 Fake by s3rver    
 #      type: s3rver
 #      port: 4568
@@ -57,6 +57,6 @@ aws:
 #S3 Fake by MinIO
 #      type: minio
 #      port: 9000
-#      accessKeyId: minioadmin
-#      secretAccessKey: minioadmin
+#      access-key-id: minioadmin
+#      secret-access-key: minioadmin
 #    bucket: mysd33bucket123
