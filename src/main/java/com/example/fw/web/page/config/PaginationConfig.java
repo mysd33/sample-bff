@@ -28,6 +28,8 @@ public class PaginationConfig implements WebMvcConfigurer {
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        // 参考
+        // https://macchinetta.github.io/server-guideline-thymeleaf/1.8.1.SP1.RELEASE/ja/ArchitectureInDetail/WebApplicationDetail/Pagination.html#pageablehandlermethodargumentresolver
         PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
         resolver.setMaxPageSize(paginationConfigurationProperties.getMaxPageSize());
         resolver.setFallbackPageable(PageRequest.of(paginationConfigurationProperties.getDefaultPage(), paginationConfigurationProperties.getDefaultPageSize()));

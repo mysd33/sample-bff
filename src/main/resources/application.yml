@@ -36,10 +36,18 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true    
 
-
+ 
 transaction:
   token:
     store-type: db
 #    store-type: session 
     path-partterns: /**
-#    exclude-path-patterns:    
+#    exclude-path-patterns:
+
+pagination:
+#  max-page-size: 100    
+#  default-page: 0
+  default-page-size: 5
+
+
+    
