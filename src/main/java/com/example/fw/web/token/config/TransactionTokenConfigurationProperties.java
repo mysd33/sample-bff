@@ -3,6 +3,8 @@ package com.example.fw.web.token.config;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import lombok.Data;
 
 /**
@@ -11,7 +13,8 @@ import lombok.Data;
  *
  */
 @Data
-public class TransactionTokenProperties {
+@ConfigurationProperties(prefix = "transaction.token")
+public class TransactionTokenConfigurationProperties {
     //　トランザクショントークン機能の有効化フラグ
     private boolean enabled = true;
     

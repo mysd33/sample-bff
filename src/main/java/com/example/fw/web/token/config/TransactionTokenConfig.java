@@ -12,7 +12,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -28,7 +28,6 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenInterceptor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
-import com.example.fw.web.token.TraceableTransactionTokenRequestDataValueProcessor;
 import com.example.fw.web.token.TransactionTokenCleaningListener;
 
 /**
@@ -38,19 +37,13 @@ import com.example.fw.web.token.TransactionTokenCleaningListener;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "transaction.token", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties({TransactionTokenConfigurationProperties.class})
 public class TransactionTokenConfig implements WebMvcConfigurer {
     @Autowired
     private TransactionTokenStore transactionTokenStore;
     
-    /**
-     * トランザクショントークンの設定
-     * 
-     */
-    @ConfigurationProperties(prefix = "transaction.token")
-    @Bean
-    public TransactionTokenProperties transactionTokenProperties() {
-        return new TransactionTokenProperties();
-    }
+    @Autowired
+    private TransactionTokenConfigurationProperties transactionTokenProperties;
 
     /**
      * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
@@ -114,8 +107,8 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(transactionTokenInterceptor())
-                .addPathPatterns(transactionTokenProperties().getPathPatterns())
-                .excludePathPatterns(transactionTokenProperties().getExcludePathPatterns())
+                .addPathPatterns(transactionTokenProperties.getPathPatterns())
+                .excludePathPatterns(transactionTokenProperties.getExcludePathPatterns())
                 .order(Ordered.LOWEST_PRECEDENCE - 10);
     }
 
