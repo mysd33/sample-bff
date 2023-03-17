@@ -15,14 +15,14 @@ import com.example.fw.web.token.MyBatisTransactionTokenStore;
  *
  */
 @Configuration
-@ConditionalOnProperty(prefix = "transaction.token", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "transaction-token", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class TransactionTokenStoreConfig implements WebMvcConfigurer {
    
     /**
      * TransationTokenStoreクラスの設定（RDBのテーブル管理するTransationTokenStoreに差し替え
      * 
      */
-    @ConditionalOnProperty(prefix = "transaction.token", name = "store-type", havingValue = "db", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "transaction-token", name = "store-type", havingValue = "db", matchIfMissing = true)
     @Bean
     public TransactionTokenStore transactionTokenDBStore() {
         return new MyBatisTransactionTokenStore();
@@ -33,7 +33,7 @@ public class TransactionTokenStoreConfig implements WebMvcConfigurer {
      * TransationTokenStoreクラスの設定（Sessionの管理するTransationTokenStoreに差し替え
      * 
      */
-    @ConditionalOnProperty(prefix = "transaction.token", name = "store-type", havingValue = "session")
+    @ConditionalOnProperty(prefix = "transaction-token", name = "store-type", havingValue = "session")
     @Bean
     public TransactionTokenStore transactionTokenSessionStore() {
         return new HttpSessionTransactionTokenStore();

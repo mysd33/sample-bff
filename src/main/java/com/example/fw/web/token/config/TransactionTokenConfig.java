@@ -36,7 +36,7 @@ import com.example.fw.web.token.TransactionTokenCleaningListener;
  *
  */
 @Configuration
-@ConditionalOnProperty(prefix = "transaction.token", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "transaction-token", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties({TransactionTokenConfigurationProperties.class})
 public class TransactionTokenConfig implements WebMvcConfigurer {
     @Autowired

@@ -13,7 +13,7 @@ import lombok.Data;
  *
  */
 @Data
-@ConfigurationProperties(prefix = "transaction.token")
+@ConfigurationProperties(prefix = "transaction-token")
 public class TransactionTokenConfigurationProperties {
     //　トランザクショントークン機能の有効化フラグ
     private boolean enabled = true;
