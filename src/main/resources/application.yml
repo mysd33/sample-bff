@@ -48,5 +48,6 @@ pagination:
 #  default-page: 0
   default-page-size: 5
 
-
-    
+aws:
+  xray:
+    tracing-filter-name: sample-bff 

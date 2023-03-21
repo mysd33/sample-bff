@@ -43,4 +43,14 @@ public class WebClientConfig {
     public WebClient webClientWithXRay(WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
         return WebClient.builder().filter(loggingFilter.filter()).filter(xrayFilter.filter()).build();
     }
+    
+    /**
+     * WebClientでのAWS X-RayのHttpクライアントトレーシング設定
+     * 
+     */
+    @Profile("xray")
+    @Bean
+    public WebClientXrayFilter webClientXrayFilter() {
+        return new WebClientXrayFilter();
+    }
 }
