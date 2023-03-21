@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -90,6 +91,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
      * セッションタイムアウト時にHttpSessionListener（TransactionTokenCleaningListener）を動作させるための設定
      */
     @Bean
+    @ConditionalOnExpression("'${spring.session.store-type}' != 'redis'")
     public SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
             List<HttpSessionListener> listeners) {
         return new SessionEventHttpSessionListenerAdapter(listeners);

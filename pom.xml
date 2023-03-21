@@ -16,7 +16,7 @@
 	<description>Spring Boot Backend for Frontend Sample</description>
 	<properties>
 		<java.version>17</java.version>
-		<spring.cloud-version>2021.0.6</spring.cloud-version>
+		<spring.cloud-version>2021.0.5</spring.cloud-version>
 		<mybatis-spring-boot-starter.version>2.2.2</mybatis-spring-boot-starter.version>
 		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 		<bootstrap.version>5.2.2</bootstrap.version>
@@ -174,11 +174,11 @@
 			<artifactId>logstash-logback-encoder</artifactId>
 			<version>${logstash-logback-encoder.version}</version>
 		</dependency>
-		<!-- Spring Cloud Sleuth -->
+		<!-- Spring Cloud Sleuth -->	
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
-		</dependency>
+		</dependency>		
 		<!-- Spring Cloud Circuit Breaker Resilience4J -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
