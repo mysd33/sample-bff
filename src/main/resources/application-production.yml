@@ -43,7 +43,10 @@ resilience4j.timelimiter:
 api:
   backend:
     url: http://localhost:8000
-      
+  retry:
+    max-attempts: 3
+    min-backoff: 200
+          
 delayed:
   batch:
     queue: SampleQueue

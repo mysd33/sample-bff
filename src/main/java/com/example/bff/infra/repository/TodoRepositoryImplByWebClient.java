@@ -1,5 +1,6 @@
 package com.example.bff.infra.repository;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 /**
  * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す WebFlux実装
@@ -34,6 +36,12 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     // （参考）https://spring.io/projects/spring-cloud-circuitbreaker
     @SuppressWarnings("rawtypes")
     private final ReactiveCircuitBreakerFactory cbFactory;
+    // リトライ回数
+    @Value("${api.retry.max-attempts:3}")
+    int maxAttempts;
+    // エクスポネンシャルバックオフによる初回待機時間
+    @Value("${api.retry.min-backoff:200}")
+    long minBackoff;
 
     @Value("${api.backend.url}/api/v1/todos")
     private String urlTodos;
@@ -60,6 +68,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				        responseErrorHandler::createServerErrorException
 				) 
 				.bodyToMono(Todo.class)
+                // エクスポネンシャルバックオフによるリトライ
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_findById")
 						.run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
 		return todoMono.blockOptional();
@@ -69,7 +80,8 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Override
     public Collection<Todo> findAll() {
         // @formatter:off 
-		Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
+
+        Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError,
 				        responseErrorHandler::createClientErrorException
@@ -78,6 +90,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				        responseErrorHandler::createServerErrorException
 				) 
 				.bodyToMono(TodoList.class)
+				// エクスポネンシャルバックオフによるリトライ
+				.retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                // サーキットブレーカによる処理				
 				// Fallback時にエラーとせずに空のリストを例
 				.transform(it -> cbFactory.create("todo_findAll")
 						.run(it, throwable -> Mono.just(new TodoList())));
@@ -98,6 +113,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				        responseErrorHandler::createServerErrorException
 				) 
 				.bodyToMono(Todo.class)
+                // エクスポネンシャルバックオフによるリトライ
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_create").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
@@ -116,6 +134,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				        responseErrorHandler::createServerErrorException
 				) 
 				.bodyToMono(Todo.class)
+                // エクスポネンシャルバックオフによるリトライ
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_update").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
@@ -135,6 +156,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				        responseErrorHandler::createServerErrorException
 				)  
 				.bodyToMono(Void.class)
+                // エクスポネンシャルバックオフによるリトライ
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_delete").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
