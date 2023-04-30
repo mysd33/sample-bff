@@ -17,6 +17,7 @@ import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
 import com.example.bff.infra.common.httpclient.CircutiBreakerErrorFallback;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
+import com.example.fw.common.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -69,7 +70,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				) 
 				.bodyToMono(Todo.class)
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
+                    return !(th instanceof BusinessException);
+                }))
                 // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_findById")
 						.run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
@@ -91,7 +94,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				) 
 				.bodyToMono(TodoList.class)
 				// エクスポネンシャルバックオフによるリトライ
-				.retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+				.retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
+                    return !(th instanceof BusinessException);
+                }))
                 // サーキットブレーカによる処理				
 				// Fallback時にエラーとせずに空のリストを例
 				.transform(it -> cbFactory.create("todo_findAll")
@@ -114,7 +119,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				) 
 				.bodyToMono(Todo.class)
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
+                    return !(th instanceof BusinessException);
+                }))
                 // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_create").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
@@ -135,7 +142,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				) 
 				.bodyToMono(Todo.class)
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
+                    return !(th instanceof BusinessException);
+                }))
                 // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_update").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
@@ -157,7 +166,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 				)  
 				.bodyToMono(Void.class)
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
+                    return !(th instanceof BusinessException);
+                }))
                 // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_delete").run(it,
 						CircutiBreakerErrorFallback.returnMonoBusinessException()))
