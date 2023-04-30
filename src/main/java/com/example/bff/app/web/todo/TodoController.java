@@ -2,7 +2,7 @@ package com.example.bff.app.web.todo;
 
 import java.util.Collection;
 
-import javax.validation.groups.Default;
+import jakarta.validation.groups.Default;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

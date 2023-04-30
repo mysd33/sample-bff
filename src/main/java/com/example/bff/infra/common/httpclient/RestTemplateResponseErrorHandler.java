@@ -9,8 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus.Series;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.Nullable;
@@ -41,37 +40,36 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
     @Override
     public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
-        return (httpResponse.getStatusCode().series() == Series.CLIENT_ERROR
-                || httpResponse.getStatusCode().series() == Series.SERVER_ERROR);
+        return (httpResponse.getStatusCode().is4xxClientError()
+                || httpResponse.getStatusCode().is5xxServerError());
     }
 
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
-        HttpStatus httpStatus = response.getStatusCode();
+        HttpStatusCode httpStatusCode = response.getStatusCode();
         String statusText = response.getStatusText();
         byte[] responseBody = getResponseBody(response);
         Charset charset = getCharset(response);
         ErrorResponse errorResponse = null;
         String code = null;
         String message = null;
-        switch (httpStatus.series()) {
-        case CLIENT_ERROR:
+        if (httpStatusCode.is4xxClientError()) {        
             try {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
             } catch (Exception e) {
                 // ErrorResponseに変換できない場合
-                throwBussinessExceptionForUnknownErrorResponse(httpStatus, statusText, responseBody, charset);
+                throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
             }
             // サーバ側のErrorResponseに含まれるメッセージをもとにエラーメッセージを画面表示する            
             message = errorResponse.getMessage();
             throw new BusinessException(ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
                     .message(message).build());
-        case SERVER_ERROR:
+        } else if (httpStatusCode.is5xxServerError()) {        
             try {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
             } catch (Exception e) {
                 // ErrorResponseに変換できない場合
-                throwBussinessExceptionForUnknownErrorResponse(httpStatus, statusText, responseBody, charset);
+                throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
             }
             code = errorResponse.getCode();
             message = errorResponse.getMessage();
@@ -80,22 +78,22 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
             appLogger.warn(MessageIds.W_EX_8001, logMessage);
             throw new BusinessException(
                     ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());
-        default:
-            throwBussinessExceptionForUnknownErrorResponse(httpStatus, statusText, responseBody, charset);
+        } else {        
+            throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
         }
     }
 
     /**
      * 不明なエラーの場合は、サービスから取得したエラー情報を警告ログ出力し、定型的なメッセージを画面表示する
      * 
-     * @param httpStatus
+     * @param httpStatusCode
      * @param statusText
      * @param responseBody
      * @param charset
      */
-    private void throwBussinessExceptionForUnknownErrorResponse(HttpStatus httpStatus, String statusText,
+    private void throwBussinessExceptionForUnknownErrorResponse(HttpStatusCode httpStatusCode, String statusText,
             byte[] responseBody, Charset charset) {
-        String logMessage = getErrorMessage(httpStatus.value(), statusText, responseBody, charset);
+        String logMessage = getErrorMessage(httpStatusCode.value(), statusText, responseBody, charset);
         appLogger.warn(MessageIds.W_EX_8001, logMessage);
         throw new BusinessException(
                 ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());

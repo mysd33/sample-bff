@@ -7,7 +7,7 @@
     <!--/* ページネーションのページリンク */-->
     <nav th:fragment="pagination (page)" th:object="${page}" th:remove="tag">
         <ul th:if="*{totalElements} != 0" class="pagination"
-            th:with="pageLinkMaxDispNum = 10, disabledHref = 'javascript:void(0)', currentUrl = ${#request.requestURI}">
+            th:with="pageLinkMaxDispNum = 10, disabledHref = 'javascript:void(0)', currentUrl = ${requestURI}">
 
             <li class="page-item" th:classappend="*{isFirst()} ? 'disabled'" >          
                 <a class="page-link" th:tabindex="*{isFirst()} ? -1" th:href="*{isFirst()} ? ${disabledHref} : @{{currentUrl}(currentUrl=${currentUrl},page=0,size=*{size})}">最初へ</a>

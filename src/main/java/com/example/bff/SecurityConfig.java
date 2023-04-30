@@ -2,6 +2,7 @@ package com.example.bff;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * SpringSecurityの設定クラス
  *
  */
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     // Spring Security5.7より大幅に設定方法が変更された
@@ -53,22 +55,22 @@ public class SecurityConfig {
 				.logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
 						.logoutSuccessUrl("/")) // ログアウト成功後のURL
 				// 認可設定
-				.authorizeHttpRequests(authz -> authz.antMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
-						.antMatchers("/css/**").permitAll()// cssへアクセス許可
-						.antMatchers("/js/**").permitAll()// jsへアクセス許可
-						.antMatchers("/login").permitAll() // ログインページは直リンクOK
-						.antMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
-						.antMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-						.antMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-						.antMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-						.antMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
-						.antMatchers("/api/**").permitAll()// REST APIへアクセス許可
-						.antMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
-						.antMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
+				.authorizeHttpRequests(authz -> authz.requestMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
+						.requestMatchers("/css/**").permitAll()// cssへアクセス許可
+						.requestMatchers("/js/**").permitAll()// jsへアクセス許可
+						.requestMatchers("/login").permitAll() // ログインページは直リンクOK
+						.requestMatchers("/actuator/**").permitAll() // actuatorのAPIへアクセス許可
+						.requestMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+						.requestMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+						.requestMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+						.requestMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへのアクセス許可
+						.requestMatchers("/api/**").permitAll()// REST APIへアクセス許可
+						.requestMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
+						.requestMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザーのみ許可
 						.anyRequest().authenticated() // それ以外は認証・認可が必要
 				)
 				// REST APIはCSRF保護不要
-				.csrf().ignoringAntMatchers("/api/**");
+				.csrf().ignoringRequestMatchers("/api/**");
 		// @formatter:on
         return http.build();
     }
@@ -82,7 +84,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
         // @formatter:off
 		//H2 ConsoleのURLに対して
-		http.antMatcher("/h2-console/**")
+		http.securityMatcher("/h2-console/**")
 			.authorizeHttpRequests(
 				// 認証不要でアクセス許可
 				authz -> authz.anyRequest().permitAll())

@@ -25,6 +25,7 @@ import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.web.view.CsvDownloadView;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,10 +83,12 @@ public class UserController {
      * ユーザー一覧画面のGETメソッド用処理.
      */
     @GetMapping("/userList")
-    public String getUserList(Model model, Pageable pageable) {
+    public String getUserList(Model model, Pageable pageable, HttpServletRequest request) {
         // ユーザー一覧の生成
         Page<User> userPage = userService.findAllForPagination(pageable);
 
+        model.addAttribute("requestURI", request.getRequestURI());
+        
         // Modelにユーザーリストを登録
         model.addAttribute("userPage", userPage);
         return "user/userList";

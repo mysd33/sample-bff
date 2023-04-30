@@ -2,8 +2,6 @@ package com.example.fw.web.token.config;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSessionListener;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -30,6 +28,8 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValue
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
 import com.example.fw.web.token.TransactionTokenCleaningListener;
+
+import jakarta.servlet.http.HttpSessionListener;
 
 /**
  * 
