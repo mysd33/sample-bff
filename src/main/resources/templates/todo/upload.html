@@ -12,8 +12,8 @@
 	<div class="container">
 		<form method="post" enctype="multipart/form-data" th:action="@{/todoFile/upload}" th:object="${todoFileForm}">
 			<!--/* メッセージ領域 */-->
-			<div th:replace="layout/parts :: part_validation_message"></div>
-			<div th:replace="layout/parts :: part_message"></div>
+			<div th:replace="~{layout/parts :: part_validation_message}"></div>
+			<div th:replace="~{layout/parts :: part_message}"></div>
 			<div class="row mb-3">
 				<div class="col">
 					<label for="todoFile" class="form-label">Todoファイル<span class="badge bg-danger">必須</span></label>

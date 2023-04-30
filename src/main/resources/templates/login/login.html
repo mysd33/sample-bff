@@ -9,10 +9,10 @@
 	<div class="container">
 		<div class="text-center">
             <!--/* ログインエラー時メッセージ領域 */-->
-            <div th:replace="layout/parts :: part_login_error"></div>                                      
+            <div th:replace="~{layout/parts :: part_login_error}"></div>                                      
 			<form method="post" th:action="@{/login}" class="form-login" th:object="${loginForm}">
                 <!--/* 入力エラー時メッセージ領域 */-->
-                <div th:replace="layout/parts :: part_validation_message"></div>                             
+                <div th:replace="~{layout/parts :: part_validation_message}"></div>                             
 				<!-- ユーザーID -->
 				<label for="userId" class="visually-hidden">ユーザーID</label> 
                 <input type="text"

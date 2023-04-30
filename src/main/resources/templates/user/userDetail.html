@@ -10,8 +10,8 @@
         <div class="container">
             <form method="post" th:action="@{/userDetail}" th:object="${userForm}">
                 <!--/* メッセージ領域 */-->
-                <div th:replace="layout/parts :: part_validation_message"></div>             
-                <div th:replace="layout/parts :: part_message"></div>
+                <div th:replace="~{layout/parts :: part_validation_message}"></div>             
+                <div th:replace="~{layout/parts :: part_message}"></div>
                 <div class="row mb-3">
                     <div class="col">
                         <label for="userId" class="form-label">ユーザID</label>                    

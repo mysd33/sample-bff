@@ -13,8 +13,8 @@
         <div id="todoForm">
             <form method="post" th:action="@{/todo/create}" th:object="${todoForm}">
                 <!--/* メッセージ領域 */-->        
-                <div th:replace="layout/parts :: part_validation_message"></div>             
-                <div th:replace="layout/parts :: part_message"></div>
+                <div th:replace="~{layout/parts :: part_validation_message}"></div>             
+                <div th:replace="~{layout/parts :: part_message}"></div>
                 <div class="row">
                     <div class="col-8">
                         <input type="text" th:field="*{todoTitle}" class="form-control" th:classappend="${#fields.hasErrors('todoTitle')} ? 'is-invalid'">
