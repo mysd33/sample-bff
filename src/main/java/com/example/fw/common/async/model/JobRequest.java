@@ -2,6 +2,7 @@ package com.example.fw.common.async.model;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringJoiner;
 
 import lombok.AllArgsConstructor;
@@ -32,9 +33,9 @@ public class JobRequest implements Serializable {
     private boolean restart;
 
     /**
-     * パラメータ文字列を返却する
+     * ジョブパラメータ文字列を返却する
      * 
-     * @return パラメータ文字列
+     * @return ジョブパラメータの文字列
      */
     public String toParameterString() {
         StringJoiner sj = new StringJoiner(",");
@@ -43,6 +44,17 @@ public class JobRequest implements Serializable {
         }
         return sj.toString();
     }
+    
+    /**
+     * ジョブパラメータをProperties形式で返却する
+     * @return ジョブパラメータのProperties形式で返却する
+     */
+    public Properties toParameterProperties() {
+        Properties properties = new Properties();
+        parameters.forEach(properties::put);        
+        return properties;
+    }
+    
 
     /**
      * 
