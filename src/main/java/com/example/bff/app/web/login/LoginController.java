@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.bff.app.web.common.authentication.AuthenticationUtil;
+
 /**
  * 
  * ログイン機能のコントローラクラス
@@ -28,6 +30,11 @@ public class LoginController {
      */
     @GetMapping("/login")
     public String getLogin(Model model, HttpSession session) {
+        // ログイン済みの場合
+        if (AuthenticationUtil.isAuthenticated()) {
+            // メニュー画面へ遷移
+            return "redirect:/menu";
+        }
         // ログイン画面へ遷移
         return "login/login";
     }
