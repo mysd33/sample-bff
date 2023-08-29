@@ -17,7 +17,6 @@ VOLUME [ "/tmp" ]
 WORKDIR /home/$USERNAME/
 
 COPY target/sample-bff-0.1.0-SNAPSHOT.jar /home/$USERNAME/
-CMD ls -l /opt
-#ENTRYPOINT [ "java" ]
-#CMD [ "-jar", "sample-bff-0.1.0-SNAPSHOT.jar" ]
+ENTRYPOINT [ "java" ]
+CMD [ "-jar", "sample-bff-0.1.0-SNAPSHOT.jar" ]
 EXPOSE 8080
