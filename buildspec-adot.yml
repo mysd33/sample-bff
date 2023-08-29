@@ -10,7 +10,9 @@ phases:
       - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_URI
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
-      - ls /root/.m2/      
+      - ls /root/.m2/
+      - echo get ADOT Collector...
+      - curl -O https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar      
   build:
     commands:
       - echo Build started on `date`
