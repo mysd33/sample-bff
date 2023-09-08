@@ -92,8 +92,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
      */
     @Bean
     //Spring Session with Redisがある場合はBean定義不要
-    //TODO:一旦削除
-    //@ConditionalOnMissingClass("org.springframework.session.data.redis.RedisSessionRepository")
+    @ConditionalOnMissingClass("org.springframework.session.data.redis.RedisSessionRepository")
     public SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
             List<HttpSessionListener> listeners) {
         return new SessionEventHttpSessionListenerAdapter(listeners);
