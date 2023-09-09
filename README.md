@@ -89,6 +89,7 @@
 ## Redisのローカル起動
 * Profileが「dev」でSpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
 * sample-bffのProfile「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
+    * Spring Boot3系より、AutoConfigureでSpring Session Data Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring Session Data Redisが有効になる。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順

@@ -1,4 +1,7 @@
 server:
+#  servlet:
+#    session:
+#      timeout: 1m
   tomcat:
     use-relative-redirects: true
 spring:

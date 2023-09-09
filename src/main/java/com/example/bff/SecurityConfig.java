@@ -8,12 +8,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -47,7 +50,8 @@ public class SecurityConfig {
      * Spring Securityによる認証認可設定
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
         // フォーム認証にによるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
@@ -60,22 +64,28 @@ public class SecurityConfig {
                 .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
                         .logoutSuccessUrl("/")) // ログアウト成功後のURL
                 // 認可設定
-                .authorizeHttpRequests(authz -> authz.requestMatchers("/webjars/**").permitAll() // webjarsへアクセス許可
-                        .requestMatchers("/css/**").permitAll()// cssへ認証なしでアクセス許可
-                        .requestMatchers("/js/**").permitAll()// jsへ認証なしでアクセス許可
-                        .requestMatchers("/login").permitAll() // ログインページへ認証なしでアクセス許可
-                        .requestMatchers("/actuator/**").permitAll() // actuatorのAPIへ認証なしでアクセス許可
-                        .requestMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
-                        .requestMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers("/api/**").permitAll()// REST APIへアクセス許可
-                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
-                        .requestMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
+                // cve-2023-34035の対応でDispatcherServletと、H2-ConsoleのJakartaWebServletの複数サーブレットあるとエラーになるため
+                // MVCMatcherとAntMatcherを明示
+                // https://spring.io/security/cve-2023-34035
+                // https://github.com/jzheaux/cve-2023-34035-mitigations    
+                // https://marco.dev/spring-boot-h2-error
+                .authorizeHttpRequests(authz ->                 
+                    authz.requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll() // webjarsへアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/css/**")).permitAll()// cssへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/js/**")).permitAll()// jsへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).permitAll() // ログインページへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/actuator/**")).permitAll() // actuatorのAPIへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs/**")).permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs*")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui/**")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui.html")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()// REST APIへアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/admin")).hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/user*")).hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可                        
                         .anyRequest().authenticated() // それ以外は認証が必要
                 )
                 // REST APIはCSRF保護不要
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+                .csrf(csrf -> csrf.ignoringRequestMatchers(mvcMatcherBuilder.pattern("/api/**")));
         return http.build();
     }
 
@@ -94,7 +104,7 @@ public class SecurityConfig {
                 // CSRF保護不要
                 .csrf(csrf -> csrf.disable())
                 // H2 Consoleの表示ではframeタグを使用しているのでX-FrameOptionsを無効化
-                .headers(headers -> headers.frameOptions().disable());
+                .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable());
         return http.build();
     }
 
