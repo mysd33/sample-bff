@@ -14,6 +14,9 @@ spring:
     driver-class-name: org.postgresql.Driver 
     username: postgres
     password: password	
+  h2:
+    console:
+      enabled: false
 
 #Spring Session Data Redis
   session:
