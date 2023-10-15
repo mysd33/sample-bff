@@ -219,19 +219,19 @@ docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:lat
 
 * ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_default --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
-docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_container --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_container --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
     * ※Redisのローカル起動、PostgreSQLのローカル起動、AWS上のSQS作成、S3作成も必要
 ```sh
-docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://host.docker.internal:8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
-docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_container --env API_BACKEND_URL=http://(ローカルPCのプライベートIP):8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://(ローカルPCのプライベートIP):5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_container --env API_BACKEND_URL=http://host.docker.internal:8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 * ECRプッシュ
