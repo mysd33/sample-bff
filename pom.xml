@@ -218,6 +218,17 @@
 			<artifactId>amazon-sqs-java-messaging-lib</artifactId>
 			<version>${amazon-sqs-java-messaging-lib.version}</version>			
 		</dependency>
+		<!-- AWS SDK Http Client -->		
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>apache-client</artifactId>			
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>				
+			</exclusions>
+		</dependency>		
 		<!-- AWS SDK SQS -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>

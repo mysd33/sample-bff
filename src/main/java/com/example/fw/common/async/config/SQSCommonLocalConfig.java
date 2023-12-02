@@ -13,6 +13,7 @@ import com.amazonaws.xray.interceptors.TracingInterceptor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -26,7 +27,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonLocalConfig {
     private static final String HTTP_LOCALHOST = "http://localhost:";
-    
+
     @Autowired
     private SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
@@ -40,7 +41,9 @@ public class SQSCommonLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
-                .region(region).credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .region(region)//
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
                 .build();
     }
@@ -54,10 +57,11 @@ public class SQSCommonLocalConfig {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-        return SqsClient.builder()
+        return SqsClient.builder()                
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .httpClientBuilder((ApacheHttpClient.builder()))//
                 .region(region)//
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))

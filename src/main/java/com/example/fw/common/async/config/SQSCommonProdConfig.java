@@ -1,16 +1,15 @@
 package com.example.fw.common.async.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazonaws.xray.interceptors.TracingInterceptor;
 
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -31,7 +30,10 @@ public class SQSCommonProdConfig {
     @Bean
     public SqsClient sqsClientWithoutXRay() {
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
-        return SqsClient.builder().region(region).build();
+        return SqsClient.builder()//
+                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .region(region)//                
+                .build();
     }
 
     /**
@@ -45,6 +47,7 @@ public class SQSCommonProdConfig {
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
+                .httpClientBuilder((ApacheHttpClient.builder()))//                
                 .region(region)
                 .build();
     }

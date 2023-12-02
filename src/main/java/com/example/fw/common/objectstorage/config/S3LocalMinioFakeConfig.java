@@ -17,6 +17,7 @@ import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -54,7 +55,8 @@ public class S3LocalMinioFakeConfig {
         
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
-        return S3Client.builder()                
+        return S3Client.builder()
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -78,7 +80,8 @@ public class S3LocalMinioFakeConfig {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()                
-                .region(region)       
+                .region(region)
+                .httpClientBuilder((ApacheHttpClient.builder()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
