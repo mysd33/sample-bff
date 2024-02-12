@@ -5,8 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.bff.app.api.common.advice.ErrorResponseCreator;
+import com.example.bff.app.api.common.advice.DefaultErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
+import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
@@ -31,7 +32,7 @@ public class AppConfig {
      */
     @Bean
     public ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
-        return new ErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
+        return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_5001, MessageIds.E_EX_9001);
     }
 
     /**

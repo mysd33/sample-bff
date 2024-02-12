@@ -50,9 +50,4 @@ pagination:
 
 aws:
   xray:
-    tracing-filter-name: sample-bff
-    
-# Micrometer Tracing         
-logging:
-  pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"     
+    tracing-filter-name: sample-bff         
