@@ -71,6 +71,7 @@ public class SecurityConfig {
                 // https://marco.dev/spring-boot-h2-error
                 .authorizeHttpRequests(authz ->                 
                     authz.requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll() // webjarsへアクセス許可
+                        .requestMatchers(mvcMatcherBuilder.pattern("/favicon.ico")).permitAll()// faviconへ認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/css/**")).permitAll()// cssへ認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/js/**")).permitAll()// jsへ認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/login")).permitAll() // ログインページへ認証なしでアクセス許可
