@@ -87,11 +87,13 @@
         * html形式（Swagger-UI）のドキュメント  
 
 ## Redisのローカル起動
-* Profileが「dev」でSpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
-* sample-bffのProfile「production」に切り替えて、SpringBootアプリケーションを実行する場合、Spring Session Data Redisでセッションを外部管理する設定としているため、Redisサーバが必要となる。
+* MavenのデフォルトのProfile設定では、Spring Session Data Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
+* MavenのProfileを「production」に切り替えてビルドした実行可能jarでは、Spring Session Data Redisが有効化されセッションを外部管理するため、Redisサーバが必要となる。
     * Spring Boot3系より、AutoConfigureでSpring Session Data Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring Session Data Redisが有効になる。
+    * ローカル実行時は、mvnコマンドで-P prroductionを指定してビルドする。Eclipse上では、プロジェクトのプロパティから「Maven」→「Active Maven Profiles」に「production」を追加してビルドする。    
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
-* Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+* Redisの利用するようなケースは、通常、Spring Bootのプロファイルも「production」に切り替えることを前提としている。
+* Profile「procution」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
         * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
         ```sh
@@ -127,8 +129,8 @@
             * https://aws.amazon.com/jp/premiumsupport/knowledge-center/elasticache-redis-keyspace-notifications/
 
 ## PostgreSQLのローカル起動
-* Profileが「dev」でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
-* Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+* Spring BootのProfileが「dev」（デフォルト）でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
+* Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
     * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
 * Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
 ```sh
@@ -143,14 +145,14 @@ postgres> CREATE DATABASE testdb;
 ```
 
 ## SQSの設定
-* Profileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
+* Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
     * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
     * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 ## S3の設定
-* Profileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
+* Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
     * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
@@ -192,8 +194,8 @@ postgres> CREATE DATABASE testdb;
     * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
     * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
-# X-Rayデーモンのローカル起動
-* Profileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
+## X-Rayデーモンのローカル起動
+* Spring BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
 * ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
     * デーモンのダウンロード    
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
@@ -205,13 +207,15 @@ postgres> CREATE DATABASE testdb;
     ```    
 
 ## Dockerでのアプリ起動
+### ローカルでDocker実行（Profileを「dev」でSpringBoot実行）の場合
 * Mavenビルド
 ```sh
 #Windows
-.\mvnw.cmd package -P production
+.\mvnw.cmd package
 #Linux/Mac
-./mvnw package -P production
+./mvnw package
 ```
+
 * ローカルでDockerビルド
 ```sh
 docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
@@ -219,26 +223,99 @@ docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:lat
 
 * ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
 ```sh
-docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_default --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
+#デフォルトのプロファイルの場合
+docker run -d -p 8080:8080 --name samplebff  --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
 docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log_container --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
+### ローカルでDocker実行（Profileを「production」でSpringBoot実行）　の場合
+* Mavenビルド（Profileを「production」でビルド）
+```sh
+#Windows
+.\mvnw.cmd package -P production
+#Linux/Mac
+./mvnw package -P production
+```
+
+* ローカルでDockerビルド
+```sh
+docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
+```
+
 * ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
     * ※Redisのローカル起動、PostgreSQLのローカル起動、AWS上のSQS作成、S3作成も必要
+
 ```sh
+#logをデフォルト（タブ区切り）形式のままの場合
 docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_default --env API_BACKEND_URL=http://host.docker.internal:8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 #logをjson形式に変更する場合
 docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name samplebff --env SPRING_PROFILES_ACTIVE=production,log_container --env API_BACKEND_URL=http://host.docker.internal:8000 --env SPRING_REDIS_HOST=(ローカルPCのプライベートIP) --env SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/testdb XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
-* ECRプッシュ
+## ECRプッシュ
 ```sh
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
 docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
+
+## 参考：Java Flight Recorder（JFR）の利用
+* 以下のサイトから、JMC（Java Mission Controll）をダウンロードしインストール
+    * https://jdk.java.net/jmc/8/
+
+* Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
+```
+-XX:StartFlightRecording:filename=recording.jfr,duration=10s
+```
+
+* APを動作させて、JFRを記録する
+
+* AP実行が終了したら、出力されたrecording.jfrファイルを、JMCで開く
+    * 例えば、時間のかかっている処理を特定するには、JMC画面のアウトラインから「メソッドプロファイリング」を選択して確認できる。
+
+* 参考
+    * https://www.alpha.co.jp/blog/202402_02/
+    * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-01.html
+    * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-02.html
+
+### 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
+* Spring Boot APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring Boot APのスタートアップの追跡が可能になる。
+
+```java
+@SpringBootApplication
+public class SampleBffApplication {
+    public static void main(String[] args) {
+        …
+        // コメントアウト
+        //SpringApplication.run(SampleBffApplication.class, args);
+        
+        // FlightRecorderApplicationStartupを使った、JFRのアプリケーションのスタートアップの追跡する場合のAP起動例
+        SpringApplication app = new SpringApplication(SampleBffApplication.class);
+        app.setApplicationStartup(new FlightRecorderApplicationStartup());
+        app.run(args);
+    }
+}
+```
+
+* Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
+```
+-XX:StartFlightRecording:filename=recording.jfr,duration=10s
+```
+
+* APを動作させて、JFRを記録する
+
+* AP実行が終了したら、出力されたrecording.jfrファイルを、JMCで開く
+ 
+* JMC画面のアウトラインから、「イベント・ブラウザ」を選択すると、「Spring Application」という項目が追加で表示されているのが分かる。
+
+* 「Startup Step」イベントで、どのBeanのインスタンス化に時間がかかっているか等分かる。
+
+* 参考 
+    * https://hirakida29.hatenablog.com/entry/2021/01/23/213825
+    * https://spring.pleiades.io/spring-boot/docs/current/reference/html/features.html#features.spring-application.startup-tracking
+
 
 ## ソフトウェアフレームワーク
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
