@@ -274,7 +274,8 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 * AP実行が終了したら、出力されたrecording.jfrファイルを、JMCで開く
     * 例えば、時間のかかっている処理を特定するには、JMC画面のアウトラインから「メソッドプロファイリング」を選択して確認できる。
-
+    * また、JMC画面のアウトラインから「Javaアプリケーション」を選択すると、時系列で、CPU使用率やヒープ使用量、メソッドプロファイリングを確認することができる。
+    * その他、GCの発生状況、スレッドダンプでのデッドロックの確認等、さまざまな情報が確認できる。
 * 参考
     * https://www.alpha.co.jp/blog/202402_02/
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-01.html
