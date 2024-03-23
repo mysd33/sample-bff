@@ -280,7 +280,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-01.html
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-02.html
 
-### 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
+## 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
 * Spring Boot APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring Boot APのスタートアップの追跡が可能になる。
 
 ```java
