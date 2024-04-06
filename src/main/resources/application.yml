@@ -17,20 +17,21 @@ spring:
         - error
         - request        
         - forward 
-
   jackson:
-    property-naming-strategy: SNAKE_CASE
-    
+    property-naming-strategy: SNAKE_CASE    
   lifecycle:
-    timeout-per-shutdown-phase: 20s          
-    
+    timeout-per-shutdown-phase: 20s
 # Servicet File Upload Max Size
   servlet:
     multipart:
       file-size-threshold: 512KB
       max-file-size: 3MB
-      max-request-size: 10MB            
-     
+      max-request-size: 10MB
+# Virtual Thread                  
+  threads:
+    virtual:
+      enabled: true       
+
 mybatis:
   type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
   configuration:
