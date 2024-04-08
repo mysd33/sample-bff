@@ -302,7 +302,7 @@ public class SampleBffApplication {
 
 * Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
 ```
--XX:StartFlightRecording:filename=recording.jfr,duration=10s
+-XX:StartFlightRecording:filename=recording.jfr
 ```
 
 * APを動作させて、JFRを記録する
