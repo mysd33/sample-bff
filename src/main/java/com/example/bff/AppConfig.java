@@ -4,9 +4,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.example.bff.app.api.common.advice.DefaultErrorResponseCreator;
 import com.example.bff.domain.message.MessageIds;
+import com.example.fw.common.systemdate.SystemDate;
+import com.example.fw.common.systemdate.SystemDateConfig;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.config.PaginationConfigPackage;
@@ -25,6 +28,8 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 // ページネーション機能、トランザクショントークンチェック機能の追加
 @ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
+// システム日時機能の追加
+@Import(SystemDateConfig.class)
 public class AppConfig {
 
     /**
@@ -39,8 +44,8 @@ public class AppConfig {
      * ロギング機能
      */
     @Bean
-    public LogAspect logAspect() {
-        return new LogAspect(MessageIds.E_EX_9001);
+    public LogAspect logAspect(SystemDate systemDate) {
+        return new LogAspect(systemDate, MessageIds.E_EX_9001);
     }
 
     /**
