@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
 
+import io.micrometer.tracing.Tracer;
+
 /**
  * RESTクライアント関連の設定クラス 
  *
@@ -18,8 +20,8 @@ public class WebClientConfig {
      * WebClientでのログ出力クラス
      */
     @Bean
-    public WebClientLoggingFilter webClientLoggingFilter() {
-        return new WebClientLoggingFilter();
+    public WebClientLoggingFilter webClientLoggingFilter(Tracer tracer) {
+        return new WebClientLoggingFilter(tracer);
     }
     
     /**
