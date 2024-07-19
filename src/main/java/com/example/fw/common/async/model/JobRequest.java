@@ -40,7 +40,7 @@ public class JobRequest implements Serializable {
     public String toParameterString() {
         StringJoiner sj = new StringJoiner(",");
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            sj.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
+            sj.add("%s=%s".formatted(entry.getKey(), entry.getValue()));
         }
         return sj.toString();
     }

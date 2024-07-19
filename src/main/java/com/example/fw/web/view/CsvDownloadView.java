@@ -80,8 +80,8 @@ public class CsvDownloadView extends AbstractView {
             final HttpServletResponse response) throws Exception {
 
         // ファイル名に日本語を含めても文字化けしないようにUTF-8にエンコードする
-        val encodedFilename = encodeUtf8(filename);
-        val contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFilename);
+        final var encodedFilename = encodeUtf8(filename);
+        final var contentDisposition = "attachment; filename*=UTF-8''%s".formatted(encodedFilename);
 
         response.setHeader(CONTENT_TYPE, getContentType());
         response.setHeader(CONTENT_DISPOSITION, contentDisposition);
@@ -91,7 +91,7 @@ public class CsvDownloadView extends AbstractView {
 
         if (columns != null && columns.isEmpty()) {
             // カラムが指定された場合は、スキーマを再構築する
-            val builder = schema.rebuild().clearColumns();
+            final var builder = schema.rebuild().clearColumns();
             for (String column : columns) {
                 builder.addColumn(column);
             }
@@ -99,7 +99,7 @@ public class CsvDownloadView extends AbstractView {
         }
 
         // 書き出し
-        val outputStream = new BufferedOutputStream(response.getOutputStream());
+        final var outputStream = new BufferedOutputStream(response.getOutputStream());
         try (Writer writer = new OutputStreamWriter(outputStream, "Windows-31J")) {
             csvMapper.writer(schema).writeValue(writer, data);
         }
