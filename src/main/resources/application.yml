@@ -31,7 +31,9 @@ spring:
   threads:
     virtual:
       enabled: true       
-
+  messages:
+    basename: messages, messages-fw-common, messages-fw-web
+    
 mybatis:
   type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
   configuration:
