@@ -18,7 +18,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "*"      
+  info:
+    os:
+      enabled: true
+    java:
+      enabled: true      
   health:
     redis:
       enabled: false 
