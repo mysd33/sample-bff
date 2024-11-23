@@ -41,6 +41,7 @@ logging:
 #    org.springframework.security: DEBUG
 #    org.thymeleaf: DEBUG
     com.example: DEBUG
+    com.example.fw.web.aspect.LogAspect: TRACE
     
 api:
   backend:
