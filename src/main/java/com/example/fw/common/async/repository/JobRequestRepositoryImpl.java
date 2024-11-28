@@ -21,13 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JobRequestRepositoryImpl implements JobRequestRepository {
-	private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final JmsTemplate jmsTemplate;
     private final String queueName;
 
     @Override
     public void save(final JobRequest jobRequest) {
-        Assert.notNull(jobRequest, "jobRequestがNullです");        
+        Assert.notNull(jobRequest, "jobRequestがNullです");
         // キューに登録
         jmsTemplate.convertAndSend(queueName, jobRequest);
         appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0005, queueName, jobRequest);
