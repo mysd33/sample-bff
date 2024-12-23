@@ -1,9 +1,11 @@
 package com.example.bff;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toStaticResources;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -70,12 +72,9 @@ public class SecurityConfig {
                 // https://github.com/jzheaux/cve-2023-34035-mitigations    
                 // https://marco.dev/spring-boot-h2-error
                 .authorizeHttpRequests(authz ->                 
-                    authz.requestMatchers(mvcMatcherBuilder.pattern("/webjars/**")).permitAll() // webjarsへアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/favicon.ico")).permitAll()// faviconへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/css/**")).permitAll()// cssへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/js/**")).permitAll()// jsへ認証なしでアクセス許可
+                    authz.requestMatchers(toStaticResources().atCommonLocations()).permitAll() // 静的リソースへアクセス許可
+                        .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll() // Spring Boot Actuatorのエンドポイントへアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/login")).permitAll() // ログインページへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/actuator/**")).permitAll() // actuatorのAPIへ認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs/**")).permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs*")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
                         .requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui/**")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
