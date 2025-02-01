@@ -2,8 +2,20 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <Pattern>combined</Pattern>
-      <Pattern>[ACCESS] %h %l %u %r %t{yyyy-MM-dd HH:mm:ss.SSS} %s %b %D ms</Pattern>
+      <!-- https://logback.qos.ch/access.html -->
+      <!-- https://logback.qos.ch/manual/layouts.html#AccessPatternLayout -->
+      <!-- %h: Remote host
+           %a: Remote IP address
+           %i{X-Forwarded-For}: ALB forwards the original client IP address in the X-Forwarded-For header
+           %u: Remote user that was authenticated
+           %t: Date and time
+           %r: Request URL
+           %s: HTTP status code
+           %b: Response's content length
+           %i{X-Amzn-Trace-Id}: ALB forwards the Trace ID in the X-Amzn-Trace-Id header
+           %i{User-Agent}: User agent
+      -->
+      <Pattern>[ACCESS] %h %a %i{X-Forwarded-For} %u [%t{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] "%r" %s %b "%i{X-Amzn-Trace-Id}" "%i{User-Agent}"</Pattern>
     </encoder>
   </appender>
   

@@ -53,4 +53,9 @@ pagination:
 
 aws:
   xray:
-    tracing-filter-name: sample-bff         
+    tracing-filter-name: sample-bff
+
+# Tomcat Access Log
+#logback:
+#  access:
+#    enabled: false
