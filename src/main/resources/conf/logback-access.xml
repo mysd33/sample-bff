@@ -7,15 +7,17 @@
       <!-- %h: Remote host
            %a: Remote IP address
            %i{X-Forwarded-For}: ALB forwards the original client IP address in the X-Forwarded-For header
-           %u: Remote user that was authenticated
+           %u: Remote user
            %t: Date and time
            %r: Request URL
            %s: HTTP status code
-           %b: Response's content length
+           %S: Session ID
+           %v: Server name
+           %I: Thread Name
            %i{X-Amzn-Trace-Id}: ALB forwards the Trace ID in the X-Amzn-Trace-Id header
            %i{User-Agent}: User agent
       -->
-      <Pattern>[ACCESS] %h %a %i{X-Forwarded-For} %u [%t{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] "%r" %s %b "%i{X-Amzn-Trace-Id}" "%i{User-Agent}"</Pattern>
+      <Pattern>[ACCESS] %h %a %i{X-Forwarded-For} %u [%t{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] "%r" "%D ms" %s "%S" "%v" "%I" "%i{X-Amzn-Trace-Id}" "%i{User-Agent}"</Pattern>
     </encoder>
   </appender>
   
