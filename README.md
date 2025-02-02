@@ -100,18 +100,19 @@
     * X-AMZN-TRACE-IDヘッダーの値をログに出力することで、APログ側とリクエストを紐づけできるようにしている。
 
     * APログの例
+
         ```json
         {
-            "@timestamp": "2025-02-02T15:46:47.946678916+09:00",
+            "@timestamp": "2025-02-02T22:12:18.168711445+09:00",
             "@version": "1",
-            "message": "Controller開始: String com.example.bff.app.web.login.LoginController.getLogin(Model,HttpSession), システム日時:2025-02-02T15:46:47.946543054+09:00[Asia/Tokyo]",
+            "message": "Controller開始: void com.example.bff.app.web.home.FaviconController.returnNoFavicon(), システム日時:2025-02-02T22:12:18.168462814+09:00[Asia/Tokyo]",
             "logger_name": "com.example.fw.web.aspect.LogAspect",
-            "thread_name": "tomcat-handler-8",
+            "thread_name": "tomcat-handler-49",
             "level": "INFO",
             "level_value": 20000,
-            "traceId": "679f14d7bf5964e96371932d8fd022a7",
-            "spanId": "67ce70c31c42433a",
-            "x_amzn_trace_id": "Root=1-679f14d7-192f8e7642d161782f99891d"
+            "traceId": "679f6f3242a811eb09df7e3f860cd4f4",
+            "spanId": "3274d7f614f56274",
+            "x_amzn_trace_id": "Root=1-679f6f32-1cf0a0d653ad6b044dfd0d3c"
         }
         ```
 
@@ -120,17 +121,18 @@
         ```json
         {
             "type": "tomcat access log",
-            "@timestamp": "2025-02-02T15:46:49.563+09:00",
-            "remote_host": "10.0.0.91",
-            "remote_ip": "10.0.0.91",
+            "@timestamp": "2025-02-02T22:12:17.963+09:00",
+            "remote_host": "10.0.1.131",
+            "remote_ip": "10.0.1.131",
             "x_forwared_for": "157.147.220.120",
             "request_url": "GET /login HTTP/1.1",
             "http_status": "200",
-            "elapsed_time": "1728 ms",
+            "elapsed_time": "50 ms",
             "session_id": "null",
-            "server_name": "demo-publicalb-929675576.ap-northeast-1.elb.amazonaws.com",
-            "thread_name": "tomcat-handler-8",
-            "x_amzn_trace_id": "Root=1-679f14d7-192f8e7642d161782f99891d",
+            "session_id_on_aws": "OWE5NGIzNDUtNTExOC00NTUyLTljYTQtMzNlZjcwNzE2ZjM4",
+            "server_name": "demo-publicalb-1900367849.ap-northeast-1.elb.amazonaws.com",
+            "thread_name": "tomcat-handler-45",
+            "x_amzn_trace_id": "Root=1-679f6f31-4b35e2d30905c2343a76ba0b",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
         }
         ```
