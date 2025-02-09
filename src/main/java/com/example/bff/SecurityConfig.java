@@ -46,7 +46,7 @@ public class SecurityConfig {
      * 
      */
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
+    WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.debug(webSecurityDebug);
     }
 
@@ -54,7 +54,7 @@ public class SecurityConfig {
      * Spring Securityによる認証認可設定
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
         // フォーム認証にによるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
@@ -97,7 +97,7 @@ public class SecurityConfig {
     @Profile("dev")
     @Order(1)
     @Bean
-    public SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
         // H2 ConsoleのURLに対して
         http.securityMatcher(toH2Console())//
                 .authorizeHttpRequests(
@@ -114,7 +114,7 @@ public class SecurityConfig {
      * パスワードエンコーダ
      */
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         // この例では、以前のサンプルAPのパスワードデータの互換性のため、接頭辞に{id}が付与されてない場合はBCryptを使用するよう設定
         ((DelegatingPasswordEncoder) passwordEncoder).setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());

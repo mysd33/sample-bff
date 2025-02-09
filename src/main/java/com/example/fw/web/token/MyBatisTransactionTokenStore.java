@@ -2,9 +2,6 @@ package com.example.fw.web.token;
 
 import java.util.UUID;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,16 +12,27 @@ import org.terasoluna.gfw.web.token.TokenStringGenerator;
 import org.terasoluna.gfw.web.token.transaction.TransactionToken;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 /**
- * DB管理(MyBatis)によるTransactionTokenStore実装クラス 
+ * DB管理(MyBatis)によるTransactionT
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.beans.facokenStore実装クラス 
  *
  */
 public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     private final int transactionTokenSizePerTokenName;
     private final TokenStringGenerator generator;
-
+    private StoredTransactionTokenRepository tokenRepository;
+    
     @Autowired
-    private StoredTransactionTokenRepository tokenRepository;    
+    public void setTokenRepository(StoredTransactionTokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     public MyBatisTransactionTokenStore() {
         this(10, new TokenStringGenerator());

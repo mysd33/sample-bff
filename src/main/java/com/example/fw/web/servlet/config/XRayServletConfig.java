@@ -43,7 +43,7 @@ public class XRayServletConfig  {
      * AWS X-RayのAOP設定
      */
     @Bean
-    public XRayAspect xRayAspect() {
+    XRayAspect xRayAspect() {
         return new XRayAspect();
     }
     
@@ -53,7 +53,7 @@ public class XRayServletConfig  {
      * 
      */
     @Bean
-    public Filter tracingFilter() {
+    Filter tracingFilter() {
         return new AWSXRayServletFilter(xRayServletConfigurationProperties.getTracingFilterName());
     }
 

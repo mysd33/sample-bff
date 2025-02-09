@@ -1,9 +1,5 @@
 package com.example.fw.web.token;
 
-import jakarta.servlet.http.HttpSessionEvent;
-import jakarta.servlet.http.HttpSessionListener;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import com.amazonaws.xray.AWSXRay;
@@ -11,6 +7,9 @@ import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.web.message.WebFrameworkMessageIds;
 
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,10 +38,10 @@ import lombok.extern.slf4j.Slf4j;
  * 
  */
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionTokenCleaningListener implements HttpSessionListener {
-    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    @Autowired
-    private StoredTransactionTokenRepository tokenRepository;
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);    
+    private final StoredTransactionTokenRepository tokenRepository;
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {        

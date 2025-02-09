@@ -2,7 +2,6 @@ package com.example.fw.web.page.config;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +12,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.fw.web.page.PageInfoDialect;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * ページネーションの設定クラス
  *
  */
 @Configuration
+@RequiredArgsConstructor
 @EnableConfigurationProperties({PaginationConfigurationProperties.class})
 public class PaginationConfig implements WebMvcConfigurer {
-    @Autowired
-    private PaginationConfigurationProperties paginationConfigurationProperties;
+    private final PaginationConfigurationProperties paginationConfigurationProperties;
     
     /**
      * ページネーションの設定
@@ -40,7 +41,7 @@ public class PaginationConfig implements WebMvcConfigurer {
      * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
      */
     @Bean
-    public PageInfoDialect pageInfoDialect() {
+    PageInfoDialect pageInfoDialect() {
         return new PageInfoDialect();
     }
 }

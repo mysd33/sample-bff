@@ -2,7 +2,6 @@ package com.example.fw.common.objectstorage.config;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,7 @@ import com.example.fw.common.objectstorage.BucketCreateInitializer;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import com.example.fw.common.objectstorage.S3ObjectStorageFileAccessor;
 
+import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
@@ -31,15 +31,15 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 @ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "s3rver")
 @EnableConfigurationProperties({S3ConfigurationProperties.class})
 @Configuration
+@RequiredArgsConstructor
 public class S3LocalS3rverFakeConfig {
-    @Autowired
-    private S3ConfigurationProperties s3ConfigurationProperties;    
+    private final S3ConfigurationProperties s3ConfigurationProperties;    
 
     /**
      * オブジェクトストレージアクセスクラス
      */
     @Bean
-    public ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
+    ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
@@ -48,7 +48,7 @@ public class S3LocalS3rverFakeConfig {
      */
     @Profile("!xray")
     @Bean
-    public S3Client s3ClientWithoutXRay() {
+    S3Client s3ClientWithoutXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
         
@@ -71,7 +71,7 @@ public class S3LocalS3rverFakeConfig {
      */
     @Profile("xray")
     @Bean
-    public S3Client s3ClientWithXRay() {
+    S3Client s3ClientWithXRay() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("S3RVER", "S3RVER");
         
@@ -97,7 +97,7 @@ public class S3LocalS3rverFakeConfig {
      * 
      */
     @Bean
-    public BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
+    BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
         return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());
     }
 

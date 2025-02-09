@@ -20,7 +20,7 @@ public class WebClientConfig {
      * WebClientでのログ出力クラス
      */
     @Bean
-    public WebClientLoggingFilter webClientLoggingFilter(Tracer tracer) {
+    WebClientLoggingFilter webClientLoggingFilter(Tracer tracer) {
         return new WebClientLoggingFilter(tracer);
     }
     
@@ -31,7 +31,7 @@ public class WebClientConfig {
      */
     @Profile("!xray")
     @Bean
-    public WebClient webClientWithoutXRay(WebClient.Builder builder, WebClientLoggingFilter loggingFilter) {
+    WebClient webClientWithoutXRay(WebClient.Builder builder, WebClientLoggingFilter loggingFilter) {
         return builder.filter(loggingFilter.filter()).build();
     }
 
@@ -42,7 +42,7 @@ public class WebClientConfig {
      */
     @Profile("xray")
     @Bean
-    public WebClient webClientWithXRay(WebClient.Builder builder, WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
+    WebClient webClientWithXRay(WebClient.Builder builder, WebClientLoggingFilter loggingFilter, WebClientXrayFilter xrayFilter) {
         return builder.filter(loggingFilter.filter()).filter(xrayFilter.filter()).build();
     }
     
@@ -52,7 +52,7 @@ public class WebClientConfig {
      */
     @Profile("xray")
     @Bean
-    public WebClientXrayFilter webClientXrayFilter() {
+    WebClientXrayFilter webClientXrayFilter() {
         return new WebClientXrayFilter();
     }
 }

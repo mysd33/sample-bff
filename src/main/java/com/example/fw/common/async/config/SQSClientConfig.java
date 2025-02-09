@@ -19,7 +19,7 @@ public class SQSClientConfig {
      * @param connectionFactory
      */
     @Bean
-    public JmsTemplate defaultJmsTemplate(ConnectionFactory connectionFactory,
+    JmsTemplate defaultJmsTemplate(ConnectionFactory connectionFactory,
             MessageConverter jacksonJmsMessageConverter) {
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);

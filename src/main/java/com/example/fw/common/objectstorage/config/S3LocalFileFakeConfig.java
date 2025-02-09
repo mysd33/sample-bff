@@ -26,7 +26,7 @@ public class S3LocalFileFakeConfig {
      * 
      */
     @Bean    
-    public ObjectStorageFileAccessor objectStorageFileAccessorFake(S3ConfigurationProperties s3ConfigurationProperties) {
+    ObjectStorageFileAccessor objectStorageFileAccessorFake(S3ConfigurationProperties s3ConfigurationProperties) {
         return new ObjectStorageFileAccessorFake(s3ConfigurationProperties.getLocalfake().getBaseDir());
     }
     

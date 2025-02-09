@@ -27,6 +27,7 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenInterceptor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
+import com.example.fw.web.token.StoredTransactionTokenRepository;
 import com.example.fw.web.token.TransactionTokenCleaningListener;
 
 import jakarta.servlet.http.HttpSessionListener;
@@ -40,22 +41,30 @@ import jakarta.servlet.http.HttpSessionListener;
 @ConditionalOnProperty(prefix = "transaction-token", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties({TransactionTokenConfigurationProperties.class})
 public class TransactionTokenConfig implements WebMvcConfigurer {
-    @Autowired
     private TransactionTokenStore transactionTokenStore;
+    private TransactionTokenConfigurationProperties transactionTokenProperties;
     
     @Autowired
-    private TransactionTokenConfigurationProperties transactionTokenProperties;
+    public void setTransactionTokenStore(TransactionTokenStore transactionTokenStore) {
+        this.transactionTokenStore = transactionTokenStore;
+    }
+    
+    @Autowired
+    public void setTransactionTokenProperties(TransactionTokenConfigurationProperties transactionTokenProperties) {
+        this.transactionTokenProperties = transactionTokenProperties;
+    }
 
     /**
      * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
      * CompolistRequestDataValueProcessorによるBean定義に上書き
      */
     @Bean
-    public static BeanDefinitionRegistryPostProcessor requestDataValueProcessorPostProcessor() {
+    static BeanDefinitionRegistryPostProcessor requestDataValueProcessorPostProcessor() {
         return new BeanDefinitionRegistryPostProcessor() {
 
             @Override
             public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+                // NOP
             }
 
             @Override
@@ -82,7 +91,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
      * 
      */
     @Bean
-    public TransactionTokenInterceptor transactionTokenInterceptor() {
+    TransactionTokenInterceptor transactionTokenInterceptor() {
         return new TransactionTokenInterceptor(new TokenStringGenerator(), new TransactionTokenInfoStore(),
                 transactionTokenStore);
     }
@@ -93,7 +102,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
     @Bean
     //Spring Session with Redisがある場合はBean定義不要
     @ConditionalOnMissingClass("org.springframework.session.data.redis.RedisIndexedSessionRepository")
-    public SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
+    SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
             List<HttpSessionListener> listeners) {
         return new SessionEventHttpSessionListenerAdapter(listeners);
     }
@@ -103,8 +112,8 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
      * 
      */
     @Bean
-    public TransactionTokenCleaningListener transactionTokenCleaningListener() {
-        return new TransactionTokenCleaningListener();
+    TransactionTokenCleaningListener transactionTokenCleaningListener(StoredTransactionTokenRepository tokenRepository) {
+        return new TransactionTokenCleaningListener(tokenRepository);
     }
 
     @Override

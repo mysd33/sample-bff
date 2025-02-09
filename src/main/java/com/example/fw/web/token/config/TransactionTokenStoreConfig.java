@@ -24,7 +24,7 @@ public class TransactionTokenStoreConfig implements WebMvcConfigurer {
      */
     @ConditionalOnProperty(prefix = "transaction-token", name = "store-type", havingValue = "db", matchIfMissing = true)
     @Bean
-    public TransactionTokenStore transactionTokenDBStore() {
+    TransactionTokenStore transactionTokenDBStore() {
         return new MyBatisTransactionTokenStore();
     }
 
@@ -35,7 +35,7 @@ public class TransactionTokenStoreConfig implements WebMvcConfigurer {
      */
     @ConditionalOnProperty(prefix = "transaction-token", name = "store-type", havingValue = "session")
     @Bean
-    public TransactionTokenStore transactionTokenSessionStore() {
+    TransactionTokenStore transactionTokenSessionStore() {
         return new HttpSessionTransactionTokenStore();
     }
     

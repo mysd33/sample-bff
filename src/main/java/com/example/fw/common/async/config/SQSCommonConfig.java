@@ -23,7 +23,7 @@ public class SQSCommonConfig {
      * JMSのメッセージコンバータの定義
      */
     @Bean
-    public MessageConverter jacksonJmsMessageConverter() {
+    MessageConverter jacksonJmsMessageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
@@ -34,7 +34,7 @@ public class SQSCommonConfig {
      * SQSConnectionFactoryのSQSのメッセージプリフェッチ数の設定
      */
     @Bean
-    public ProviderConfiguration providerConfiguration(SQSCommonConfigurationProperties sqsCommonConfigurationProperties) {
+    ProviderConfiguration providerConfiguration(SQSCommonConfigurationProperties sqsCommonConfigurationProperties) {
         return new ProviderConfiguration().withNumberOfMessagesToPrefetch(sqsCommonConfigurationProperties.getNumberOfMessagesToPrefetch());
     }
     
@@ -42,7 +42,7 @@ public class SQSCommonConfig {
      * SQSConnectionFactoryの定義
      */
     @Bean
-    public SQSConnectionFactory sqsConnectionFactory(ProviderConfiguration providerConfiguration, SqsClient sqsClient) {
+    SQSConnectionFactory sqsConnectionFactory(ProviderConfiguration providerConfiguration, SqsClient sqsClient) {
         return new SQSConnectionFactory(providerConfiguration, sqsClient);
     }
 }

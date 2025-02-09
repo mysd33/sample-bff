@@ -36,7 +36,7 @@ public class InfraConfig {
      * WebClientでのエラーハンドラークラス
      */
     @Bean
-    public WebClientResponseErrorHandler webClientResponseErrorHandler() {
+    WebClientResponseErrorHandler webClientResponseErrorHandler() {
         return new WebClientResponseErrorHandler();
     }
 
@@ -45,7 +45,7 @@ public class InfraConfig {
      * RestTemplateの設定
      */
 //    @Bean
-//    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+//    RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 //        // TODO: X-Rayのトレーシング設定
 //        // ログ出力クラスの設定
 //        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
@@ -61,7 +61,7 @@ public class InfraConfig {
      * @param jmsTemplate
      */
     @Bean
-    public JobRequestRepository jobRequestRepository(JmsTemplate jmsTemplate) {
+    JobRequestRepository jobRequestRepository(JmsTemplate jmsTemplate) {
         return new JobRequestRepositoryImpl(jmsTemplate, queueName);
     }
 
