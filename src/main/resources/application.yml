@@ -33,6 +33,11 @@ spring:
       enabled: true       
   messages:
     basename: messages, messages-fw-common, messages-fw-web
+
+# Dynamic Routing DataSource (disabled on Sample AP Default)
+  datasource:
+    dynamic-routing:
+      enabled: false
     
 mybatis:
   type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
