@@ -26,7 +26,9 @@
         <springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
         <terasoluna.version>5.9.0.RELEASE</terasoluna.version>
         <commons-io.version>2.18.0</commons-io.version>
+        <!-- logback-access -->
         <logback-access.version>2.0.6</logback-access.version>
+        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <!-- MapStruct -->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
@@ -180,6 +182,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
+        </dependency>
+        <!-- Logstash Logback Encoder -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback-encoder.version}</version>
         </dependency>
         <!-- Micrometer Tracing -->
         <dependency>
