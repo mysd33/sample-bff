@@ -3,6 +3,7 @@ package com.example.fw.common.httpclient;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.reactivestreams.Publisher;
@@ -217,6 +218,11 @@ public class WebClientLoggingFilter {
         @Override
         public <T> T getNativeRequest() {
             return delegateRequest.getNativeRequest();
+        }
+
+        @Override
+        public Map<String, Object> getAttributes() {
+            return delegateRequest.getAttributes();
         }
 
     }
