@@ -61,7 +61,7 @@ public class AppConfig {
      * Springdoc-openapiの定義
      */
     @Bean
-    OpenAPI springShopOpenAPI() {
+    OpenAPI springDocOpenAPI() {
         return new OpenAPI().info(new Info().title("非同期実行APIドキュメント").description("非同期実行管理のためのAPIです。").version("v1.0"));
     }
 
