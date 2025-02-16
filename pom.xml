@@ -26,6 +26,9 @@
         <springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
         <terasoluna.version>5.9.0.RELEASE</terasoluna.version>
         <commons-io.version>2.18.0</commons-io.version>
+        <!-- Jasper Reports-->
+        <jasperreports.version>7.0.1</jasperreports.version>
+        <bouncycastle.version>1.78.1</bouncycastle.version>
         <!-- logback-access -->
         <logback-access.version>2.0.6</logback-access.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
@@ -269,6 +272,36 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+        </dependency>
+        <!-- Jaspter Reports -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperreports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- ver7.xより、機能ごとExtensionに分離されたので、PDFExtensionの追加定義が必要 -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-pdf</artifactId>
+            <version>${jasperreports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>           
+        </dependency>
+        <!-- PDFのパスワード設定する場合に、bouncycastleを利用するため追加定義が必要 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
         </dependency>
         <!-- logback-access -->
         <dependency>
