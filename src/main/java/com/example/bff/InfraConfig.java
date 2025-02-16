@@ -17,6 +17,7 @@ import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
 import com.example.fw.common.datasource.config.DynamicRoutingDataSourceConfig;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
+import com.example.fw.common.reports.config.ReportsConfigPackage;
 import com.example.fw.web.token.TransactionTokenPackage;
 
 /**
@@ -26,7 +27,10 @@ import com.example.fw.web.token.TransactionTokenPackage;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class,
-        SQSCommonConfigPackage.class })
+        SQSCommonConfigPackage.class,
+        // TODO:帳票出力機能の設定情報を追加
+        //ReportsConfigPackage.class
+})
 //　トランザクショントークンチェックのMyBatisのMapperをスキャンさせるために、業務APのMapper含めて明示的にスキャンする設定を追加
 @MapperScan(basePackageClasses = { TransactionTokenPackage.class,
         RepositoryPackage.class }, annotationClass = Mapper.class)
