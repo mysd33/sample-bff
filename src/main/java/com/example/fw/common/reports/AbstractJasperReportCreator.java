@@ -135,7 +135,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @param data 帳票データ
      * @return PDFファイルのInputStreamデータ
      */
-    public InputStream createPDFReport(final T data) {
+    public Report createPDFReport(final T data) {
         return createPDFReport(data, PDFOptions.builder().build());
     }
 
@@ -146,7 +146,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @param options PDF出力時のオプション設定
      * @return PDFファイルのInputStreamデータ
      */
-    public InputStream createPDFReport(final T data, final PDFOptions options) {
+    public Report createPDFReport(final T data, final PDFOptions options) {
         appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0009, reportId, reportName);
         // 処理時間を計測しログ出力
         long startTime = System.nanoTime();
@@ -168,7 +168,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @param options PDF出力時のオプション設定
      * @return PDFファイルのInputStreamデータ
      */
-    private InputStream doCreatePDFReport(final T data, final PDFOptions options) {
+    private Report doCreatePDFReport(final T data, final PDFOptions options) {
         Map<String, Object> parameters = getParameters(data);
         JRDataSource dataSource = getDataSource(data);
         JasperReport jasperReport = null;
@@ -350,7 +350,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @throws JRException JasperReportsでPDFのエクスポートに失敗した場合
      */
     @Deprecated(since = "0.0.1", forRemoval = true)
-    private InputStream exportPDFOnMemory(final JasperPrint jasperPrint, final PDFOptions options) throws JRException {
+    private Report exportPDFOnMemory(final JasperPrint jasperPrint, final PDFOptions options) throws JRException {
         // （参考）通常のPDF出力の実装例
         // https://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/JasperExportManager.html
         //
@@ -368,7 +368,12 @@ public abstract class AbstractJasperReportCreator<T> {
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
         exporter.exportReport();
-        return new ByteArrayInputStream(baos.toByteArray());
+        byte[] bytes = baos.toByteArray();
+        InputStream is = new ByteArrayInputStream(bytes);
+        return Report.builder()//
+                .inputStream(is)//
+                .size(bytes.length)//
+                .build();
     }
 
     /**
@@ -381,8 +386,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @throws JRException JasperReportsでPDFのエクスポートに失敗した場合
      * @throws IOException
      */
-    private InputStream exportPDF(final JasperPrint jasperPrint, final PDFOptions options)
-            throws JRException, IOException {
+    private Report exportPDF(final JasperPrint jasperPrint, final PDFOptions options) throws JRException, IOException {
         // メモリを極力使わないよう、PDFのファイルサイズが大きい場合も考慮し一時ファイルに出力してInputStreamで返却するようにする
         Path tempFilePath = Files.createTempFile(pdfTempPath.get(), PDF_TEMP_FILE_PREFIX, PDF_FILE_EXTENSION);
 
@@ -402,7 +406,11 @@ public abstract class AbstractJasperReportCreator<T> {
             exporter.exportReport();
         }
         // 一時ファイルのInputStreamを返す
-        return new BufferedInputStream(new FileInputStream(tempFilePath.toFile()));
+        InputStream is = new BufferedInputStream(new FileInputStream(tempFilePath.toFile()));
+        return Report.builder()//
+                .inputStream(is)//
+                .size(Files.size(tempFilePath))//
+                .build();
     }
 
     /**
