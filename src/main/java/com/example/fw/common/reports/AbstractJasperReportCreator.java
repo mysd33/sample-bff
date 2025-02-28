@@ -156,7 +156,7 @@ public abstract class AbstractJasperReportCreator<T> {
         } finally {
             // 呼び出し処理実行後、処理時間を計測しログ出力
             long endTime = System.nanoTime();
-            double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
+            double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
             appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0010, reportId, reportName, elapsedTime);
         }
     }

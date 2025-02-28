@@ -80,7 +80,7 @@ public class WebClientLoggingFilter {
             return next.exchange(clientRequest).flatMap(response -> {
                 // 呼び出し処理実行後、処理時間を計測しログ出力
                 long endTime = System.nanoTime();
-                double elapsedTime = SystemDateUtils.calcElaspedTimeByMilliSecounds(startTime, endTime);
+                double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
 
                 // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
                 new MDCTrackIdScope(currentSpan).execute(request, r -> {
