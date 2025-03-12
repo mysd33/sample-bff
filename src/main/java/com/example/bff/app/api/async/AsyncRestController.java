@@ -25,8 +25,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * ジョブ登録を依頼する汎用的な Web APIを提供するRestControllerクラス
  * 
- * ジョブ登録を依頼する汎用的な Web API 汎用的なAPIにするとジョブパラメータに意味を持たせれられないので その場合は、通常のWebAPIを使用する
  */
 @XRayEnabled
 @Tag(name = "非同期実行管理", description = "非同期実行管理API")
@@ -36,12 +36,19 @@ import lombok.RequiredArgsConstructor;
 public class AsyncRestController {
     private final AsyncService asyncService;
 
+    /**
+     * ブラウザのURLで、/api/v1/async/{jobId}?param01=xxx&param02=yyy 入力するだけで簡単にジョブ実行依頼が行えるようにGETメソッドを定義します。
+     * @param jobId ジョブID（ジョブ名）
+     * @param param01 ジョブパラメータ1
+     * @param param02　ジョブパラメータ2
+     * @return
+     */
     @Operation(summary = "ジョブ実行依頼", description = "ジョブの実行を後方のバッチAPへ依頼します。")
     @GetMapping("/{jobId:.+}")
     @ResponseStatus(HttpStatus.OK)
-    public AsyncResponse executeBatch(@Parameter(description = "ジョブID") @PathVariable("jobId") final String jobId,
-            @Parameter(description = "ジョブパラメータ1") @RequestParam("param01") final String param01,
-            @Parameter(description = "ジョブパラメータ2") @RequestParam("param02") final String param02) {
+    public AsyncResponse executeBatch(@Parameter(description = "ジョブID") @PathVariable final String jobId,
+            @Parameter(description = "ジョブパラメータ1") @RequestParam final String param01,
+            @Parameter(description = "ジョブパラメータ2") @RequestParam final String param02) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("param01", param01);
         parameters.put("param02", param02);
@@ -49,14 +56,23 @@ public class AsyncRestController {
         return AsyncResponse.ACCEPT;
     }
 
+    /**
+     * ブラウザのURLで、/api/v1/async/restart/{jobExecutionId} 入力するだけで簡単にジョブ再実行依頼が行えるようにGETメソッドを定義します。
+     * @param jobExecutionId ジョブ実行ID
+     * @return
+     */
     @Operation(summary = "ジョブ再実行依頼", description = "ジョブの再実行を後方のバッチAPへ依頼します。")
     @GetMapping("/restart/{jobExecutionId:.+}")
-    public AsyncResponse restartBatch(
-            @Parameter(description = "ジョブ再実行ID") @PathVariable("jobExecutionId") final Long jobExecutionId) {
+    public AsyncResponse restartBatch(@Parameter(description = "ジョブ再実行ID") @PathVariable final Long jobExecutionId) {
         asyncService.invokeAsync(JobRequest.builder().restart(true).jobExecutionId(jobExecutionId).build());
         return AsyncResponse.ACCEPT;
     }
 
+    /**
+     * ジョブ実行依頼を行うためのPOSTメソッドを定義します。GETメソッドと違ってジョブパラメータが自由に設定できるようになります。
+     * @param jobRequest ジョブリクエスト
+     * @return
+     */
     @Operation(summary = "ジョブ実行依頼", description = "ジョブの実行を後方のバッチAPへ依頼します。")
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
@@ -71,6 +87,11 @@ public class AsyncRestController {
         return AsyncResponse.ACCEPT;
     }
 
+    /**
+     * ジョブ再実行依頼を行うためのPOSTメソッドを定義します。
+     * @param jobRequest ジョブリクエスト
+     * @return
+     */
     @Operation(summary = "ジョブ再実行依頼", description = "ジョブの実行を後方のバッチAPへ依頼します。")
     @PostMapping("/restart")
     @ResponseStatus(HttpStatus.OK)
