@@ -19,8 +19,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -54,8 +52,7 @@ public class SecurityConfig {
      * Spring Securityによる認証認可設定
      */
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // フォーム認証にによるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
@@ -68,26 +65,22 @@ public class SecurityConfig {
                 .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
                         .logoutSuccessUrl("/")) // ログアウト成功後のURL
                 // 認可設定
-                // cve-2023-34035の対応でDispatcherServletと、H2-ConsoleのJakartaWebServletの複数サーブレットあるとエラーになるため
-                // MVCMatcherとAntMatcherを明示
-                // https://spring.io/security/cve-2023-34035
-                // https://github.com/jzheaux/cve-2023-34035-mitigations    
-                // https://marco.dev/spring-boot-h2-error
-                .authorizeHttpRequests(authz ->                 
-                    authz.requestMatchers(toStaticResources().atCommonLocations()).permitAll() // 静的リソースへアクセス許可
-                        .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll() // Spring Boot Actuatorのエンドポイントへアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).permitAll() // ログインページへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs/**")).permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs*")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui/**")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui.html")).permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/**")).permitAll()// REST APIへアクセス許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/admin")).hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
-                        .requestMatchers(mvcMatcherBuilder.pattern("/user*")).hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可                        
-                        .anyRequest().authenticated() // それ以外は認証が必要
+                .authorizeHttpRequests(
+                        authz -> authz.requestMatchers(toStaticResources().atCommonLocations()).permitAll() // 静的リソースへアクセス許可
+                                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll() // Spring Boot
+                                                                                              // Actuatorのエンドポイントへアクセス許可
+                                .requestMatchers("/login").permitAll() // ログインページへ認証なしでアクセス許可
+                                .requestMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
+                                .requestMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                                .requestMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                                .requestMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                                .requestMatchers("/api/**").permitAll()// REST APIへアクセス許可
+                                .requestMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
+                                .requestMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
+                                .anyRequest().authenticated() // それ以外は認証が必要
                 )
                 // REST APIはCSRF保護不要
-                .csrf(csrf -> csrf.ignoringRequestMatchers(mvcMatcherBuilder.pattern("/api/**")));
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
 
