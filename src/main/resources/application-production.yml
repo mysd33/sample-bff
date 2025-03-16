@@ -13,7 +13,7 @@ spring:
 #    url: jdbc:postgresql://localhost:5432/testdb
     driver-class-name: org.postgresql.Driver 
 #    username: postgres
-#    password: password	
+#    password: password
   h2:
     console:
       enabled: false
@@ -32,8 +32,9 @@ spring:
 # Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
   config:
     import: 
-    - aws-parameterstore:/config/common;/config/sample-bff
-    - aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
+      - aws-parameterstore:/config/common
+      - aws-parameterstore:/config/sample-bff
+      - aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
 
 management:
   endpoints:
