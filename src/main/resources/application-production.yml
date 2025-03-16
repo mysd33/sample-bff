@@ -29,6 +29,12 @@ spring:
       host: localhost
       port: 6379
     
+# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
+  config:
+    import: 
+    - aws-parameterstore:/config/common;/config/sample-bff
+    - aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
+
 management:
   endpoints:
     web:
