@@ -33,7 +33,7 @@ spring:
   config:
     import: 
       - 'aws-parameterstore:/config/common/;/config/sample-bff/'
-      - 'aws-secretsmanager:/secrets/database-secrets/?prefix=spring.datasource.'
+      - 'aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.'
 
 management:
   endpoints:
