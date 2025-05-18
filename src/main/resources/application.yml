@@ -30,7 +30,9 @@ spring:
       enabled: true       
   messages:
     basename: messages, messages-fw-common, messages-fw-web
-
+# Transaction Rollback
+  transaction:
+    rollback-on-commit-failure: true
 # Dynamic Routing DataSource (disabled on Sample AP Default)
   datasource:
     dynamic-routing:
