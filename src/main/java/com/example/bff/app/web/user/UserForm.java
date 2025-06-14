@@ -2,15 +2,17 @@ package com.example.bff.app.web.user;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.example.fw.common.validation.CharSet;
+import com.example.fw.common.validation.FullWidth;
+import com.example.fw.common.validation.HalfWidthAlphabetNumberSymbol;
+import com.example.fw.common.validation.RangeLength;
+
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.Data;
 
 /**
@@ -39,11 +41,13 @@ public class UserForm {
     private String userId; // ユーザーID
 
     @NotBlank(groups = ValidGroup1.class)
-    @Size(min = 4, max = 100, groups = ValidGroup2.class)
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", groups = ValidGroup3.class)
+    @RangeLength(min = 4, max = 100, groups = ValidGroup2.class)
+    @HalfWidthAlphabetNumberSymbol(groups = ValidGroup3.class)
     private String password; // パスワード
 
     @NotBlank(groups = ValidGroup1.class)
+    @RangeLength(min = 1, max = 50, groups = ValidGroup2.class)
+    @CharSet(groups = ValidGroup3.class)
     private String userName; // ユーザー名
 
     @NotNull(groups = ValidGroup1.class)

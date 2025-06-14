@@ -3,7 +3,6 @@ package com.example.bff.app.web.login;
 import java.io.Serializable;
 
 import jakarta.validation.constraints.NotBlank;
-
 import lombok.Data;
 
 @Data

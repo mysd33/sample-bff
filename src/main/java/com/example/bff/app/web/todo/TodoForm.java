@@ -2,10 +2,11 @@ package com.example.bff.app.web.todo;
 
 import java.io.Serializable;
 
+import com.example.fw.common.validation.CharSet;
+import com.example.fw.common.validation.RangeLength;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import lombok.Data;
 
 @Data
@@ -25,6 +26,7 @@ public class TodoForm implements Serializable {
     private String todoId; // ID
 
     @NotBlank(groups = { TodoCreate.class })
-    @Size(min = 1, max = 30, groups = { TodoCreate.class })
+    @RangeLength(min = 1, max = 30, groups = { TodoCreate.class })
+    @CharSet(groups = { TodoCreate.class })
     private String todoTitle; // タイトル
 }

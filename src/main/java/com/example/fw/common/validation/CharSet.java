@@ -61,7 +61,7 @@ import com.example.fw.common.validation.CharSet.List;
 
 })
 public @interface CharSet {
-    String message() default "{com.example.fw.common.validation.FullWidth.message}";
+    String message() default "{com.example.fw.common.validation.CharSet.message}";
 
     Class<?>[] groups() default {};
 
