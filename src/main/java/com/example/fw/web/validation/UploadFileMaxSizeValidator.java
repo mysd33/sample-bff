@@ -1,9 +1,9 @@
 package com.example.fw.web.validation;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * ファイルのサイズが許容サイズ内であることを検証するためのValidatorの実装 

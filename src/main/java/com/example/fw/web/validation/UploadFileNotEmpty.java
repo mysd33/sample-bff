@@ -13,10 +13,10 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.example.fw.web.validation.UploadFileNotEmpty.List;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
-import com.example.fw.web.validation.UploadFileNotEmpty.List;
 
 /**
  * ファイルが空でないことを検証するためのValidatorのアノテーション 

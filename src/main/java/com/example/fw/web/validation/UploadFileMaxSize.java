@@ -13,10 +13,10 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.example.fw.web.validation.UploadFileMaxSize.List;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
-import com.example.fw.web.validation.UploadFileMaxSize.List;
 
 /**
  * ファイルのサイズが許容サイズ内であることを検証するためのValidatorのアノテーション 
