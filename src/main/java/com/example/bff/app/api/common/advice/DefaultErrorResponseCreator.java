@@ -41,8 +41,8 @@ public class DefaultErrorResponseCreator implements ErrorResponseCreator {
      * 入力エラー（パスパラメータやクエリパラメータのバリデーションエラー）の場合のエラーレスポンスを作成する
      */
     @Override
-    public Object createParameterValidationErrorResponse(final List<ParameterValidationResult> parameterValidationResults,
-            final WebRequest request) {
+    public Object createParameterValidationErrorResponse(
+            final List<ParameterValidationResult> parameterValidationResults, final WebRequest request) {
         // 入力エラーの情報を詳細情報に格納
         ArrayList<String> errorDetails = new ArrayList<>();
         for (ParameterValidationResult result : parameterValidationResults) {
@@ -54,20 +54,20 @@ public class DefaultErrorResponseCreator implements ErrorResponseCreator {
                 // パラメータ名がメッセージソースに登録されていない場合は、パラメータ名をそのまま使用
                 parameterLabel = parameterName;
             }
-            
-            List<MessageSourceResolvable> errors =  result.getResolvableErrors();
+
+            List<MessageSourceResolvable> errors = result.getResolvableErrors();
             for (MessageSourceResolvable error : errors) {
                 // 各エラーのメッセージ取得
                 String message = error.getDefaultMessage();
-                                
+
                 // メッセージに{0}を含むか正規表現でチェックして置換
                 if (StringUtils.hasLength(message) && message.contains(PLACEHOLDER_ZERO)) {
                     // {0}をパラメータ名に置換
                     message = message.replace(PLACEHOLDER_ZERO, parameterLabel);
                 }
                 errorDetails.add(message);
-            }            
-        }        
+            }
+        }
         String message = messageSource.getMessage(inputErrorMessageId, null, request.getLocale());
         return ErrorResponse.builder().code(inputErrorMessageId).message(message).details(errorDetails).build();
 
@@ -98,8 +98,8 @@ public class DefaultErrorResponseCreator implements ErrorResponseCreator {
      * @return エラーレスポンス
      */
     @Override
-    public Object createRequestMappingErrorResponse(final List<InvalidFormatField> invalidFields, final JsonMappingException e,
-            final WebRequest request) {
+    public Object createRequestMappingErrorResponse(final List<InvalidFormatField> invalidFields,
+            final JsonMappingException e, final WebRequest request) {
 
         ArrayList<String> errorDetails = new ArrayList<>();
         invalidFields.forEach(field -> {
@@ -137,7 +137,51 @@ public class DefaultErrorResponseCreator implements ErrorResponseCreator {
             errorDetails.add(localizedMessage);
         }
         String message = messageSource.getMessage(inputErrorMessageId, null, request.getLocale());
+        // Bean全体に対する日本語名を取得
+        String objectLabel = getObjectLabel(bindingResult, request);
+        // メッセージに{0}を含むか正規表現でチェックして置換
+        if (StringUtils.hasLength(message) && message.contains(PLACEHOLDER_ZERO)) {
+            // {0}をパラメータ名に置換
+            message = message.replace(PLACEHOLDER_ZERO, objectLabel);
+        }
         return ErrorResponse.builder().code(inputErrorMessageId).message(message).details(errorDetails).build();
+    }
+
+    /**
+     * BindingResultからオブジェクト名に対する日本語ラベルを取得する
+     * 
+     * @param bindingResult BindingResult
+     * @param request       WebRequest
+     * @return オブジェクト名に対する日本語ラベル
+     */
+    private String getObjectLabel(final BindingResult bindingResult, final WebRequest request) {
+        // オブジェクト名を取得
+        String objectName = bindingResult.getObjectName();
+        // メッセージ定義からオブジェクト名に対する日本語ラベルを取得
+        String objectLabel = messageSource.getMessage(objectName, null, request.getLocale());
+        if (StringUtils.hasLength(objectLabel)) {
+            return objectLabel;
+        }
+        Object target = bindingResult.getTarget();
+        if (target == null) {
+            // ターゲットがnullの場合は、オブジェクト名をそのまま使用
+            return objectName;
+        }
+        // オブジェクト名で登録されていない場合は、オブジェクトのクラス名で日本語ラベルを取得
+        Class<?> targetClass = target.getClass();
+        String targetClassName = targetClass.getSimpleName();
+        objectLabel = messageSource.getMessage(targetClassName, null, request.getLocale());
+        if (StringUtils.hasLength(objectLabel)) {
+            return objectLabel;
+        }
+        // クラス名も登録されていない場合は、クラスのFQDNを使用して日本語ラベルを取得
+        String targetClassFQDN = targetClass.getName();
+        objectLabel = messageSource.getMessage(targetClassFQDN, null, request.getLocale());
+        if (StringUtils.hasLength(objectLabel)) {
+            return objectLabel;
+        }
+        // ラベル取得できなかった場合は、オブジェクト名をそのまま使用
+        return objectName; 
     }
 
     /**
@@ -161,7 +205,8 @@ public class DefaultErrorResponseCreator implements ErrorResponseCreator {
      * @return
      */
     @Override
-    public Object createWarnErrorResponse(final Exception e, final HttpStatusCode statusCode, final WebRequest request) {
+    public Object createWarnErrorResponse(final Exception e, final HttpStatusCode statusCode,
+            final WebRequest request) {
         HttpStatus status = HttpStatus.valueOf(statusCode.value());
         return ErrorResponse.builder().code(String.valueOf(statusCode.value())).message(status.name()).build();
     }
