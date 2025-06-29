@@ -5,7 +5,6 @@ import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.fw.common.validation.CharSet;
-import com.example.fw.common.validation.FullWidth;
 import com.example.fw.common.validation.HalfWidthAlphabetNumberSymbol;
 import com.example.fw.common.validation.RangeLength;
 
@@ -44,8 +43,11 @@ public class UserForm {
     @RangeLength(min = 4, max = 100, groups = ValidGroup2.class)
     @HalfWidthAlphabetNumberSymbol(groups = ValidGroup3.class)
     private String password; // パスワード
-    
-    // TODO: 確認用パスワードを作る & 相関項目チェックの例を作る
+
+    @NotBlank(groups = ValidGroup1.class)
+    @RangeLength(min = 4, max = 100, groups = ValidGroup2.class)
+    @HalfWidthAlphabetNumberSymbol(groups = ValidGroup3.class)
+    private String confirmPassword; // パスワード確認用
 
     @NotBlank(groups = ValidGroup1.class)
     @RangeLength(min = 1, max = 50, groups = ValidGroup2.class)

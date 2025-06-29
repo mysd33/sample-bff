@@ -9,7 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,8 +41,15 @@ import lombok.extern.slf4j.Slf4j;
 @TransactionTokenCheck("userTransactionToken")
 public class UserController {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    private final PasswordComparisonValidator passwordComparisonValidator;
     private final UserService userService;
     private final UserMapper userMapper;
+
+    @InitBinder("userForm")
+    public void initBinder(WebDataBinder binder) {
+        // 相関項目チェックのValidatorを登録
+        binder.addValidators(passwordComparisonValidator);
+    }
 
     /**
      * ユーザー登録画面のGETメソッド用処理.
@@ -88,7 +97,7 @@ public class UserController {
         Page<User> userPage = userService.findAllForPagination(pageable);
 
         model.addAttribute("requestURI", request.getRequestURI());
-        
+
         // Modelにユーザーリストを登録
         model.addAttribute("userPage", userPage);
         return "user/userList";
