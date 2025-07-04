@@ -17,6 +17,8 @@ import com.example.fw.web.validation.UploadFileRequired.List;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import jakarta.validation.constraintvalidation.SupportedValidationTarget;
+import jakarta.validation.constraintvalidation.ValidationTarget;
 
 /**
  * ファイルが選択されていることを検証するためのValidatorのアノテーション
@@ -25,9 +27,13 @@ import jakarta.validation.Payload;
 @Retention(RUNTIME)
 @Constraint(validatedBy = UploadFileRequiredValidator.class)
 @Repeatable(List.class)
+//https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#_validation_target_specification_for_purely_composed_constraints
+@SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
 public @interface UploadFileRequired {
     String message() default "{com.example.fw.web.validation.UploadFileRequired.message}";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })

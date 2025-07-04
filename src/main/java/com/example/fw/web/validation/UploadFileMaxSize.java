@@ -17,19 +17,26 @@ import com.example.fw.web.validation.UploadFileMaxSize.List;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import jakarta.validation.constraintvalidation.SupportedValidationTarget;
+import jakarta.validation.constraintvalidation.ValidationTarget;
 
 /**
- * ファイルのサイズが許容サイズ内であることを検証するためのValidatorのアノテーション 
+ * ファイルのサイズが許容サイズ内であることを検証するためのValidatorのアノテーション
  *
  */
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = UploadFileMaxSizeValidator.class)
 @Repeatable(List.class)
+//https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#_validation_target_specification_for_purely_composed_constraints
+@SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
 public @interface UploadFileMaxSize {
     String message() default "{com.example.fw.web.validation.UploadFileMaxSize.message}";
+
     long value() default (1024 * 1024);
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
