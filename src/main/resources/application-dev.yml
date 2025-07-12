@@ -2,6 +2,14 @@
 #  servlet:
 #    session:
 #      timeout: 1m
+
+# Tomcat metrics enabled
+# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+#server:
+#  tomcat:
+#    mbeanregistry:
+#      enabled: true
+
 spring:
   sql:
     init:
@@ -26,7 +34,6 @@ spring:
       password:
     dynamic-routing:
       enabled: true
-
           
 management:
   endpoints:
@@ -41,7 +48,12 @@ management:
   health:
     redis:
       enabled: false 
-
+# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+#  cloudwatch:
+#    metrics:
+#      export:
+#        enabled: true
+      
 resilience4j:
   timelimiter:
     configs:

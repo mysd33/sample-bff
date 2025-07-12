@@ -47,11 +47,21 @@ spring:
     write:
       hikari:
         auto-commit: false
-
+         
+# Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
+# Default Disabled For Local Development
+management:
+  cloudwatch:
+    metrics:
+      export:
+        enabled: false
+        namespace: sample-bff
+        step: 10s
+            
 mybatis:
   type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
   configuration:
-    map-underscore-to-camel-case: true    
+    map-underscore-to-camel-case: true
 
  
 transaction-token:
