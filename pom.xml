@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.2</version>
+		<version>3.5.3</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -16,23 +16,23 @@
 	<description>Spring Boot Backend for Frontend Sample</description>
 	<properties>
 		<java.version>21</java.version>
-		<spring-cloud.version>2024.0.0</spring-cloud.version>
-		<spring-cloud-aws.version>3.3.0</spring-cloud-aws.version>
+		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<spring-cloud-aws.version>3.4.0</spring-cloud-aws.version>
 		<mybatis-spring-boot-starter.version>3.0.4</mybatis-spring-boot-starter.version>
-		<bootstrap.version>5.3.3</bootstrap.version>
-		<bootstrap-icons.version>1.11.3</bootstrap-icons.version>
-		<awssdk.bom.version>2.29.19</awssdk.bom.version>
-		<amazon-sqs-java-messaging-lib.version>2.1.3</amazon-sqs-java-messaging-lib.version>
+        <springdoc-openapi-ui.version>2.8.9</springdoc-openapi-ui.version>		
+		<bootstrap.version>5.3.7</bootstrap.version>
+		<bootstrap-icons.version>1.13.1</bootstrap-icons.version>
+		<awssdk.bom.version>2.31.76</awssdk.bom.version>
+		<amazon-sqs-java-messaging-lib.version>2.1.4</amazon-sqs-java-messaging-lib.version>
 		<awsxray.bom.version>2.18.2</awsxray.bom.version>
-		<springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
-		<terasoluna.version>5.9.0.RELEASE</terasoluna.version>
-		<commons-io.version>2.18.0</commons-io.version>
+		<terasoluna.version>5.10.0.RELEASE</terasoluna.version>
+		<commons-io.version>2.19.0</commons-io.version>
 		<!-- Jasper Reports-->
-		<jasperreports.version>7.0.1</jasperreports.version>
-		<bouncycastle.version>1.78.1</bouncycastle.version>
+		<jasperreports.version>7.0.3</jasperreports.version>
+		<bouncycastle.version>1.81</bouncycastle.version>
 		<!-- logback-access -->
 		<logback-access.version>2.0.6</logback-access.version>
-		<logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 		<!-- MapStruct -->
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
