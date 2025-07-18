@@ -51,17 +51,22 @@ public class MyBatisMetricsObserver implements Interceptor {
         // Micrometer Observationを使用してメトリクスを観測する
         // https://docs.spring.io/spring-boot/reference/actuator/observability.html
         // https://docs.micrometer.io/micrometer/reference/observation/introduction.html
-        return Observation.createNotStarted(METER_NAME_PREFIX, observationRegistry)
-                .lowCardinalityKeyValue(ID, mappedStatement.getId())
-                .lowCardinalityKeyValue(TYPE, mappedStatement.getSqlCommandType().name())//
-                .observe(() -> {
-                    try {
-                        // 実際のメソッドを呼び出す
-                        return invocation.proceed();
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new PluginException(e);
-                    }
-                });
+        try {
+            return Observation.createNotStarted(METER_NAME_PREFIX, observationRegistry)
+                    .lowCardinalityKeyValue(ID, mappedStatement.getId())
+                    .lowCardinalityKeyValue(TYPE, mappedStatement.getSqlCommandType().name())//
+                    .observe(() -> {
+                        try {
+                            // 実際のメソッドを呼び出す
+                            return invocation.proceed();
+                        } catch (InvocationTargetException | IllegalAccessException e) {
+                            throw new PluginException(e);
+                        }
+                    });
+        } catch (PluginException e) {
+            // PluginExceptionから再度元の例外を取得して再スローする
+            throw e.getCause();
+        }
     }
 
 }
