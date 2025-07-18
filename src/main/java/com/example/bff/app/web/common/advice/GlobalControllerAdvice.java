@@ -34,7 +34,7 @@ public class GlobalControllerAdvice {
      * トランザクショントークンチェックエラー時のメッセージID
      */
     @Setter
-    private String invalidTransactionTokenExceptionMessageId = MessageIds.W_EX_5002;
+    private String invalidTransactionTokenExceptionMessageId = MessageIds.W_EX_8006;
 
     /**
      * エラーページ表示用にModelに格納されるHTTPステータスの属性名

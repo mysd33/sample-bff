@@ -28,7 +28,7 @@ public class PasswordComparisonValidator implements Validator {
         String confirmPassword = form.getConfirmPassword();
         // パスワードとパスワード確認用が一致するかチェック
         if (!password.equals(confirmPassword)) {
-            errors.rejectValue("confirmPassword", MessageIds.W_EX_5006);
+            errors.rejectValue("confirmPassword", MessageIds.W_EX_3001);
         }
     }
 }
