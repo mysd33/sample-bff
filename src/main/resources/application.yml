@@ -7,6 +7,8 @@ spring:
     - log_default  #logging in default format
 #    - log_container  #logging in json format
 #    - xray  #X-Ray Enabled
+  messages:
+    basename: messages, messages-fw-common, messages-fw-web
   security:
     filter:
       dispatcher-types:
@@ -28,8 +30,7 @@ spring:
   threads:
     virtual:
       enabled: true       
-  messages:
-    basename: messages, messages-fw-common, messages-fw-web
+
 # Transaction Rollback
   transaction:
     rollback-on-commit-failure: true

@@ -1,4 +1,4 @@
-package com.example.bff.app.api.common.resource;
+package com.example.fw.web.resource;
 
 import java.io.Serializable;
 import java.util.List;
