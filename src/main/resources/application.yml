@@ -17,7 +17,10 @@ spring:
         - request        
         - forward 
   jackson:
-    property-naming-strategy: SNAKE_CASE    
+    property-naming-strategy: SNAKE_CASE
+    # Resourceオブジェクトに存在しないフィールドがJSONに指定されていた場合、エラーとする
+    deserialization:
+      fail-on-unknown-properties: true
   lifecycle:
     timeout-per-shutdown-phase: 20s
 # Servicet File Upload Max Size
