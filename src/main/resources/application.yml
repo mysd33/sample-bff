@@ -52,13 +52,7 @@ spring:
       hikari:
         auto-commit: false
 
-# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
-  config:
-    import: 
-      - optional:aws-parameterstore:/config/common/;/config/sample-bff/
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.read.
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.write.
+
 
 # Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
 # Default Disabled For Local Development
