@@ -14,10 +14,10 @@ spring:
       platform: postgresql
       mode: always      
   datasource:    
-#    url: jdbc:postgresql://localhost:5432/testdb
+    url: jdbc:postgresql://localhost:5432/testdb
     driver-class-name: org.postgresql.Driver 
-#    username: postgres
-#    password: password
+    username: postgres
+    password: password
 # Dynamic Routing DataSource
     read:
       driver-class-name: org.postgresql.Driver
@@ -42,14 +42,6 @@ spring:
     redis:
 #      host: localhost
       port: 6379
-    
-# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
-  config:
-    import: 
-      - 'optional:aws-parameterstore:/config/common/;/config/sample-bff/'
-      - 'optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.'
-      - 'optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.read.'
-      - 'optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.write.'
 
 management:
   endpoints:
@@ -91,19 +83,19 @@ resilience4j.timelimiter:
       timeoutDuration: 3s    
     
 api:
-#  backend:
-#    url: http://localhost:8000
+  backend:
+    url: http://localhost:8000
   retry:
     max-attempts: 3
     min-backoff: 200
           
-#delayed:
-#  batch:
-#    queue: SampleQueue
+delayed:
+  batch:
+    queue: SampleQueue
     
-#aws:
-#  sqs:
-#    region: ap-northeast-1  
-#  s3:
-#    bucket: mysd33bucket123
-#    region: ap-northeast-1
+aws:
+  sqs:
+    region: ap-northeast-1  
+  s3:
+    bucket: mysd33bucket123
+    region: ap-northeast-1
