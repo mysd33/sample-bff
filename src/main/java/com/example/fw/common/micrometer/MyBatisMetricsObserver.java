@@ -19,7 +19,7 @@ import io.micrometer.observation.ObservationRegistry;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Spring Boot ActuatorのカスタムメトリクスとしてMyBatisに関するメトリクスを観測するクラス
+ * Spring Boot Actuator/MicrometerのカスタムメトリクスとしてMyBatisに関するメトリクスを観測するクラス
  */
 // MyBatisのプラグイン機能を使用し、Executorのupdate、query、queryCursorメソッドをインターセプトしてメトリクスを取得
 // https://mybatis.org/mybatis-3/ja/configuration.html#plugins
@@ -60,12 +60,17 @@ public class MyBatisMetricsObserver implements Interceptor {
                             // 実際のメソッドを呼び出す
                             return invocation.proceed();
                         } catch (InvocationTargetException | IllegalAccessException e) {
+                            // いったん非検査例外でラップして再スローする
                             throw new PluginException(e);
                         }
                     });
         } catch (PluginException e) {
             // PluginExceptionから再度元の例外を取得して再スローする
-            throw e.getCause();
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                throw cause;
+            }
+            throw e;
         }
     }
 
