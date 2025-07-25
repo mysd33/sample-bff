@@ -4,7 +4,7 @@
 #      timeout: 1m
 
 # Tomcat metrics enabled
-# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+# Spring Cloud for AWS Micrometer CloudWatch Merics Integration Enabled if local testing is required
 #server:
 #  tomcat:
 #    mbeanregistry:
@@ -48,7 +48,7 @@ management:
   health:
     redis:
       enabled: false 
-# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled if local testing is required
+# Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
 #  cloudwatch:
 #    metrics:
 #      export:

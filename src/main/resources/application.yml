@@ -54,7 +54,7 @@ spring:
 
 
 
-# Spring Cloud for AWS Micrometer CloudWatch Integration Common Configuration
+# Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Common Configuration
 # Default Disabled For Local Development
 management:
   cloudwatch:

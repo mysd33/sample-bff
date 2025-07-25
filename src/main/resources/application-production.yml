@@ -55,10 +55,6 @@ management:
     web:
       discovery:
         enabled: false
-      exposure:
-        include:
-          - health
-          - metrics
 # Metrics enabled        
   metrics:
     enable:
@@ -70,11 +66,11 @@ management:
       hikaricp: true
       mybatis: true
 
-# Spring Cloud for AWS Micrometer CloudWatch Integration Enabled        
+# Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
   cloudwatch:
     metrics:
       export:
-        enabled: true      
+        enabled: true
                   
 logging:
   level:
