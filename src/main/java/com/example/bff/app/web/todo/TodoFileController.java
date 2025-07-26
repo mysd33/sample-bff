@@ -60,7 +60,13 @@ public class TodoFileController {
                 .parameters(params)
                 .build();
         // @formatter:on        
-        asyncService.invokeAsync(jobRequest);
+        try {
+            asyncService.invokeAsync(jobRequest);
+        } catch (Exception e) {
+            // 非同期実行依頼時にエラーが発生した場合は、業務エラーとしてメッセージを設定
+            model.addAttribute(ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8007).build());
+            return getUpload(form);
+        }
 
         return "redirect:upload";
     }

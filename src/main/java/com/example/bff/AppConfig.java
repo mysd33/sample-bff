@@ -30,7 +30,7 @@ import io.swagger.v3.oas.models.info.Info;
 // ページネーション機能、トランザクショントークンチェック機能の追加
 @ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
 // システム日時機能の追加、Tomcatのログ設定の追加
-@Import({SystemDateConfig.class, TomcatAccessLogConfig.class})
+@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class })
 public class AppConfig {
 
     /**
@@ -49,8 +49,8 @@ public class AppConfig {
      * ロギング機能
      */
     @Bean
-    LogAspect logAspect(SystemDate systemDate) {
-        return new LogAspect(systemDate, MessageIds.E_EX_9001);
+    LogAspect logAspect(SystemDate systemDate, MessageSource messageSource) {
+        return new LogAspect(systemDate, messageSource, MessageIds.W_EX_2001, MessageIds.E_EX_9001);
     }
 
     /**
