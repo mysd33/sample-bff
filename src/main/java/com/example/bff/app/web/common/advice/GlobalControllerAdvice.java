@@ -14,6 +14,6 @@ import com.example.fw.web.advice.AbstractGlobalControllerAdvice;
 @ControllerAdvice(basePackageClasses = { WebPackage.class })
 public class GlobalControllerAdvice extends AbstractGlobalControllerAdvice {
     public GlobalControllerAdvice() {
-        super(MessageIds.W_EX_2001, MessageIds.E_EX_9001);
+        super(MessageIds.E_EX_9001, MessageIds.W_EX_8006);
     }
 }
