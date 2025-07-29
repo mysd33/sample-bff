@@ -22,6 +22,7 @@ public interface UserMapper {
      * @param user Model
      * @return Form
      */
+    @Mapping(target = "confirmPassword", ignore = true)
     UserForm modelToForm(User user);
 
     /**
