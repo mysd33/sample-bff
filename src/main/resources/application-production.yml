@@ -13,6 +13,9 @@ spring:
     init:
       platform: postgresql
       mode: always      
+  h2:
+    console:
+      enabled: false
   datasource:    
     url: jdbc:postgresql://localhost:5432/testdb
     driver-class-name: org.postgresql.Driver 
@@ -27,29 +30,26 @@ spring:
       driver-class-name: org.postgresql.Driver
 #      hikari:
 #        maximum-pool-size: 30      
-      
-  h2:
-    console:
-      enabled: false
 
 #Spring Session Data Redis
   session:
     redis:
       configure-action: none
 #RedisIndexedSessionRepository is selected to support session expiration and deletion         
-      repository-type: indexed      
+      repository-type: indexed
   data:
     redis:
 #      host: localhost
       port: 6379
-# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
-  config:
-    import: 
-      - optional:aws-parameterstore:/config/common/;/config/sample-bff/
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.read.
-      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.write.
+# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration Enabled
+  cloud:
+    aws:
+      parameterstore:
+        enabled: true
+      secretsmanager:
+        enabled: true
 
+# Spring Boot Actuator
 management:
   endpoints:
     web:
@@ -65,33 +65,19 @@ management:
       jvm: true
       hikaricp: true
       mybatis: true
-
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
   cloudwatch:
     metrics:
       export:
         enabled: true
-                  
-logging:
-  level:
-    org.springframework: INFO
-    org.springframework.jdbc: INFO
-#    org.thymeleaf: DEBUG
-#    com.example: DEBUG
-    com.example: INFO
-    
-resilience4j.timelimiter:
-  configs:
-    default:
-      timeoutDuration: 3s    
-    
+
 api:
   backend:
     url: http://localhost:8000
   retry:
     max-attempts: 3
     min-backoff: 200
-          
+
 delayed:
   batch:
     queue: SampleQueue

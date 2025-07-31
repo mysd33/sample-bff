@@ -34,7 +34,8 @@ spring:
       password:
     dynamic-routing:
       enabled: true
-          
+
+# Spring Boot Actuator
 management:
   endpoints:
     web:
@@ -54,11 +55,6 @@ management:
 #      export:
 #        enabled: true
       
-resilience4j:
-  timelimiter:
-    configs:
-      default:
-        timeoutDuration: 3s
           
 logging:
   level:
@@ -68,7 +64,7 @@ logging:
 #    org.thymeleaf: DEBUG
     com.example: DEBUG
     com.example.fw.web.aspect.LogAspect: TRACE
-    
+
 api:
   backend:
     url: http://localhost:8000

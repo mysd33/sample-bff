@@ -18,9 +18,10 @@ spring:
         - forward 
   jackson:
     property-naming-strategy: SNAKE_CASE
-    # Resourceオブジェクトに存在しないフィールドがJSONに指定されていた場合、エラーとする
+# Resourceオブジェクトに存在しないフィールドがJSONに指定されていた場合、エラーとする
     deserialization:
       fail-on-unknown-properties: true
+# Graceful Shutdown
   lifecycle:
     timeout-per-shutdown-phase: 20s
 # Servicet File Upload Max Size
@@ -51,8 +52,20 @@ spring:
     write:
       hikari:
         auto-commit: false
-
-
+# Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
+# Default Disabled For Local Development
+  cloud:
+    aws:
+      parameterstore:
+        enabled: false
+      secretsmanager:
+        enabled: false
+  config:
+    import: 
+      - optional:aws-parameterstore:/config/common/;/config/${spring.application.name}/
+      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.
+      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.read.
+      - optional:aws-secretsmanager:/secrets/database-secrets?prefix=spring.datasource.write.
 
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Common Configuration
 # Default Disabled For Local Development
@@ -61,28 +74,39 @@ management:
     metrics:
       export:
         enabled: false
-        namespace: sample-bff
+        namespace: ${spring.application.name}
         step: 10s
-            
+
+# Mybatis
 mybatis:
   type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
   configuration:
     map-underscore-to-camel-case: true
 
+# Spring Cloud Circuit Breaker TimeLimiter
+resilience4j:
+  timelimiter:
+   configs:
+     default:
+       timeoutDuration: 3s
+
+# Transaction Token Check 
 transaction-token:
   store-type: db
 #  store-type: session 
   path-partterns: /**
 #  exclude-path-patterns:
 
+# Pageation
 pagination:
 #  max-page-size: 100    
 #  default-page: 0
   default-page-size: 5
 
+# X-Ray SDK(not ADOT)
 aws:
   xray:
-    tracing-filter-name: sample-bff
+    tracing-filter-name: ${spring.application.name}
 
 # Tomcat Access Log
 #logback:
