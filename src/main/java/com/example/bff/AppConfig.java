@@ -36,15 +36,27 @@ public class AppConfig {
     /**
      * エラーレスポンス作成クラス
      */
+    /**
+     * エラーレスポンス作成クラス
+     */
     @Bean
     ErrorResponseCreator errorResponseCreator(MessageSource messageSource) {
         // オプション引数未指定の場合の例
         // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
         // MessageIds.E_EX_9001);
-        return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001, MessageIds.E_EX_9001,
-                MessageIds.W_EX_2002);
+        
+        // オプション引数を指定した場合の例
+        // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
+        // MessageIds.E_EX_9001,
+        // MessageIds.W_EX_2002);
+        
+        // Builderパターンを使用した場合の記載例
+        return DefaultErrorResponseCreator.builder().messageSource(messageSource)
+                .inputErrorMessageId(MessageIds.W_EX_2001)//
+                .unexpectedErrorMessageId(MessageIds.E_EX_9001)//
+                .requestBodyValidationErrorMessageId(MessageIds.W_EX_2002)//
+                .build();
     }
-
     /**
      * ロギング機能
      */
