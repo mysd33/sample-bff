@@ -14,7 +14,7 @@ import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.async.config.SQSCommonConfigPackage;
 import com.example.fw.common.async.repository.JobRequestRepository;
 import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
-import com.example.fw.common.datasource.config.DynamicRoutingDataSourceConfig;
+import com.example.fw.common.db.config.DynamicRoutingDataSourceConfig;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
 import com.example.fw.common.micrometer.config.MicrometerConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
