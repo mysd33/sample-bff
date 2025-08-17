@@ -30,7 +30,7 @@ public class JobRequestRepositoryImpl implements JobRequestRepository {
         Assert.notNull(jobRequest, "jobRequestがNullです");
         // キューに登録
         jmsTemplate.convertAndSend(queueName, jobRequest);
-        appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0005, queueName, jobRequest);
+        appLogger.info(CommonFrameworkMessageIds.I_FW_ASYNCCL_0001, queueName, jobRequest);
     }
 
 }

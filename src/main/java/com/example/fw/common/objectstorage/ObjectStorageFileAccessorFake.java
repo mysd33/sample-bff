@@ -29,7 +29,7 @@ public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor 
         try {
             FileUtils.copyInputStreamToFile(uploadObject.getInputStream(), destinationPath.toFile());
         } catch (IOException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
+            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
         }
     }
 
@@ -44,7 +44,7 @@ public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor 
                     .fileName(fileName)
                     .build();
         } catch (FileNotFoundException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
+            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
         }                
     }
 }

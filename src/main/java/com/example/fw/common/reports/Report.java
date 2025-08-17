@@ -2,18 +2,13 @@ package com.example.fw.common.reports;
 
 import java.io.InputStream;
 
-import lombok.Builder;
-import lombok.Value;
-
 /**
- * 帳票クラス
+ * 帳票インタフェース
  */
-@Builder
-@Value
-public class Report {
+public interface Report {
     // InputStreamデータ
-    private final InputStream inputStream;
+    InputStream getInputStream();
     // データサイズ
-    private final long size;
+    long getSize(); 
 
 }

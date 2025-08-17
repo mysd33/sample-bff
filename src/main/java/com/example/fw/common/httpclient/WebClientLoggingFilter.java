@@ -63,12 +63,12 @@ public class WebClientLoggingFilter {
             // 処理時間を計測しログ出力
             long startTime = System.nanoTime();
             try {
-                appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0001, request.method(),
+                appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
                         URLDecoder.decode(request.url().toASCIIString(), UTF_8));
             } catch (Exception e) {
                 // マルチスレッド下の想定外のエラーのため、エラーログを出力
-                monitoringLogger.error(CommonFrameworkMessageIds.E_CM_FW_9001, e);
-                throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
+                monitoringLogger.error(CommonFrameworkMessageIds.E_FW_CMMN_9001, e);
+                throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
             }
 
             // レスポンス受領時にログを出力するため、Tracerから現在のTraceID、SpanIDを取得しておく
@@ -85,12 +85,12 @@ public class WebClientLoggingFilter {
                 // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
                 new MDCTrackIdScope(currentSpan).execute(request, r -> {
                     try {
-                        appLogger.info(CommonFrameworkMessageIds.I_CM_FW_0002, r.method(),
+                        appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0002, r.method(),
                                 URLDecoder.decode(r.url().toASCIIString(), UTF_8), elapsedTime);
                     } catch (Exception e) {
                         // マルチスレッド下の想定外のエラーのため、エラーログを出力
-                        monitoringLogger.error(CommonFrameworkMessageIds.E_CM_FW_9001, e);
-                        throw new SystemException(e, CommonFrameworkMessageIds.E_CM_FW_9001);
+                        monitoringLogger.error(CommonFrameworkMessageIds.E_FW_CMMN_9001, e);
+                        throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
                     }
                 });
 

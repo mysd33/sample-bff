@@ -54,10 +54,10 @@ public class TransactionTokenCleaningListener implements HttpSessionListener {
             //対象のセッションのトランザクショントークンのレコードを削除
             int count = tokenRepository.deleteBySessionId(sessionId);
             if (count > 0) {
-                appLogger.info(WebFrameworkMessageIds.I_ON_FW_0003, sessionId);
+                appLogger.info(WebFrameworkMessageIds.I_FW_TRNTKN_0001, sessionId);
             }
         } catch (DataAccessException e) {
-            appLogger.warn(WebFrameworkMessageIds.W_ON_FW_8001, e, sessionId);
+            appLogger.warn(WebFrameworkMessageIds.W_FW_TRNTKN_8001, e, sessionId);
         }
     }
 
