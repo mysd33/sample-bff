@@ -1,0 +1,123 @@
+<!-- Created with Jaspersoft Studio version 7.0.2.final using JasperReports Library version 7.0.2-31532122640f516c6d17238ae0e41a08113d5ac0  -->
+<jasperReport name="userlist-report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b7d46086-a67d-43bc-82b2-ad5dd63d75aa">
+	<query language="sql"><![CDATA[]]></query>
+	<field name="userId" class="java.lang.String"/>
+	<field name="userName" class="java.lang.String"/>
+	<field name="birthday" class="java.util.Date"/>
+	<field name="roleName" class="java.lang.String"/>
+	<field name="note" class="java.lang.String"/>
+	<title height="43" splitType="Stretch">
+		<element kind="staticText" uuid="62e84635-ef06-4706-8d17-c093327fc64c" x="227" y="0" width="100" height="30" fontName="ipaexm" fontSize="16.0" hTextAlign="Center">
+			<text><![CDATA[ユーザ一覧]]></text>
+		</element>
+	</title>
+	<columnHeader height="20" splitType="Stretch">
+		<element kind="textField" uuid="ccb95172-464a-4be6-be94-eb1823e4c4dd" mode="Opaque" x="0" y="1" width="131" height="19" forecolor="#FFFFFF" backcolor="#969696" fontName="ipaexg" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["ユーザID"]]></expression>
+			<box>
+				<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="2bdc8294-ca65-4b20-a91f-d6e57b514914" mode="Opaque" x="131" y="1" width="120" height="19" forecolor="#FFFFFF" backcolor="#969696" fontName="ipaexg" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["ユーザ名"]]></expression>
+			<box>
+				<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="91f15a35-174b-4fc0-8fe4-b05511b48cab" mode="Opaque" x="251" y="1" width="100" height="19" forecolor="#FFFFFF" backcolor="#969696" fontName="ipaexg" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["生年月日"]]></expression>
+			<box>
+				<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="5267775a-3101-442e-88ea-6e124d27dc1c" mode="Opaque" x="351" y="1" width="99" height="19" forecolor="#FFFFFF" backcolor="#969696" fontName="ipaexg" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["ロール"]]></expression>
+			<box>
+				<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="aa29a65d-7c7c-4833-9fb2-f8ea0e14b41b" mode="Opaque" x="450" y="1" width="96" height="19" forecolor="#FFFFFF" backcolor="#969696" fontName="ipaexg" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA["備考"]]></expression>
+			<box>
+				<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<element kind="textField" uuid="b1fd1d19-aafa-44a6-a541-af55af0fabc1" x="0" y="0" width="131" height="20" fontName="ipaexm" vTextAlign="Middle">
+				<expression><![CDATA[$F{userId}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="0f00b03d-afd9-477f-b722-525320b24334" x="131" y="0" width="120" height="20" fontName="ipaexm" vTextAlign="Middle">
+				<expression><![CDATA[$F{userName}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="0b98c837-4ac7-4d4a-8937-451ea4f4bf85" x="251" y="0" width="100" height="20" fontName="ipaexm" pattern="yyyy年MM月dd日" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA[$F{birthday}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="4cc16e50-8a4f-4471-9cdb-67832fc9fc8c" x="351" y="0" width="99" height="20" fontName="ipaexm" hTextAlign="Left" vTextAlign="Middle">
+				<expression><![CDATA[$F{roleName}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+			<element kind="textField" uuid="081e06f9-53cb-42c9-bc3d-c49d21de399f" x="450" y="0" width="96" height="20" fontName="ipaexm" vTextAlign="Middle">
+				<expression><![CDATA[$F{note}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="23" splitType="Stretch">
+		<element kind="textField" uuid="ce7e7026-ebaa-4524-86ed-337f4afa48b2" x="520" y="2" width="35" height="19" fontName="ipaexm" evaluationTime="Report" hTextAlign="Left">
+			<expression><![CDATA["/ " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="textField" uuid="9a12f768-8cbc-489d-bc20-7d322efe9555" x="480" y="2" width="39" height="19" fontName="ipaexm" hTextAlign="Right">
+			<expression><![CDATA[$V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+</jasperReport>

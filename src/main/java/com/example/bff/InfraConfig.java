@@ -27,17 +27,14 @@ import com.example.fw.web.token.TransactionTokenPackage;
  *
  */
 @Configuration
-@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class,
-        SQSCommonConfigPackage.class,
-        // TODO:帳票出力機能の設定情報を追加
-        //ReportsConfigPackage.class
-})
+@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class, //
+        SQSCommonConfigPackage.class, ReportsConfigPackage.class })
 //　トランザクショントークンチェックのMyBatisのMapperをスキャンさせるために、業務APのMapper含めて明示的にスキャンする設定を追加
 @MapperScan(basePackageClasses = { TransactionTokenPackage.class,
         RepositoryPackage.class }, annotationClass = Mapper.class)
 // 動的ルーティングによるデータソース設定を追加
 // Micrometerのカスタムメトリックス設定を追加
-@Import({ DynamicRoutingDataSourceConfig.class, MicrometerConfig.class})
+@Import({ DynamicRoutingDataSourceConfig.class, MicrometerConfig.class })
 public class InfraConfig {
     @Value("${delayed.batch.queue}")
     private String queueName;

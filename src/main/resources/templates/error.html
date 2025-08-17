@@ -10,7 +10,10 @@
 		<div class="text-center">
 	    <h1 th:text="${status}"></h1>
 	    <div th:if="${resultMessage != null}">
-	    	<p th:text="#{${resultMessage.code}}"></p>
+            <p th:if="${resultMessage.message != null}"
+                th:text="|[${resultMessage.code}] ${resultMessage.message}|"></p>
+            <p th:if="${resultMessage.message == null}"
+                th:text="|[${resultMessage.code}] ${#messages.msgWithParams(resultMessage.code, resultMessage.args)}|"></p>
 	    </div>	    
 	    <div th:if="${resultMessage == null}">
 	    	<p th:text="#{e.ex.9001}"></p>

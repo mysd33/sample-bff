@@ -2,9 +2,11 @@ package com.example.bff.app.web.user;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,10 +23,15 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
 import com.example.bff.app.web.user.UserForm.GroupOrder;
 import com.example.bff.domain.model.User;
+import com.example.bff.domain.reports.ReportFile;
+import com.example.bff.domain.reports.UserListReportCreator;
+import com.example.bff.domain.reports.UserListReportData;
+import com.example.bff.domain.reports.UserListReportItem;
 import com.example.bff.domain.service.user.UserService;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.web.io.ResponseUtil;
 import com.example.fw.web.view.CsvDownloadView;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +50,7 @@ public class UserController {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final PasswordComparisonValidator passwordComparisonValidator;
     private final UserService userService;
+    private final UserListReportCreator userListReportCreator;
     private final UserMapper userMapper;
 
     @InitBinder("userForm")
@@ -190,5 +198,19 @@ public class UserController {
         return new ModelAndView(view);
 
     }
-
+    
+    /**
+     * ユーザー一覧のPDF出力用処理.
+     *
+     * @param model
+     * @return PDFファイルのレスポンス
+     */
+    @GetMapping("/userList/pdf")
+    public ResponseEntity<Resource> getUserListPdf(Model model) {
+        List<User> users = userService.findAll();
+        List<UserListReportItem> reportItems = userMapper.modelsToReportItems(users);
+        ReportFile reportFile = userListReportCreator.createUserListReport(new  UserListReportData(reportItems));
+        return ResponseUtil.createResponseForPDF(reportFile.getInputStream(), reportFile.getFileName(),
+                reportFile.getFileSize());
+    }
 }

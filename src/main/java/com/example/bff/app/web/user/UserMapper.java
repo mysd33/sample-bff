@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
 
 import com.example.bff.domain.model.User;
+import com.example.bff.domain.reports.UserListReportItem;
 
 /**
  * 
@@ -41,15 +42,30 @@ public interface UserMapper {
      * @return UserCsv
      */
     UserCsv modelToCsv(User user);
-    
+
+    /**
+     * ModelからPDF帳票用格納データ（UserListReportItem)に変換
+     * @param user
+     * @return UserListReportItem
+     */
+    UserListReportItem modelToReportItem(User user);
+
     /**
      * ModelのリストからCSV出力用格納データ(UserCsv)のリストに変換
      * 
      * @param users Model
      * @return UserCsvのリスト
      */
-    default List<UserCsv> modelsToCsvs(List<User> users) {                
-        return users.stream().map(this::modelToCsv).toList();        
+    default List<UserCsv> modelsToCsvs(List<User> users) {
+        return users.stream().map(this::modelToCsv).toList();
     }
-
+    
+    /**
+     * ModelのリストからPDF帳票用格納データ（UserListReportItem)のリストに変換
+     * @param users Model
+     * @return UserListReportItemのリスト
+     */
+    default List<UserListReportItem> modelsToReportItems(List<User> users) {
+        return users.stream().map(this::modelToReportItem).toList();
+    }
 }

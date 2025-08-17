@@ -73,7 +73,7 @@ public abstract class AbstractGlobalControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String systemExceptionHandler(final SystemException e, final Model model) {
         // 例外クラスのメッセージをModelに登録
-        model.addAttribute(ResultMessage.builder().type(ResultMessageType.ERROR).code(e.getCode()).build());
+        model.addAttribute(ResultMessage.builder().type(ResultMessageType.ERROR).code(e.getCode()).args(e.getArgs()).build());
         // HTTPのエラーコード（500）をModelに登録
         model.addAttribute(statusModelAttributeName, HttpStatus.INTERNAL_SERVER_ERROR);
 
