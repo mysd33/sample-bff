@@ -3,7 +3,6 @@ package com.example.fw.web.token.config;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -31,6 +30,7 @@ import com.example.fw.web.token.StoredTransactionTokenRepository;
 import com.example.fw.web.token.TransactionTokenCleaningListener;
 
 import jakarta.servlet.http.HttpSessionListener;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 
@@ -39,20 +39,11 @@ import jakarta.servlet.http.HttpSessionListener;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "transaction-token", name = "enabled", havingValue = "true", matchIfMissing = true)
-@EnableConfigurationProperties({TransactionTokenConfigurationProperties.class})
+@RequiredArgsConstructor
+@EnableConfigurationProperties({ TransactionTokenConfigurationProperties.class })
 public class TransactionTokenConfig implements WebMvcConfigurer {
-    private TransactionTokenStore transactionTokenStore;
-    private TransactionTokenConfigurationProperties transactionTokenProperties;
-    
-    @Autowired
-    public void setTransactionTokenStore(TransactionTokenStore transactionTokenStore) {
-        this.transactionTokenStore = transactionTokenStore;
-    }
-    
-    @Autowired
-    public void setTransactionTokenProperties(TransactionTokenConfigurationProperties transactionTokenProperties) {
-        this.transactionTokenProperties = transactionTokenProperties;
-    }
+    private final TransactionTokenStore transactionTokenStore;
+    private final TransactionTokenConfigurationProperties transactionTokenProperties;
 
     /**
      * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
@@ -72,11 +63,10 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
                 // SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
                 ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
                 RequestDataValueProcessor[] requestDataValueProcessors = new RequestDataValueProcessor[] {
-                        new CsrfRequestDataValueProcessor(),
-                        new TransactionTokenRequestDataValueProcessor()
-                        //new TraceableTransactionTokenRequestDataValueProcessor() 
-                        };
-                constructorArgumentValues.addIndexedArgumentValue(0, requestDataValueProcessors);                
+                        new CsrfRequestDataValueProcessor(), new TransactionTokenRequestDataValueProcessor()
+                        // new TraceableTransactionTokenRequestDataValueProcessor()
+                };
+                constructorArgumentValues.addIndexedArgumentValue(0, requestDataValueProcessors);
                 RootBeanDefinition rootBean = new RootBeanDefinition(CompositeRequestDataValueProcessor.class,
                         constructorArgumentValues, null);
                 registry.removeBeanDefinition("requestDataValueProcessor");
@@ -100,19 +90,19 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
      * セッションタイムアウト時にHttpSessionListener（TransactionTokenCleaningListener）を動作させるための設定
      */
     @Bean
-    //Spring Session with Redisがある場合はBean定義不要
+    // Spring Session with Redisがある場合はBean定義不要
     @ConditionalOnMissingClass("org.springframework.session.data.redis.RedisIndexedSessionRepository")
-    SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(
-            List<HttpSessionListener> listeners) {
+    SessionEventHttpSessionListenerAdapter sessionEventHttpSessionListenerAdapter(List<HttpSessionListener> listeners) {
         return new SessionEventHttpSessionListenerAdapter(listeners);
     }
-    
+
     /**
      * セッションタイムアウト等のセッション破棄時にトークンを自動削除するHttpSessionListenerの設定
      * 
      */
     @Bean
-    TransactionTokenCleaningListener transactionTokenCleaningListener(StoredTransactionTokenRepository tokenRepository) {
+    TransactionTokenCleaningListener transactionTokenCleaningListener(
+            StoredTransactionTokenRepository tokenRepository) {
         return new TransactionTokenCleaningListener(tokenRepository);
     }
 

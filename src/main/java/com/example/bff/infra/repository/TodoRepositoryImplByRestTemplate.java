@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
-import com.example.bff.infra.common.httpclient.CircutiBreakerErrorFallback;
+import com.example.bff.infra.common.httpclient.CircuitBreakerErrorFallback;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +39,7 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
     public Optional<Todo> findById(String todoId) {
         Todo todo = cbFactory.create("todo_findById").run(
                 () -> restTemplate.getForObject(urlTodoById, Todo.class, todoId),
-                CircutiBreakerErrorFallback.throwBusinessException());
+                CircuitBreakerErrorFallback.throwBusinessException());
         return Optional.ofNullable(todo);
     }
 
@@ -53,7 +53,7 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
     @Override
     public void create(Todo todo) {
         cbFactory.create("todo_create").run(() -> restTemplate.postForObject(urlTodos, todo, Todo.class),
-                CircutiBreakerErrorFallback.throwBusinessException());
+                CircuitBreakerErrorFallback.throwBusinessException());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
         return cbFactory.create("todo_update").run(() -> {
             restTemplate.put(urlTodoById, null, todo.getTodoId());
             return true;
-        }, CircutiBreakerErrorFallback.throwBusinessException());
+        }, CircuitBreakerErrorFallback.throwBusinessException());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
         cbFactory.create("todo_delete").run(() -> {
             restTemplate.delete(urlTodoById, todo.getTodoId());
             return true;
-        }, CircutiBreakerErrorFallback.throwBusinessException());
+        }, CircuitBreakerErrorFallback.throwBusinessException());
     }
 
 }

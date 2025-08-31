@@ -11,8 +11,8 @@ import reactor.core.publisher.Mono;
  * CircuitBreakerでのエラー時のデフォルトのフォールバック処理を実装するクラス
  *
  */
-public class CircutiBreakerErrorFallback {
-    private CircutiBreakerErrorFallback() {
+public class CircuitBreakerErrorFallback {
+    private CircuitBreakerErrorFallback() {
     }
 
     /**

@@ -15,7 +15,7 @@ import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
 import com.example.bff.domain.repository.TodoRepository;
-import com.example.bff.infra.common.httpclient.CircutiBreakerErrorFallback;
+import com.example.bff.infra.common.httpclient.CircuitBreakerErrorFallback;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.exception.BusinessException;
 
@@ -75,7 +75,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_findById")
-						.run(it, CircutiBreakerErrorFallback.returnMonoBusinessException()));
+						.run(it, CircuitBreakerErrorFallback.returnMonoBusinessException()));
 		return todoMono.blockOptional();
 		// @formatter:on
     }
@@ -124,7 +124,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_create").run(it,
-						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+						CircuitBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
 		// @formatter:on
     }
@@ -147,7 +147,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理                
 				.transform(it -> cbFactory.create("todo_update").run(it,
-						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+						CircuitBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
 	    // @formatter:on 
         return true;
@@ -171,7 +171,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 }))
                 // サーキットブレーカによる処理
 				.transform(it -> cbFactory.create("todo_delete").run(it,
-						CircutiBreakerErrorFallback.returnMonoBusinessException()))
+						CircuitBreakerErrorFallback.returnMonoBusinessException()))
 				.block();
 		// @formatter:on 		
     }
