@@ -112,3 +112,40 @@ aws:
 #logback:
 #  access:
 #    enabled: false
+
+# 帳票出力機能の設定
+#report:
+# コンパイル済の様式ファイルを保管する一時ディレクトリを変更する場合に設定
+#  jasper-file-tmpdir: jasper2
+# PDFを一時保存するディレクトリを変更する場合に設定
+#  report-tmpdir: pdf2
+# PDFを一時保存するディレクトリを削除する間隔を変更する場合に設定
+#  delete-tempfiles-initial-delay-seconds: 60
+#  delete-tempfiles-fixed-rate-seconds: 60
+
+# 鍵管理機能の設定
+#keymanagement:
+  # オブジェクトストレージで管理されているKMSの署名鍵の証明書
+  # 開発時は自己署名証明書のpemファイルを使用するように設定している
+#  cert-pem-file-name: self-certificate.pem
+
+# 電子署名機能の設定
+#digitalsignature:
+#  visible: true
+#  stamp-image-path: certs/stamp.png
+# PKCS#12のキーストアを使用して基本署名を行う場合に設定
+#  type: pkcs12-basic
+# PKCS#12のキーストアを使用してPADES署名(PADES-B-B)を行う場合に設定
+#  type: pkcs12-pades
+#  pkcs12:
+    # PKCS#12のキーストアファイル名(SHA256 WITH RSA)
+#    keystore-file-path: certs/pkcs12/rsa/keystore.p12
+    # PKCS#12のキーストアファイル名(SHA256 WITH ECDSA)
+#    keystore-file-path: certs/pkcs12/ecdsa/keystore.p12
+    # PKCS#12のキーストアパスワード
+#    password: password123
+# AWS KMSを使用してPADES署名(PADES-B-B)を行う場合に設定
+#  type: aws-kms-pades
+#  aws-kms:
+    # AWS KMSのキーIDを設定
+#    key-id: 713cdf19-8ad3-4659-be76-6547c0a65f7c

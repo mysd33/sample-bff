@@ -28,8 +28,10 @@ import com.example.fw.web.token.TransactionTokenPackage;
  */
 @Configuration
 @ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class, //
-        SQSCommonConfigPackage.class, ReportsConfigPackage.class })
-//　トランザクショントークンチェックのMyBatisのMapperをスキャンさせるために、業務APのMapper含めて明示的にスキャンする設定を追加
+        SQSCommonConfigPackage.class, ReportsConfigPackage.class }) // , //
+// 鍵管理機能とPDF電子署名機能を有効化するには、ComponentScanに以下を追加する
+// KeyManagementConfigPackage.class, DigitalSignatureConfigPackage.class })
+// トランザクショントークンチェックのMyBatisのMapperをスキャンさせるために、業務APのMapper含めて明示的にスキャンする設定を追加
 @MapperScan(basePackageClasses = { TransactionTokenPackage.class,
         RepositoryPackage.class }, annotationClass = Mapper.class)
 // 動的ルーティングによるデータソース設定を追加

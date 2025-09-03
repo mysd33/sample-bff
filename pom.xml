@@ -28,7 +28,7 @@
         <commons-io.version>2.19.0</commons-io.version>
         <!-- Jasper Reports-->
         <jasperreports.version>7.0.3</jasperreports.version>
-        <bouncycastle.version>1.81</bouncycastle.version>
+        <dss.bom.version>6.2</dss.bom.version>
         <!-- logback-access -->
         <logback-access.version>2.0.6</logback-access.version>
         <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
@@ -337,7 +337,33 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>${bouncycastle.version}</version>
+        </dependency>
+        <!--  CSRの生成に必要 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+        </dependency>
+        <!-- DSS -->
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-token</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-pades</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-pades-openpdf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-utils-apache-commons</artifactId>
+        </dependency>
+        <!-- AWS SDK KMS -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>kms</artifactId>
         </dependency>
         <!-- logback-access -->
         <dependency>
@@ -353,6 +379,14 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <!-- DSS -->
+            <dependency>
+                <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+                <artifactId>dss-bom</artifactId>
+                <version>${dss.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- AWS X-Ray -->
             <dependency>
                 <groupId>com.amazonaws</groupId>
