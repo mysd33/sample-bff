@@ -39,6 +39,11 @@ public interface KeyManager {
     void deleteKeyAlias(String alias);
 
     /**
+     * エイリアスから暗号鍵の情報を取得します。
+     */
+    KeyInfo findKeyByAlias(String alias);
+
+    /**
      * 指定された暗号鍵の公開鍵を取得します。
      *
      * @param keyInfo 暗号鍵の情報

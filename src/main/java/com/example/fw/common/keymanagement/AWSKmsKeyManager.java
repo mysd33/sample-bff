@@ -99,12 +99,7 @@ public class AWSKmsKeyManager implements KeyManager {
     @Override
     public void deleteKeyAlias(String alias) {
         // キーエイリアスが存在するか確認
-        Optional<AliasListEntry> aliasListEntry = kmsAsyncClient.listAliases()//
-                .thenApply(response -> response.aliases().stream()//
-                        .filter(a -> a.aliasName().equals(KEY_ALIAS_PREFIX + alias)) // 指定されたエイリアス名をフィルタリング
-                        .findFirst())
-                .join();
-        if (aliasListEntry.isEmpty()) {
+        if (!isKeyAliasExists(alias)) {
             appLogger.debug("キーエイリアス{}は存在しません", alias);
             return;
         }
@@ -112,6 +107,38 @@ public class AWSKmsKeyManager implements KeyManager {
         kmsAsyncClient.deleteAlias(builder -> builder//
                 .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
         ).join();
+    }
+
+    @Override
+    public KeyInfo findKeyByAlias(String alias) {
+        // キーエイリアスが存在するか確認
+        if (!isKeyAliasExists(alias)) {
+            appLogger.debug("キーエイリアス{}は存在しません", alias);
+            return null;
+        }
+        return kmsAsyncClient.describeKey(builder -> builder//
+                .keyId(KEY_ALIAS_PREFIX + alias))//
+                .thenApply(response -> KeyInfo.builder()//
+                        .keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
+                        .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
+                        .build())//
+                .join();
+    }
+
+    /**
+     * 指定されたキーエイリアスが存在するか確認するメソッド
+     * 
+     * @param alias キーエイリアス
+     * @return 存在する場合はtrue、存在しない場合はfalse
+     */
+    private boolean isKeyAliasExists(String alias) {
+        // キーエイリアスが存在するか確認
+        Optional<AliasListEntry> aliasListEntry = kmsAsyncClient.listAliases()//
+                .thenApply(response -> response.aliases().stream()//
+                        .filter(a -> a.aliasName().equals(KEY_ALIAS_PREFIX + alias)) // 指定されたエイリアス名をフィルタリング
+                        .findFirst())
+                .join();
+        return aliasListEntry.isPresent();
     }
 
     @Override
