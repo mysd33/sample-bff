@@ -15,6 +15,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsAsyncClient;
+import software.amazon.awssdk.services.kms.model.AliasListEntry;
 import software.amazon.awssdk.services.kms.model.MessageType;
 import software.amazon.awssdk.services.kms.model.SignRequest;
 
@@ -64,9 +66,9 @@ public class AWSKmsKeyManager implements KeyManager {
     // https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/example_code/kms#code-examples
 
     @Override
-    public KeyInfo createKey(String keyAlias) {
+    public KeyInfo createKey() {
         // KMSを使って暗号鍵を生成する
-        KeyInfo keyInfo = kmsAsyncClient.createKey(builder -> builder//
+        return kmsAsyncClient.createKey(builder -> builder//
                 .keySpec(keyManagementConfigurationProperties.getAwsKms().getKeySpec())//
                 .keyUsage(keyManagementConfigurationProperties.getAwsKms().getKeyUsage())
                 .description(keyManagementConfigurationProperties.getAwsKms().getKeyDescription()))//
@@ -76,13 +78,40 @@ public class AWSKmsKeyManager implements KeyManager {
                         .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
                         .build())
                 .join();
+    }
+
+    @Override
+    public KeyInfo createKey(String keyAlias) {
+        KeyInfo keyInfo = createKey();
+        addKeyAlias(keyInfo, keyAlias);
+        return keyInfo;
+    }
+
+    @Override
+    public void addKeyAlias(KeyInfo keyInfo, String alias) {
         // キーのエイリアスを作成
         kmsAsyncClient.createAlias(builder -> builder//
-                .aliasName(KEY_ALIAS_PREFIX + keyAlias) // エイリアス名を指定
+                .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
                 .targetKeyId(keyInfo.getKeyId()) // 作成したキーIDを指定
         ).join();
+    }
 
-        return keyInfo;
+    @Override
+    public void deleteKeyAlias(String alias) {
+        // キーエイリアスが存在するか確認
+        Optional<AliasListEntry> aliasListEntry = kmsAsyncClient.listAliases()//
+                .thenApply(response -> response.aliases().stream()//
+                        .filter(a -> a.aliasName().equals(KEY_ALIAS_PREFIX + alias)) // 指定されたエイリアス名をフィルタリング
+                        .findFirst())
+                .join();
+        if (aliasListEntry.isEmpty()) {
+            appLogger.debug("キーエイリアス{}は存在しません", alias);
+            return;
+        }
+        // エイリアスがあれば、キーのエイリアスを削除
+        kmsAsyncClient.deleteAlias(builder -> builder//
+                .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
+        ).join();
     }
 
     @Override

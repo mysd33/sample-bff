@@ -13,7 +13,30 @@ public interface KeyManager {
      * @param keyAlias 作成する暗号鍵のエイリアス
      * @return 作成された暗号鍵の情報
      */
+    KeyInfo createKey();
+
+    /**
+     * 新しい暗号鍵を作成します。
+     *
+     * @param keyAlias 作成する暗号鍵のエイリアス
+     * @return 作成された暗号鍵の情報
+     */
     KeyInfo createKey(String keyAlias);
+
+    /**
+     * 指定された暗号鍵にエイリアスを追加します。
+     * 
+     * @param keyInfo エイリアスを追加する暗号鍵の情報
+     * @param alias   追加するエイリアス
+     */
+    void addKeyAlias(KeyInfo keyInfo, String alias);
+
+    /**
+     * エイリアスを削除します。
+     * 
+     * @param alias 削除するエイリアス
+     */
+    void deleteKeyAlias(String alias);
 
     /**
      * 指定された暗号鍵の公開鍵を取得します。
