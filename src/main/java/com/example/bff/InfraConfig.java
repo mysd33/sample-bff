@@ -16,6 +16,7 @@ import com.example.fw.common.async.repository.JobRequestRepository;
 import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
 import com.example.fw.common.db.config.DynamicRoutingDataSourceConfig;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
+import com.example.fw.common.logging.config.LoggingExtensionConfig;
 import com.example.fw.common.metrics.config.MetricsConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
 import com.example.fw.common.reports.config.ReportsConfigPackage;
@@ -36,7 +37,8 @@ import com.example.fw.web.token.TransactionTokenPackage;
         RepositoryPackage.class }, annotationClass = Mapper.class)
 // 動的ルーティングによるデータソース設定を追加
 // Micrometerのカスタムメトリックス設定を追加
-@Import({ DynamicRoutingDataSourceConfig.class, MetricsConfig.class })
+// ロギング拡張機能の設定を追加
+@Import({ DynamicRoutingDataSourceConfig.class, MetricsConfig.class, LoggingExtensionConfig.class })
 public class InfraConfig {
     @Value("${delayed.batch.queue}")
     private String queueName;

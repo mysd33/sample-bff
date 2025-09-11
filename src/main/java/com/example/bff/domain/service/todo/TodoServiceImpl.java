@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.example.bff.domain.message.CommonMessageIds;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.repository.TodoRepository;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TodoServiceの実装クラス
@@ -18,13 +22,17 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class TodoServiceImpl implements TodoService {
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     private final TodoRepository todoRepository;
 
     @Override
     @Transactional(readOnly = true)
     public Collection<Todo> findAll() {
+        appLogger.info(CommonMessageIds.I_CMN_0001);
+
         return todoRepository.findAll();
     }
 
