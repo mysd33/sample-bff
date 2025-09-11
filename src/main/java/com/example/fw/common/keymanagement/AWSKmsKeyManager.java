@@ -70,14 +70,14 @@ public class AWSKmsKeyManager implements KeyManager {
         // KMSを使って暗号鍵を生成する
         return kmsAsyncClient.createKey(builder -> builder//
                 .keySpec(keyManagementConfigurationProperties.getAwsKms().getKeySpec())//
-                .keyUsage(keyManagementConfigurationProperties.getAwsKms().getKeyUsage())
-                .description(keyManagementConfigurationProperties.getAwsKms().getKeyDescription()))//
-                .thenApply(response -> //
-                KeyInfo.builder().//
-                        keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
-                        .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
-                        .build())
-                .join();
+                .keyUsage(keyManagementConfigurationProperties.getAwsKms().getKeyUsage())//
+                .description(keyManagementConfigurationProperties.getAwsKms().getKeyDescription())//
+                .multiRegion(keyManagementConfigurationProperties.getAwsKms().isMultiRegion()) //
+        ).thenApply(response -> //
+        KeyInfo.builder().//
+                keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
+                .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
+                .build()).join();
     }
 
     @Override

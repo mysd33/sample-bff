@@ -30,7 +30,7 @@ public class KeyManagementConfigurationProperties {
     private int selfSignedCertValidityDays = 365;
     // 証明書のPEMファイル名
     private String certPemFileName = "certificate.pem";
-    
+
     // AWS KMS固有の設定(keymanagement.aws-kms.*)
     private AWSKmsProperties awsKms = new AWSKmsProperties();
 
@@ -52,6 +52,8 @@ public class KeyManagementConfigurationProperties {
         private SigningAlgorithmSpec kmsSigningAlgorithmSpec = SigningAlgorithmSpec.ECDSA_SHA_256;
         // KMSキー削除時の猶予期限（デフォルト：7日）
         private int pendingDeleteWindowInDays = 7;
+        // マルチリージョンキーにするかどうかのフラグ
+        private boolean multiRegion = true;
     }
 
 }

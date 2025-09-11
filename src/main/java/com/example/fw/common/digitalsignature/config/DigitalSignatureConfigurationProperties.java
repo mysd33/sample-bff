@@ -43,6 +43,10 @@ public class DigitalSignatureConfigurationProperties {
     @Data
     public static class AWSKmsProperties {
         // 署名に使用するAWS KMSのキーID
+        // 指定がある場合、キーエイリアスより優先される
         private String keyId;
+        // 署名に使用するAWS KMSのキーエリアス（alias/は除く）
+        // キーIDが指定されていない場合に使用される
+        private String keyAlias;
     }
 }

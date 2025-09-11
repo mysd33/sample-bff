@@ -11,6 +11,7 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
@@ -72,8 +73,23 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         appLogger.debug("pdfTempPath: {}", pdfTempPath);
         // 一時ディレクトリが存在しない場合は作成する
         pdfTempPath.get().toFile().mkdirs();
+
         // キーIDの取得
         keyId = digitalSignatureConfigurationProperties.getAwsKms().getKeyId();
+        if (StringUtils.isEmpty(keyId)) {
+            // キーIDが指定されていない場合、キーエイリアスからキーIDを取得
+            String keyAlias = digitalSignatureConfigurationProperties.getAwsKms().getKeyAlias();
+            if (StringUtils.isEmpty(keyAlias)) {
+                throw new IllegalStateException(
+                        "Either keyId or keyAlias must be specified in digital signature configuration.");
+            }
+            // キーエイリアスからキーIDを取得
+            keyId = keyManager.findKeyByAlias(keyAlias).getKeyId();
+            if (StringUtils.isEmpty(keyId)) {
+                throw new IllegalStateException(
+                        String.format("No key found for the specified key alias: %s", keyAlias));
+            }
+        }
         // 証明書の取得
         certificate = keyManager.getCertificateFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
     }
