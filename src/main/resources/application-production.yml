@@ -65,6 +65,7 @@ management:
       jvm: true
       hikaricp: true
       mybatis: true
+      tomcat: true
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled
   cloudwatch:
     metrics:
