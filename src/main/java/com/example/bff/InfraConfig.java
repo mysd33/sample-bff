@@ -14,11 +14,11 @@ import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.async.config.SQSCommonConfigPackage;
 import com.example.fw.common.async.repository.JobRequestRepository;
 import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
-import com.example.fw.common.db.config.DynamicRoutingDataSourceConfig;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
 import com.example.fw.common.logging.config.LoggingConfigPackage;
 import com.example.fw.common.metrics.config.MetricsConfig;
 import com.example.fw.common.objectstorage.config.S3ConfigPackage;
+import com.example.fw.common.rdb.config.DynamicRoutingDataSourceConfig;
 import com.example.fw.common.reports.config.ReportsConfigPackage;
 import com.example.fw.web.token.TransactionTokenPackage;
 
