@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -20,6 +21,8 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.fw.web.auth.config.AuthConfigPackage;
+
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
 
@@ -29,6 +32,7 @@ import io.micrometer.observation.ObservationRegistry;
  *
  */
 @Configuration
+@ComponentScan(basePackageClasses = { AuthConfigPackage.class })
 @EnableWebSecurity
 public class SecurityConfig {
     // Spring Security5.7より大幅に設定方法が変更された
