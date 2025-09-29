@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
+import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.ApplicationLogger;
@@ -71,17 +72,22 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
     }
 
     @Override
-    public Report sign(Report report) {
+    public Report sign(Report originalReport) {
+        return sign(originalReport, SignOptions.builder().build());
+    }
+
+    @Override
+    public Report sign(Report originalReport, SignOptions options) {
         DSSDocument toSignDocument = null;
-        if (report instanceof DefaultReport defultReport) {
+        if (originalReport instanceof DefaultReport defultReport) {
             // Fileに対して電子署名付与を実装
             toSignDocument = new FileDocument(defultReport.getFile());
         } else {
-            toSignDocument = new InMemoryDocument(report.getInputStream());
+            toSignDocument = new InMemoryDocument(originalReport.getInputStream());
         }
 
         // TODO: 可視署名は現在未対応
-        if (digitalSignatureConfig.isVisible()) {
+        if (options.isVisible()) {
             appLogger.debug("可視署名は現在未対応");
         }
 
@@ -96,7 +102,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             validateCertificate(certificate);
 
             // PAdESSignatureの署名パラメータを作成
-            PAdESSignatureParameters signatureParameters = createSignatureParameters(privateKey);
+            PAdESSignatureParameters signatureParameters = createSignatureParameters(privateKey, options);
 
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
@@ -145,7 +151,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
-    private PAdESSignatureParameters createSignatureParameters(DSSPrivateKeyEntry privateKey) {
+    private PAdESSignatureParameters createSignatureParameters(DSSPrivateKeyEntry privateKey, SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
@@ -155,8 +161,8 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
                 .setDigestAlgorithm(privateKey.getCertificate().getSignatureAlgorithm().getDigestAlgorithm());
         pAdESSignatureParameters.setSigningCertificate(privateKey.getCertificate());
         pAdESSignatureParameters.setCertificateChain(privateKey.getCertificateChain());
-        pAdESSignatureParameters.setReason(digitalSignatureConfig.getReason());
-        pAdESSignatureParameters.setLocation(digitalSignatureConfig.getLocation());
+        pAdESSignatureParameters.setReason(options.getReason());
+        pAdESSignatureParameters.setLocation(options.getLocation());
         return pAdESSignatureParameters;
     }
 }

@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
+import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.ApplicationLogger;
@@ -71,6 +72,11 @@ public class PKCS12BasicReportSigner implements ReportSigner {
 
     @Override
     public Report sign(Report originalReport) {
+        return sign(originalReport, SignOptions.builder().build());
+    }
+
+    @Override
+    public Report sign(Report originalReport, SignOptions options) {
         // デフォルトの署名処理としてOpenPDFを使用して、PDFに電子署名を付与する実装例
         // https://javadoc.io/doc/com.github.librepdf/openpdf/1.3.43/com/lowagie/text/pdf/PdfStamper.html#createSignature-com.lowagie.text.pdf.PdfReader-java.io.OutputStream-char-
         PdfReader originalPdfReader = null;
@@ -97,7 +103,7 @@ public class PKCS12BasicReportSigner implements ReportSigner {
                     digitalSignatureConfig.getPkcs12().getPassword().toCharArray());
             Certificate[] chain = ks.getCertificateChain(alias);
             // PDFに電子署名を付与する
-            doSign(originalPdfReader, fos, key, chain);
+            doSign(originalPdfReader, fos, key, chain, options);
             // 署名付きPDFの帳票を返却する
             return DefaultReport.builder()//
                     .file(signedPdfTempFilePath.toFile()).build();
@@ -117,15 +123,17 @@ public class PKCS12BasicReportSigner implements ReportSigner {
      * @param fos               署名付きPDFの出力先のFileOutputStream
      * @param key               秘密鍵
      * @param chain             証明書チェーン
+     * @param options           署名オプション
      */
-    private void doSign(PdfReader originalPdfReader, FileOutputStream fos, PrivateKey key, Certificate[] chain) {
+    private void doSign(PdfReader originalPdfReader, FileOutputStream fos, PrivateKey key, Certificate[] chain,
+            SignOptions options) {
         try (PdfStamperWrapper pdfStamperWrapper = new PdfStamperWrapper(
                 PdfStamper.createSignature(originalPdfReader, fos, '\0'))) {
             PdfSignatureAppearance sap = pdfStamperWrapper.getSignatureAppearance();
-            sap.setReason(digitalSignatureConfig.getReason());
-            sap.setLocation(digitalSignatureConfig.getLocation());
-            if (digitalSignatureConfig.isVisible()) {
-                createVisbleSignatureImage(sap);
+            sap.setReason(options.getReason());
+            sap.setLocation(options.getLocation());
+            if (options.isVisible()) {
+                createVisbleSignatureImage(sap, options);
             }
             pdfStamperWrapper.setEnforcedModificationDate(Calendar.getInstance());
 
@@ -145,10 +153,11 @@ public class PKCS12BasicReportSigner implements ReportSigner {
      * 
      * @param sap PdfSignatureAppearance
      */
-    private void createVisbleSignatureImage(PdfSignatureAppearance sap) {
-        sap.setVisibleSignature(new Rectangle(100, 100, 200, 200), 1);
-        sap.setLayer2Text(digitalSignatureConfig.getVisibleSignText());
-        String imagePath = digitalSignatureConfig.getStampImagePath();
+    private void createVisbleSignatureImage(PdfSignatureAppearance sap, SignOptions options) {
+        float[] rect = options.getVisibleSignRect();
+        sap.setVisibleSignature(new Rectangle(rect[0], rect[1], rect[2], rect[3]), options.getVisibleSignPage());
+        sap.setLayer2Text(options.getVisibleSignText());
+        String imagePath = options.getVisibleSignImagePath();
         try {
             sap.setImage(Image.getInstance(imagePath));
         } catch (IOException e) {

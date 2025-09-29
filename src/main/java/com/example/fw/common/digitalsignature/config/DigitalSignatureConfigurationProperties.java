@@ -11,16 +11,6 @@ public class DigitalSignatureConfigurationProperties {
     static final String DIGITAL_SIGNATURE = "digitalsignature";
     // 署名に使用するハッシュアルゴリズム（デフォルト: SHA256） PKCS12BasicReportSignerでのみ使用
     private String hashAlgorithm = "SHA256";
-    // 署名の理由
-    private String reason = "署名理由";
-    // 署名の場所
-    private String location = "署名場所";
-    // 署名の可視性（true: 可視署名、false: 非可視署名）
-    private boolean visible = false;
-    // 可視署名のテキスト
-    private String visibleSignText = "署名者";
-    // 可視署名のスタンプ画像のパス
-    private String stampImagePath = "";
     // PKCS#12固有の設定(digitalsignature.pkcs12.*)
     private PKCS12Properties pkcs12 = new PKCS12Properties();
     // AWS KMS固有の設定(digitalsignature.aws-kms.*)

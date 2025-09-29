@@ -131,8 +131,6 @@ aws:
 
 # 電子署名機能の設定
 #digitalsignature:
-#  visible: true
-#  stamp-image-path: certs/stamp.png
 # PKCS#12のキーストアを使用して基本署名を行う場合に設定
 #  type: pkcs12-basic
 # PKCS#12のキーストアを使用してPADES署名(PADES-B-B)を行う場合に設定

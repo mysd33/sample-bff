@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
+import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.keymanagement.Certificate;
@@ -95,20 +96,25 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
     }
 
     @Override
-    public Report sign(Report report) {
+    public Report sign(Report originalReport) {
+        return sign(originalReport, SignOptions.builder().build());
+    }
+
+    @Override
+    public Report sign(Report originalReport, SignOptions options) {
         DSSDocument toSignDocument = null;
-        if (report instanceof DefaultReport defaultReport) {
+        if (originalReport instanceof DefaultReport defaultReport) {
             // Fileに対して電子署名付与を実装
             toSignDocument = new FileDocument(defaultReport.getFile());
         } else {
             // InMemoryDocumentに対して電子署名付与を実装
-            toSignDocument = new InMemoryDocument(report.getInputStream());
+            toSignDocument = new InMemoryDocument(originalReport.getInputStream());
         }
 
         try (AWSKmsSignatureToken token = new AWSKmsSignatureToken(keyManager, keyId)) {
 
             // TODO: 可視署名は現在未対応
-            if (digitalSignatureConfigurationProperties.isVisible()) {
+            if (options.isVisible()) {
                 appLogger.debug("可視署名は現在未対応");
             }
 
@@ -125,7 +131,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
             // PAdESSignatureの署名パラメータを作成
             CertificateToken certificateToken = new CertificateToken(x509Certificate);
-            PAdESSignatureParameters signatureParameters = createSignatureParameters(certificateToken);
+            PAdESSignatureParameters signatureParameters = createSignatureParameters(certificateToken, options);
 
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
@@ -183,7 +189,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
-    private PAdESSignatureParameters createSignatureParameters(CertificateToken certificateToken) {
+    private PAdESSignatureParameters createSignatureParameters(CertificateToken certificateToken, SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 署名レベルをPAdES_BASELINE Bプロファイルに設定
         pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
@@ -200,8 +206,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         // TODO: 証明書チェーンをどうしておくか（いまは自己署名なので）
         pAdESSignatureParameters.setCertificateChain(certificateToken);
         // 署名の理由、場所を設定
-        pAdESSignatureParameters.setReason(digitalSignatureConfigurationProperties.getReason());
-        pAdESSignatureParameters.setLocation(digitalSignatureConfigurationProperties.getLocation());
+        pAdESSignatureParameters.setReason(options.getReason());
+        pAdESSignatureParameters.setLocation(options.getLocation());
 
         // TODO: 可視署名は現在未対応
         return pAdESSignatureParameters;
