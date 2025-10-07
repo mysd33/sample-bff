@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @Configuration
-@ConditionalOnProperty(prefix = "transaction-token", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = TransactionTokenConfigurationProperties.PROPERTY_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @EnableConfigurationProperties({ TransactionTokenConfigurationProperties.class })
 public class TransactionTokenConfig implements WebMvcConfigurer {

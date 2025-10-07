@@ -14,6 +14,9 @@ import com.example.fw.web.auth.UserNameProvider;
 @ConditionalOnClass(name = "org.springframework.security.core.context.SecurityContextHolder")
 public class AuthConfig {
 
+    /**
+     * Spring Securityの認証情報からユーザ名を取得するUserNameProvider
+     */
     @Bean
     UserNameProvider userNameProvider() {
         return new SpringSecurityUserNameProvider();

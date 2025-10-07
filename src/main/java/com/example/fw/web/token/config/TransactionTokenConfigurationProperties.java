@@ -13,19 +13,20 @@ import lombok.Data;
  *
  */
 @Data
-@ConfigurationProperties(prefix = "transaction-token")
+@ConfigurationProperties(TransactionTokenConfigurationProperties.PROPERTY_PREFIX)
 public class TransactionTokenConfigurationProperties {
-    //　トランザクショントークン機能の有効化フラグ
+    // トランザクショントークンチェック機能のプロパティプレフィックス
+    static final String PROPERTY_PREFIX = "transaction-token";
+    // トランザクショントークン機能の有効化フラグ
     private boolean enabled = true;
-    
+
     // トランザクショントークンの保存先（db、session)
     private String storeType;
-    
+
     // トランザクショントークンチェックを適用するパス
     private List<String> pathPatterns = Collections.emptyList();
 
     // トランザクショントークンチェックを適用除外するパス
     private List<String> excludePathPatterns = Collections.emptyList();
-
 
 }

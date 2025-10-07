@@ -2,14 +2,18 @@ package com.example.fw.common.reports.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.example.fw.common.constants.FrameworkConstants;
+
 import lombok.Data;
 
 /**
  * 帳票出力関連の設定を保持するプロパティクラス
  */
 @Data
-@ConfigurationProperties(prefix = "report")
+@ConfigurationProperties(prefix = ReportsConfigurationProperties.PROPERTY_PREFIX)
 public class ReportsConfigurationProperties {
+    // 帳票出力機能のプロパティのプレフィックス
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "report";
     // コンパイル済の帳票様式を保存するデフォルトの一時ディレクトリ名
     private static final String DEFAULT_TEMP_JASPER_DIR = "jasper";
     // 帳票を一時保存するデフォルトの一時ディレクトリ名

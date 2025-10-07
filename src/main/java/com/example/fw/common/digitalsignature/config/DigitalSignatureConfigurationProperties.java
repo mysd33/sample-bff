@@ -2,13 +2,15 @@ package com.example.fw.common.digitalsignature.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.example.fw.common.constants.FrameworkConstants;
+
 import lombok.Data;
 
 @Data
-@ConfigurationProperties(prefix = DigitalSignatureConfigurationProperties.DIGITAL_SIGNATURE)
+@ConfigurationProperties(prefix = DigitalSignatureConfigurationProperties.PROPERTY)
 public class DigitalSignatureConfigurationProperties {
     // 電子署名の設定を保持するプロパティのプレフィックス
-    static final String DIGITAL_SIGNATURE = "digitalsignature";
+    static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "digitalsignature";
     // 署名に使用するハッシュアルゴリズム（デフォルト: SHA256） PKCS12BasicReportSignerでのみ使用
     private String hashAlgorithm = "SHA256";
     // PKCS#12固有の設定(digitalsignature.pkcs12.*)

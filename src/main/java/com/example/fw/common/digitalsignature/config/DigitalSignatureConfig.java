@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @EnableConfigurationProperties(DigitalSignatureConfigurationProperties.class)
 public class DigitalSignatureConfig {
     private static final String DIGITAL_SIGNATURE_TYPE = //
-            DigitalSignatureConfigurationProperties.DIGITAL_SIGNATURE + ".type";
+            DigitalSignatureConfigurationProperties.PROPERTY + ".type";
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     private final ReportsConfigurationProperties reportsConfigurationProperties;
 

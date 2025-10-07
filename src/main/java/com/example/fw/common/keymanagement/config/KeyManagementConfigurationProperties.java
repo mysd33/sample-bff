@@ -2,6 +2,8 @@ package com.example.fw.common.keymanagement.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.example.fw.common.constants.FrameworkConstants;
+
 import lombok.Data;
 import software.amazon.awssdk.services.kms.model.KeySpec;
 import software.amazon.awssdk.services.kms.model.KeyUsageType;
@@ -11,8 +13,10 @@ import software.amazon.awssdk.services.kms.model.SigningAlgorithmSpec;
  * 鍵管理機能の設定を保持するプロパティクラス
  */
 @Data
-@ConfigurationProperties(prefix = "keymanagement")
+@ConfigurationProperties(prefix = KeyManagementConfigurationProperties.PROPERTY_PREFIX)
 public class KeyManagementConfigurationProperties {
+    // 鍵管理機能のプロパティのプレフィックス
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "keymanagement";
     // java.securityのKeyFactoryで指定するのアルゴリズム（デフォルト: EC = 楕円曲線暗号）
     // 参考：https://docs.oracle.com/javase/jp/21/docs/specs/security/standard-names.html
     private String keyFactoryAlgorithm = "EC";

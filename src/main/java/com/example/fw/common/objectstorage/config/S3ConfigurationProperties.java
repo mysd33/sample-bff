@@ -2,21 +2,27 @@ package com.example.fw.common.objectstorage.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.example.fw.common.constants.FrameworkConstants;
+
 import lombok.Data;
 
 /**
- * S3のプロパティクラス
+ * オブジェクトストレージアクセス機能のプロパティクラス
  *
  */
 @Data
-@ConfigurationProperties(prefix = "aws.s3")
+@ConfigurationProperties(prefix = S3ConfigurationProperties.PROPERTY_PREFIX)
 public class S3ConfigurationProperties {
+    // オブジェクトストレージアクセス機能のプロパティ名のプレフィックス
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "aws.s3";
+    static final String LOCALFAKE_PROPERTY_PREFIX = PROPERTY_PREFIX + ".localfake";
     // バケット名
     private String bucket;
-    // リージョン名
+    // リージョン
     private String region = "ap-northeast-1";
+    // S3のローカルFakeの設定
     private S3LocalFakeProperties localfake;
-    
+
     @Data
     public static class S3LocalFakeProperties {
         // Fakeの種類
@@ -28,7 +34,7 @@ public class S3ConfigurationProperties {
         // typeがminioのときのクレデンシャル
         private String accessKeyId = "";
         private String secretAccessKey = "";
-        
+
     }
-    
-} 
+
+}

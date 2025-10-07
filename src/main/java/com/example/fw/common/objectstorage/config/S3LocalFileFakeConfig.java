@@ -11,24 +11,22 @@ import com.example.fw.common.objectstorage.ObjectStorageFileAccessorFake;
 
 /**
  * 
- * S3が開発環境上でのローカル実行で使用できない場合を考慮した
- * 通常のファイルシステムアクセスのFakeに置き換える設定クラス
+ * S3が開発環境上でのローカル実行で使用できない場合を考慮した 通常のファイルシステムアクセスのFakeに置き換える設定クラス
  *
  */
 @Profile("dev")
-@ConditionalOnProperty(prefix = "aws.s3.localfake", name = "type", havingValue = "file", matchIfMissing = true)
-@EnableConfigurationProperties({S3ConfigurationProperties.class})
+@ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "file", matchIfMissing = true)
+@EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
-public class S3LocalFileFakeConfig {    
-    
+public class S3LocalFileFakeConfig {
+
     /**
      * ローカル実行用のFake
      * 
      */
-    @Bean    
+    @Bean
     ObjectStorageFileAccessor objectStorageFileAccessorFake(S3ConfigurationProperties s3ConfigurationProperties) {
         return new ObjectStorageFileAccessorFake(s3ConfigurationProperties.getLocalfake().getBaseDir());
     }
-    
 
 }
