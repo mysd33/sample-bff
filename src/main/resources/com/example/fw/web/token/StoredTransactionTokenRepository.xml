@@ -3,7 +3,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
     
 <mapper namespace="com.example.fw.web.token.StoredTransactionTokenRepository">
-	<resultMap id="storedTransactionTokenresultMap" type="StoredTransactionToken">
+	<resultMap id="storedTransactionTokenresultMap" type="com.example.fw.web.token.StoredTransactionToken">
 		<id property="tokenName" column="token_name" />
 		<id property="tokenKey" column="token_key" />
 		<result property="tokenValue" column="token_value" />
@@ -43,7 +43,7 @@
             ]]>
 	</delete>
 	<!-- (3) -->
-	<insert id="insert" parameterType="StoredTransactionToken">
+	<insert id="insert" parameterType="com.example.fw.web.token.StoredTransactionToken">
 		<![CDATA[
                 INSERT INTO transaction_token
                 (

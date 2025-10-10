@@ -79,7 +79,7 @@ management:
 
 # Mybatis
 mybatis:
-  type-aliases-package: com.example.bff.domain.model, com.example.fw.web.token
+  type-aliases-package: com.example.bff.domain.model
   configuration:
     map-underscore-to-camel-case: true
 
