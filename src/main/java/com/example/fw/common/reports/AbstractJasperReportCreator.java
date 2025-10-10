@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.example.fw.common.exception.SystemException;
@@ -72,18 +74,18 @@ public abstract class AbstractJasperReportCreator<T> {
     }
 
     /**
-     * 初期化処理 
+     * 初期化処理
      * 
      * @throws FileNotFoundException jrxmlの様式ファイルの様式ファイルが存在しない場合
      * @throws JRException           様式のコンパイルエラーまたはコンパイル済様式の保存時のエラー
      */
     @PostConstruct
-    public void init() throws FileNotFoundException, JRException {
+    public void init() throws IOException, JRException {
         // ログ出力用に、帳票ID、帳票名を取得
         ReportCreator annotation = getClass().getAnnotation(ReportCreator.class);
         reportId = annotation.id();
         reportName = annotation.name();
-        
+
         // コンパイル済の帳票様式を保存する一時ディレクトリを作成する
         jasperPath = Path.of(ReportsConstants.TMP_DIR, config.getJasperFileTmpdir());
         appLogger.debug("jasperPath: {}", jasperPath);
@@ -165,7 +167,7 @@ public abstract class AbstractJasperReportCreator<T> {
             File jasperFile = getMainJasperFile();
             // コンパイル済の帳票様式（jasperファイル）を読み込む
             jasperReport = (JasperReport) JRLoader.loadObject(jasperFile);
-        } catch (FileNotFoundException | JRException e) {
+        } catch (JRException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_RPRT_9002, reportId, reportName);
         }
 
@@ -185,20 +187,20 @@ public abstract class AbstractJasperReportCreator<T> {
     }
 
     /**
-     * メインの帳票様式ファイル(jrxmlファイル)を取得する
+     * メインの帳票様式ファイル(jrxmlファイル)パスを取得する
      * 
      * @return 帳票様式ファイル
      * @throws FileNotFoundException 様式ファイルが見つからなかった場合
      */
-    protected abstract File getMainJRXMLFile() throws FileNotFoundException;
+    protected abstract String getMainJRXMLFile();
 
     /**
-     * サブレポート用のの帳票様式ファイル(jrxmlファイル)を取得する サブレポートがある場合のみオーバライドする。
+     * サブレポート用のの帳票様式ファイル(jrxmlファイル)パスを取得する サブレポートがある場合のみオーバライドする。
      * 
      * @return 帳票様式ファイル
      * @throws FileNotFoundException 様式ファイルが見つからなかった場合
      */
-    protected List<File> getSubReportJRXMLFiles() throws FileNotFoundException {
+    protected List<String> getSubReportJRXMLFiles() {
         // デフォルトでは、サブレポートがない場合を想定して、空のリストを返却
         return new ArrayList<>();
     }
@@ -228,7 +230,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @return コンパイル済の帳票様式ファイル
      * @throws FileNotFoundException jrxmlの様式ファイルが見つからない場合
      */
-    private File getMainJasperFile() throws FileNotFoundException {
+    private File getMainJasperFile() {
         return getJasperFile(getMainJRXMLFile());
     }
 
@@ -238,7 +240,7 @@ public abstract class AbstractJasperReportCreator<T> {
      * @return コンパイル済の帳票様式ファイル
      * @throws FileNotFoundException jrxmlの様式ファイルが見つからない場合
      */
-    private List<File> getSubReportJapserFiles() throws FileNotFoundException {
+    private List<File> getSubReportJapserFiles() {
         return getSubReportJRXMLFiles().stream().map(this::getJasperFile).toList();
     }
 
@@ -248,8 +250,10 @@ public abstract class AbstractJasperReportCreator<T> {
      * @param jrxmlFile
      * @return コンパイル済の帳票様式ファイル
      */
-    private File getJasperFile(final File jrxmlFile) {
-        String jasperFileName = jrxmlFile.getName().replace(ReportsConstants.JRXML_FILE_EXTENSION,
+    private File getJasperFile(final String jrxmlFile) {
+        // JRXMLのファイルパスから、拡張子を置き換えてjaperファイル名を取得
+        Path path = Paths.get(jrxmlFile);
+        String jasperFileName = path.getFileName().toString().replace(ReportsConstants.JRXML_FILE_EXTENSION,
                 ReportsConstants.JASPER_FILE_EXTENSION);
         // 一時フォルダにあるファイルパスを返却
         return jasperPath.resolve(jasperFileName).toFile();
@@ -261,9 +265,10 @@ public abstract class AbstractJasperReportCreator<T> {
      * @return コンパイル済の帳票様式（JasperReport）
      * @throws FileNotFoundException jrxmlの様式ファイルが見つからない場合
      * @throws JRException           様式のコンパイルエラーまたはコンパイル済の帳票の保存時のエラー
+     * @throws IOException
      */
-    private JasperReport compileMainJRXML() throws FileNotFoundException, JRException {
-        File jrxmlFile = getMainJRXMLFile();
+    private JasperReport compileMainJRXML() throws IOException, JRException {
+        String jrxmlFile = getMainJRXMLFile();
         return compileJRXML(jrxmlFile);
     }
 
@@ -274,10 +279,10 @@ public abstract class AbstractJasperReportCreator<T> {
      * @throws FileNotFoundException jrxmlの様式ファイルが見つからない場合
      * @throws JRException           様式のコンパイルエラーまたはコンパイル済の帳票の保存時のエラー
      */
-    private List<JasperReport> compileSubReportJRXML() throws FileNotFoundException, JRException {
-        List<File> jrxmlFiles = getSubReportJRXMLFiles();
+    private List<JasperReport> compileSubReportJRXML() throws IOException, JRException {
+        List<String> jrxmlFiles = getSubReportJRXMLFiles();
         ArrayList<JasperReport> jasperReports = new ArrayList<>();
-        for (File jrxmlFile : jrxmlFiles) {
+        for (String jrxmlFile : jrxmlFiles) {
             jasperReports.add(compileJRXML(jrxmlFile));
         }
         return jasperReports;
@@ -289,19 +294,21 @@ public abstract class AbstractJasperReportCreator<T> {
      * @param jrxmlFile jrxmlの様式ファイル
      * 
      * @return コンパイル済の帳票様式（JasperReport）
+     * @throws IOException 様式ファイルの読み込みエラー
      * @throws JRException 様式のコンパイルエラーまたはコンパイル済の帳票の保存時のエラー
      */
-    private JasperReport compileJRXML(final File jrxmlFile) throws JRException {
+    private JasperReport compileJRXML(final String jrxmlFile) throws IOException, JRException {
         // TODO: JDK21の場合は、帳票コンパイル時に以下のメッセージが出てしまうため、様子見（JDK17では出力されない）
         // 「n.s.j.engine.design.JRJdk13Compiler : ノート:
         // クラス・パスに1つ以上のプロセッサが見つかったため、注釈処理が有効化されています。少なくとも1つのプロセッサが名前(-processor)で指定されるか、
         // 検索パス(--processor-path、--processor-module-path)が指定されるか、注釈処理が明示的に有効化(-proc:only、-proc:full)されている場合を除き、
         // 将来のリリースのjavacでは注釈処理が無効化される可能性があります。-Xlint:オプションを使用すると、このメッセージを非表示にできます。-proc:noneを使用すると、注釈処理を無効化できます。」
 
-        appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0001, reportId, reportName, jrxmlFile.getAbsolutePath());
+        appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0001, reportId, reportName, jrxmlFile);
         // jrxmlの帳票様式ファイルをコンパイルする
         // https://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/JasperCompileManager.html
-        JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlFile.getAbsolutePath());
+        JasperReport jasperReport = JasperCompileManager
+                .compileReport(new ClassPathResource(jrxmlFile).getInputStream());
         // コンパイル後のjapserファイルを保存する
         // https://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/util/JRSaver.html
         File jasperFile = getJasperFile(jrxmlFile);
@@ -318,13 +325,15 @@ public abstract class AbstractJasperReportCreator<T> {
      */
     private void deleteJasperFile(final File jasperFile) throws IOException {
         if (!jasperFile.exists()) {
-            appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0005, reportId, reportName, jasperFile.getAbsolutePath());
+            appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0005, reportId, reportName,
+                    jasperFile.getAbsolutePath());
             return;
         }
         try {
             Files.delete(jasperFile.toPath());
         } catch (IOException e) {
-            appLogger.warn(CommonFrameworkMessageIds.W_FW_RPRT_8001, reportId, reportName, jasperFile.getAbsolutePath());
+            appLogger.warn(CommonFrameworkMessageIds.W_FW_RPRT_8001, reportId, reportName,
+                    jasperFile.getAbsolutePath());
             throw e;
         }
         appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0006, reportId, reportName, jasperFile.getAbsolutePath());

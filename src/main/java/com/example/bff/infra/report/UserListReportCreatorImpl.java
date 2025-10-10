@@ -1,11 +1,8 @@
 package com.example.bff.infra.report;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.util.ResourceUtils;
 
 import com.example.bff.domain.reports.ReportFile;
 import com.example.bff.domain.reports.UserListReportCreator;
@@ -29,7 +26,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 public class UserListReportCreatorImpl extends AbstractJasperReportCreator<UserListReportData>
         implements UserListReportCreator {
     private static final String USER_LIST_FILE_NAME = "ユーザ一覧.pdf";
-    private static final String JRXML_FILE_PATH = "classpath:reports/userlist-report.jrxml";
+    private static final String JRXML_FILE_PATH = "reports/userlist-report.jrxml";
 
     @Override
     public ReportFile createUserListReport(UserListReportData data) throws DataAccessException {
@@ -42,8 +39,8 @@ public class UserListReportCreatorImpl extends AbstractJasperReportCreator<UserL
     }
 
     @Override
-    protected File getMainJRXMLFile() throws FileNotFoundException {
-        return ResourceUtils.getFile(JRXML_FILE_PATH);
+    protected String getMainJRXMLFile() {
+        return JRXML_FILE_PATH;
     }
 
     @Override
