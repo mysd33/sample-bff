@@ -191,20 +191,20 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
      */
     private PAdESSignatureParameters createSignatureParameters(CertificateToken certificateToken, SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
+        // 証明書の設定
+        // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
+        pAdESSignatureParameters.setSigningCertificate(certificateToken);
+        // TODO: 証明書チェーンで中間証明書が必要な場合は修正が必要
+        pAdESSignatureParameters.setCertificateChain(certificateToken);
+
+        // 署名の設定
         // 署名レベルをPAdES_BASELINE Bプロファイルに設定
         pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
         // 署名のパッケージング形式をENVELOPED（署名をPDF文書に埋め込む）に設定
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
-
         // 証明書の内容からハッシュアルゴリズムの設定
         pAdESSignatureParameters.setDigestAlgorithm(certificateToken.getSignatureAlgorithm().getDigestAlgorithm());
-        // 証明書の内容から暗号化アルゴリズムの設定
-        pAdESSignatureParameters
-                .setEncryptionAlgorithm(certificateToken.getSignatureAlgorithm().getEncryptionAlgorithm());
-        // 署名に使用する証明書を設定
-        pAdESSignatureParameters.setSigningCertificate(certificateToken);
-        // TODO: 証明書チェーンをどうしておくか（いまは自己署名なので）
-        pAdESSignatureParameters.setCertificateChain(certificateToken);
+
         // 署名の理由、場所を設定
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());

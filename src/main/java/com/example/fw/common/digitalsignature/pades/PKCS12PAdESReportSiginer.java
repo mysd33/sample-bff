@@ -153,16 +153,25 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
      */
     private PAdESSignatureParameters createSignatureParameters(DSSPrivateKeyEntry privateKey, SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
-        pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
-        pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
-        pAdESSignatureParameters
-                .setEncryptionAlgorithm(privateKey.getCertificate().getSignatureAlgorithm().getEncryptionAlgorithm());
-        pAdESSignatureParameters
-                .setDigestAlgorithm(privateKey.getCertificate().getSignatureAlgorithm().getDigestAlgorithm());
+        // 証明書の設定
+        // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
         pAdESSignatureParameters.setSigningCertificate(privateKey.getCertificate());
         pAdESSignatureParameters.setCertificateChain(privateKey.getCertificateChain());
+
+        // 署名の設定
+        // 署名レベルをPAdES_BASELINE Bプロファイルに設定
+        pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+        // 署名のパッケージング形式をENVELOPED（署名をPDF文書に埋め込む）に設定
+        pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+        // 証明書の内容から署名のハッシュアルゴリズムの設定
+        pAdESSignatureParameters
+                .setDigestAlgorithm(privateKey.getCertificate().getSignatureAlgorithm().getDigestAlgorithm());
+
+        // 署名の理由、場所を設定
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
+
+        // TODO: 可視署名は現在未対応
         return pAdESSignatureParameters;
     }
 }
