@@ -29,10 +29,10 @@ public class TodoRepositoryImplByRestTemplate implements TodoRepository {
     @SuppressWarnings("rawtypes")
     private final CircuitBreakerFactory cbFactory;
 
-    @Value("${api.backend.url}/api/v1/todos")
+    @Value("${example.api.backend.url}/api/v1/todos")
     private String urlTodos;
 
-    @Value("${api.backend.url}/api/v1/todos/{todoId}")
+    @Value("${example.api.backend.url}/api/v1/todos/{todoId}")
     private String urlTodoById;
 
     @Override

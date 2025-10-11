@@ -12,7 +12,7 @@ spring:
   sql:
     init:
       platform: postgresql
-      mode: always      
+      mode: always
   h2:
     console:
       enabled: false
@@ -21,15 +21,6 @@ spring:
     driver-class-name: org.postgresql.Driver 
     username: postgres
     password: password
-# Dynamic Routing DataSource
-    read:
-      driver-class-name: org.postgresql.Driver
-#      hikari:
-#        maximum-pool-size: 30      
-    write:
-      driver-class-name: org.postgresql.Driver
-#      hikari:
-#        maximum-pool-size: 30      
 
 #Spring Session Data Redis
   session:
@@ -79,20 +70,29 @@ management:
         enabled: true
         namespace: ${spring.application.name}
 
-api:
-  backend:
-    url: http://localhost:8000
-  retry:
-    max-attempts: 3
-    min-backoff: 200
-
-delayed:
-  batch:
-    queue: SampleQueue
-    
-aws:
+example:
+  # Dynamic Routing DataSource
+  datasource:
+    read:
+      driver-class-name: org.postgresql.Driver
+  #    hikari:
+  #      maximum-pool-size: 30
+    write:
+      driver-class-name: org.postgresql.Driver
+  #    hikari:
+  #      maximum-pool-size: 30
   sqs:
     region: ap-northeast-1  
   s3:
     bucket: mysd33bucket123
     region: ap-northeast-1
+# 業務APの設定
+  api:
+    backend:
+      url: http://localhost:8000
+    retry:
+      max-attempts: 3
+      min-backoff: 200
+  delayed:
+    batch:
+      queue: SampleQueue

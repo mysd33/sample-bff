@@ -14,7 +14,7 @@ import lombok.Data;
 @ConfigurationProperties(prefix = S3ConfigurationProperties.PROPERTY_PREFIX)
 public class S3ConfigurationProperties {
     // オブジェクトストレージアクセス機能のプロパティ名のプレフィックス
-    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "aws.s3";
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "s3";
     static final String LOCALFAKE_PROPERTY_PREFIX = PROPERTY_PREFIX + ".localfake";
     // バケット名
     private String bucket;

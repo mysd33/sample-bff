@@ -19,21 +19,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-#  websecurity:
-#    debug: true
-# Dynamic Routing DataSource
-    read:
-      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      driver-class-name: org.h2.Driver 
-      username: sa
-      password:
-    write:
-      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      driver-class-name: org.h2.Driver 
-      username: sa
-      password:
-    dynamic-routing:
-      enabled: true
   # 実行可能jar起動の場合にエラーが出るので回避策として追加
   h2:
     console:
@@ -69,18 +54,22 @@ logging:
     com.example: DEBUG
     com.example.fw.web.aspect.LogAspect: TRACE
 
-api:
-  backend:
-    url: http://localhost:8000
-  retry:
-    max-attempts: 3
-    min-backoff: 200
-    
-delayed:
-  batch:
-    queue: SampleQueue        
-    
-aws:
+# 拡張フレームワークのプロパティ
+example:
+# Dynamic Routing DataSource
+  datasource:
+    read:
+      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      driver-class-name: org.h2.Driver 
+      username: sa
+      password:
+    write:
+      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      driver-class-name: org.h2.Driver 
+      username: sa
+      password:
+    dynamic-routing:
+      enabled: true
   sqs:
     sqslocal:    
       port: 18001
@@ -99,3 +88,17 @@ aws:
 #      access-key-id: minioadmin
 #      secret-access-key: minioadmin
 #    bucket: mysd33bucket123
+
+# 業務APのプロパティ
+#  websecurity:
+#    debug: true
+  api:
+    backend:
+      url: http://localhost:8000
+    retry:
+      max-attempts: 3
+      min-backoff: 200
+    
+  delayed:
+    batch:
+      queue: SampleQueue

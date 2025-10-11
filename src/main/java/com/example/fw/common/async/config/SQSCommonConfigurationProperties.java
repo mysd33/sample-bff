@@ -14,9 +14,8 @@ import lombok.Data;
 @Data
 @ConfigurationProperties(prefix = SQSCommonConfigurationProperties.PRPOPERTY_PREFIX)
 public class SQSCommonConfigurationProperties {
-    // TODO: プロパティ名の見直しを予定
     // 非同期実行依頼のプロパティのプレフィックス
-    static final String PRPOPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "aws.sqs";
+    static final String PRPOPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "sqs";
     // リージョン（デフォルト: ap-northeast-1）
     private String region = "ap-northeast-1";
     // プリフェッチ数

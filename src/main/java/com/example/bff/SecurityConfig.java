@@ -40,7 +40,7 @@ public class SecurityConfig {
     // https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
 
     // Spring Securityのデバッグモード
-    @Value("${spring.websecurity.debug:false}")
+    @Value("${example.websecurity.debug:false}")
     boolean webSecurityDebug;
 
     /**

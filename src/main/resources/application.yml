@@ -30,28 +30,19 @@ spring:
       file-size-threshold: 512KB
       max-file-size: 3MB
       max-request-size: 10MB
-# Virtual Thread                  
+# Virtual Thread
   threads:
     virtual:
-      enabled: true       
-
+      enabled: true
 # Transaction Rollback
   transaction:
     rollback-on-commit-failure: true
 # Dynamic Routing DataSource (disabled on Sample AP Default)
   datasource:
-    dynamic-routing:
-      enabled: false 
 # HikariCP AutoCommit false
     hikari:
       auto-commit: false
-# Dynamic Routing DataSource HikariCP AutoCommit false
-    read:
-      hikari:
-        auto-commit: false
-    write:
-      hikari:
-        auto-commit: false
+
 # Spring Cloud for AWS Parameter Store Integration & Secrets Manager Integration
 # Default Disabled For Local Development
   cloud:
@@ -83,60 +74,73 @@ resilience4j:
      default:
        timeoutDuration: 3s
 
+# 拡張フレームワーク機能の設定
+example:
+# Dynamic Routing DataSource (disabled on Sample AP Default)
+  datasource:
+    dynamic-routing:
+      enabled: false 
+    # Dynamic Routing DataSource HikariCP AutoCommit false
+    read:
+      hikari:
+        auto-commit: false
+    write:
+      hikari:
+        auto-commit: false
 # Transaction Token Check 
-transaction-token:
-  store-type: db
-#  store-type: session 
-  path-partterns: /**
-#  exclude-path-patterns:
+  transaction-token:
+    store-type: db
+#    store-type: session 
+    path-partterns: /**
+#    exclude-path-patterns:
 
 # Pageation
-pagination:
-#  max-page-size: 100    
-#  default-page: 0
-  default-page-size: 5
+  pagination:
+#    max-page-size: 100
+#    default-page: 0
+    default-page-size: 5
 
 # X-Ray SDK(not ADOT)
-aws:
   xray:
     tracing-filter-name: ${spring.application.name}
-
 # Tomcat Access Log
-#logback:
-#  access:
-#    enabled: false
+#  logback:
+#    access:
+#      enabled: false
 
 # 帳票出力機能の設定
-#report:
+#  report:
 # コンパイル済の様式ファイルを保管する一時ディレクトリを変更する場合に設定
-#  jasper-file-tmpdir: jasper2
+#    jasper-file-tmpdir: jasper2
 # PDFを一時保存するディレクトリを変更する場合に設定
-#  report-tmpdir: pdf2
+#    report-tmpdir: pdf2
 # PDFを一時保存するディレクトリを削除する間隔を変更する場合に設定
-#  delete-tempfiles-initial-delay-seconds: 60
-#  delete-tempfiles-fixed-rate-seconds: 60
+#    delete-tempfiles-initial-delay-seconds: 60
+#    delete-tempfiles-fixed-rate-seconds: 60
 
 # 鍵管理機能の設定
-#keymanagement:
-  # オブジェクトストレージで管理されているKMSの署名鍵の証明書
-  # 開発時は自己署名証明書のpemファイルを使用するように設定している
-#  cert-pem-file-name: self-certificate.pem
+#  keymanagement:
+# オブジェクトストレージで管理されているKMSの署名鍵の証明書
+# 開発時は自己署名証明書のpemファイルを使用するように設定している
+#    cert-pem-file-name: self-certificate.pem
 
 # 電子署名機能の設定
-#digitalsignature:
+#  digitalsignature:
 # PKCS#12のキーストアを使用して基本署名を行う場合に設定
-#  type: pkcs12-basic
+#    type: pkcs12-basic
 # PKCS#12のキーストアを使用してPADES署名(PADES-B-B)を行う場合に設定
-#  type: pkcs12-pades
-#  pkcs12:
+#    type: pkcs12-pades
+#    pkcs12:
     # PKCS#12のキーストアファイル名(SHA256 WITH RSA)
-#    keystore-file-path: certs/pkcs12/rsa/keystore.p12
+#      keystore-file-path: certs/pkcs12/rsa/keystore.p12
     # PKCS#12のキーストアファイル名(SHA256 WITH ECDSA)
-#    keystore-file-path: certs/pkcs12/ecdsa/keystore.p12
-    # PKCS#12のキーストアパスワード
-#    password: password123
+#      keystore-file-path: certs/pkcs12/ecdsa/keystore.p12
+#    # PKCS#12のキーストアパスワード
+#      password: password123
 # AWS KMSを使用してPADES署名(PADES-B-B)を行う場合に設定
-#  type: aws-kms-pades
-#  aws-kms:
+#    type: aws-kms-pades
+#    aws-kms:
     # AWS KMSのキーIDを設定
-#    key-id: 713cdf19-8ad3-4659-be76-6547c0a65f7c
+#      key-id: 713cdf19-8ad3-4659-be76-6547c0a65f7c
+      # 署名に使用するAWS KMSのキーエイリアス（alias/は除く）を設定
+#      key-alias: digital-signature-key      

@@ -40,7 +40,7 @@ import com.example.fw.web.token.TransactionTokenPackage;
 @MapperScan(basePackageClasses = { TransactionTokenPackage.class,
         RepositoryPackage.class }, annotationClass = Mapper.class)
 public class InfraConfig {
-    @Value("${delayed.batch.queue}")
+    @Value("${example.delayed.batch.queue}")
     private String queueName;
 
     /**
