@@ -14,6 +14,8 @@ VOLUME [ "/tmp" ]
 WORKDIR /home/$USERNAME/
 
 COPY target/*.jar app.jar
+RUN java -Djarmode=tools -jar app.jar extract
+
 ENTRYPOINT [ "java" ]
-CMD [ "-jar", "app.jar" ]
+CMD [ "-jar", "app/app.jar" ]
 EXPOSE 8080

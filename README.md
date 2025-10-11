@@ -76,6 +76,61 @@
 ## 非同期処理実行の操作手順について
   * 本アプリから非同期処理/バッチアプリ（sample-batch）への非同期処理実行依頼が可能である。動作手順は、sample-batchのREADME.mdを参照すること。
 
+## Spring Bootの実行可能jarでの実行
+* Mavenビルドを行い、以下のコマンドで実行可能jarを作成します。
+
+    ```sh
+    mvnw clean package
+    ```
+* targetフォルダに、sample-bff-0.0.1-SNAPSHOT.jarが作成されるので、通常は、以下のコマンドで実行します。ですが、以下のコマンドだと、エラーがでます。
+
+    ```sh
+    cd target    
+    java -jar sample-bff-0.1.0-SNAPSHOT.jar
+
+    # エラー例
+    2025-10-11T11:00:41.379+09:00 ERROR 29276 --- [sample-bff] [           main] [                                                 ] c.e.f.c.r.AbstractJasperReportCreator    : ERROR_CODE:e.fw.rprt.9001 MESSAGE:帳票ID[R001]ユーザ一覧の様式のコンパイルに失敗しました
+
+    net.sf.jasperreports.engine.JRException: Errors were encountered when compiling report expressions class file:
+    C:\Users\masas\AppData\Local\Temp\userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf.java:18: エラー: シンボルを見つけられません
+    public class userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf extends JREvaluator
+                                                                                                        ^
+    シンボル: クラス JREvaluator
+    C:\Users\masas\AppData\Local\Temp\userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf.java:25: エラー: シンボルを見つけられません
+        private JRFillVariable variable_PAGE_NUMBER = null;
+                ^
+    シンボル:   クラス JRFillVariable
+    場所: クラス userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf
+    C:\Users\masas\AppData\Local\Temp\userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf.java:4: エラー: パッケージnet.sf.jasperreports.engineは存在しません
+    import net.sf.jasperreports.engine.*;
+    ^
+    C:\Users\masas\AppData\Local\Temp\userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf.java:5: エラー: パッケージnet.sf.jasperreports.engine.fillは存在しません
+    import net.sf.jasperreports.engine.fill.*;
+    ^
+    C:\Users\masas\AppData\Local\Temp\userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf.java:64: エラー: シンボルを見つけられません
+            variable_PAGE_NUMBER = (JRFillVariable)vm.get("PAGE_NUMBER");
+                                    ^
+    シンボル:   クラス JRFillVariable
+    場所: クラス userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf    
+    ```
+
+* 原因は、本サンプルAPが、Jasper Reportsを使ったPDF帳票出力機能を実装しているのですが、Jasper Reportsのライブラリ（JasperReportsのJRJdk13Compilerクラス）がjrxmlの様式コンパイルする際、JasperReportsのライブラリが実行可能jarにしてしまうと、クラスパスからJasperReportsのライブラリを見つけられず、上記のようなエラーになるためです。
+
+* 回避策として、Spring Bootのマニュアルの手順にある[実行可能jarを解凍して実行する](https://spring.pleiades.io/spring-boot/reference/packaging/efficient.html)方法を利用して、実行します。
+    * これで、JasperReportsのライブラリをクラスパスから見つけられるようになり、正常に起動します。
+
+    ```sh
+    cd target
+    java -Djarmode=tools -jar sample-bff-0.1.0-SNAPSHOT.jar extract
+
+    java -jar sample-bff-0.1.0-SNAPSHOT/sample-bff-0.1.0-SNAPSHOT.jar    
+    ```
+
+* バージョン番号が入っているので、Dockerfile等では、app.jarのような名前にリネームしてからやったほうが良いです。
+    * Dockerfileも上記のように実行可能jarを解凍して実行する方法を利用しています。
+        * [Dockerfile](Dockerfile)
+        * [Dockerfile(ADOT用)](DockerfileForADOT)
+
 ## OpenAPI
 * Springdoc-openapiにより、RestControllerの実装からAPIドキュメントをリバースエンジニアリングできる
     * アプリケーションを起動し、以下のURLへアクセスするとそれぞれjson、yaml、html形式のドキュメントを表示する。
