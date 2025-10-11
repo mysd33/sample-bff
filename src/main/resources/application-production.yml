@@ -71,6 +71,7 @@ management:
     metrics:
       export:
         enabled: true
+        namespace: ${spring.application.name}
 
 api:
   backend:
