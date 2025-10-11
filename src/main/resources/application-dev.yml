@@ -34,6 +34,10 @@ spring:
       password:
     dynamic-routing:
       enabled: true
+  # 実行可能jar起動の場合にエラーが出るので回避策として追加
+  h2:
+    console:
+      enabled: true
 
 # Spring Boot Actuator
 management:
