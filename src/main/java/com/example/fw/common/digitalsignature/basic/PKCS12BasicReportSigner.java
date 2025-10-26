@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
@@ -81,7 +83,12 @@ public class PKCS12BasicReportSigner implements ReportSigner {
         // https://javadoc.io/doc/com.github.librepdf/openpdf/1.3.43/com/lowagie/text/pdf/PdfStamper.html#createSignature-com.lowagie.text.pdf.PdfReader-java.io.OutputStream-char-
         PdfReader originalPdfReader = null;
         try {
-            originalPdfReader = new PdfReader(originalReport.getInputStream());
+            // PDFがパスワード保護されている場合はパスワードを指定してPdfReaderを作成する
+            if (StringUtils.isNotEmpty(options.getPassword())) {
+                originalPdfReader = new PdfReader(originalReport.getInputStream(), options.getPassword().getBytes());
+            } else {
+                originalPdfReader = new PdfReader(originalReport.getInputStream());
+            }
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9001);
         }

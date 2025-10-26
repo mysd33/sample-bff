@@ -11,6 +11,7 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
@@ -25,6 +26,8 @@ import com.example.fw.common.reports.Report;
 import com.example.fw.common.reports.ReportsConstants;
 import com.example.fw.common.reports.config.ReportsConfigurationProperties;
 
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -54,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PKCS12PAdESReportSiginer implements ReportSigner {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final ReportsConfigurationProperties config;
-    private final DigitalSignatureConfigurationProperties digitalSignatureConfig;
+    private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     // PDFの一時保存ファイルのディレクトリ（パスを初期化設定後、定期削除のための別スレッドで参照されるためAtomicReferenceにしておく）
     private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
 
@@ -93,8 +96,9 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
 
         DSSPrivateKeyEntry privateKey = null;
         try (Pkcs12SignatureToken pkcs12SignatureToken = new Pkcs12SignatureToken(
-                digitalSignatureConfig.getPkcs12().getKeystoreFilePath(), //
-                new PasswordProtection(digitalSignatureConfig.getPkcs12().getPassword().toCharArray()))) {
+                digitalSignatureConfigurationProperties.getPkcs12().getKeystoreFilePath(), //
+                new PasswordProtection(
+                        digitalSignatureConfigurationProperties.getPkcs12().getPassword().toCharArray()))) {
             privateKey = pkcs12SignatureToken.getKeys().get(0);
 
             // 証明書の有効性を確認
@@ -163,13 +167,26 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         pAdESSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
         // 署名のパッケージング形式をENVELOPED（署名をPDF文書に埋め込む）に設定
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
-        // 証明書の内容から署名のハッシュアルゴリズムの設定
-        pAdESSignatureParameters
-                .setDigestAlgorithm(privateKey.getCertificate().getSignatureAlgorithm().getDigestAlgorithm());
+
+        // 注：公開鍵の証明書内に含まれる、署名の暗号化アルゴリズムは、
+        // 鍵を用いてPDF署名に使用する際の暗号化アルゴリズムとは異なるケースがあるため間違って設定しないこと。
+        // 例：PDF署名に使用する鍵がECDSAを想定した鍵であっても、公開鍵証明書はRSAで署名されている場合など。
+
+        // 署名に使用するハッシュアルゴリズムの設定
+        pAdESSignatureParameters.setDigestAlgorithm(
+                DigestAlgorithm.valueOf(digitalSignatureConfigurationProperties.getHashAlgorithm()));
+        // 署名に使用する暗号化アルゴリズムを設定
+        pAdESSignatureParameters.setEncryptionAlgorithm(
+                EncryptionAlgorithm.valueOf(digitalSignatureConfigurationProperties.getEncryptionAlgorithm()));
 
         // 署名の理由、場所を設定
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
+
+        // パスワード保護されたPDFの場合のパスワード設定
+        if (StringUtils.isNotEmpty(options.getPassword())) {
+            pAdESSignatureParameters.setPasswordProtection(options.getPassword().toCharArray());
+        }
 
         // TODO: 可視署名は現在未対応
         return pAdESSignatureParameters;

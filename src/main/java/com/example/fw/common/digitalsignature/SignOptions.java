@@ -32,4 +32,6 @@ public class SignOptions {
     // 可視署名を表示するページ番号（1から始まる）
     @Builder.Default
     private int visibleSignPage = 1;
+    // パスワード保護されたPDFの場合のパスワード
+    private String password = null;
 }
