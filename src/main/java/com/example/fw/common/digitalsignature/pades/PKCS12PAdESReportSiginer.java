@@ -36,6 +36,9 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
+import eu.europa.esig.dss.pades.SignatureImageParameters;
+import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
@@ -87,11 +90,6 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             toSignDocument = new FileDocument(defultReport.getFile());
         } else {
             toSignDocument = new InMemoryDocument(originalReport.getInputStream());
-        }
-
-        // TODO: 可視署名は現在未対応
-        if (options.isVisible()) {
-            appLogger.debug("可視署名は現在未対応");
         }
 
         DSSPrivateKeyEntry privateKey = null;
@@ -188,7 +186,22 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             pAdESSignatureParameters.setPasswordProtection(options.getPassword().toCharArray());
         }
 
-        // TODO: 可視署名は現在未対応
+        // 可視署名
+        // https://github.com/esig/dss/blob/master/dss-cookbook/src/test/java/eu/europa/esig/dss/cookbook/example/sign/SignPdfPadesBVisibleTest.java
+        if (options.isVisible()) {
+            SignatureImageParameters imageParameters = new SignatureImageParameters();
+            imageParameters.setImage(new FileDocument(options.getVisibleSignImagePath()));
+            SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
+            imageParameters.setFieldParameters(fieldParameters);
+            fieldParameters.setPage(options.getVisibleSignPage());
+            fieldParameters.setOriginX(options.getVisibleSignRect()[0]);
+            fieldParameters.setOriginY(options.getVisibleSignRect()[1]);
+            fieldParameters.setWidth(options.getVisibleSignRect()[2] - options.getVisibleSignRect()[0]);
+            fieldParameters.setHeight(options.getVisibleSignRect()[3] - options.getVisibleSignRect()[1]);
+            SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+            textParameters.setText(options.getVisibleSignText());
+            pAdESSignatureParameters.setImageParameters(imageParameters);
+        }
         return pAdESSignatureParameters;
     }
 }

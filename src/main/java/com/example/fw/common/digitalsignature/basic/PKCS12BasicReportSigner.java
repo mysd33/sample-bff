@@ -51,8 +51,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class PKCS12BasicReportSigner implements ReportSigner {
-    private static final String PKCS12 = "pkcs12";
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    private static final String PKCS12 = "pkcs12";
+    private static final int Y_AXIS_MAX_VALUE = 840; // A4縦サイズのY軸最大値
     private final ReportsConfigurationProperties config;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfig;
 
@@ -162,7 +163,9 @@ public class PKCS12BasicReportSigner implements ReportSigner {
      */
     private void createVisbleSignatureImage(PdfSignatureAppearance sap, SignOptions options) {
         float[] rect = options.getVisibleSignRect();
-        sap.setVisibleSignature(new Rectangle(rect[0], rect[1], rect[2], rect[3]), options.getVisibleSignPage());
+        // OpenPDFの座標系は左下が原点でY軸が上方向に伸びる模様なので、Y座標を変換する
+        sap.setVisibleSignature(new Rectangle(rect[0], Y_AXIS_MAX_VALUE - rect[3], rect[2], Y_AXIS_MAX_VALUE - rect[1]),
+                options.getVisibleSignPage());
         sap.setLayer2Text(options.getVisibleSignText());
         String imagePath = options.getVisibleSignImagePath();
         try {
