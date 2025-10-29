@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractGlobalControllerAdvice {
+public abstract class AbstractControllerAdvice {
 
     /**
      * 予期せぬ例外発生時のデフォルトのメッセージID
