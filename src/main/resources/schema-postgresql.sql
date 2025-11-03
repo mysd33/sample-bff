@@ -22,3 +22,11 @@ CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older_sequence on tran
 CREATE INDEX IF NOT EXISTS transaction_token_index_clean on transaction_token(session_id);
 
 CREATE SEQUENCE IF NOT EXISTS transaction_token_sequence;
+
+
+/* ユーザーの一時テーブル */
+CREATE TABLE IF NOT EXISTS m_user_temp (
+    user_id VARCHAR(50) PRIMARY KEY,
+    user_name VARCHAR(50),
+    age INT
+);
