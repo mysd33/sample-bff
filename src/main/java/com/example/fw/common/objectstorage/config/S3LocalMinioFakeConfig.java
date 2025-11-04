@@ -24,7 +24,11 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 
 /**
  * 
- * S3が開発環境上でのローカルサーバFake（MinIO）実行に置き換える設定クラス
+ * S3が開発環境上でのローカルサーバFake（MinIO）実行に置き換える設定クラス<br>
+ * 
+ * ここではMinIOはテスト時のみローカル起動することを想定している。 <br>
+ * GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、
+ * 特にAPGLの場合、MinIOを同梱しての配布、利用等には注意すること。<br>
  *
  */
 @Profile("dev")

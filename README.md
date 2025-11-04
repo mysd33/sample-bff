@@ -259,19 +259,23 @@ postgres> CREATE DATABASE testdb;
 
 ## S3の設定
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    * application-dev.ymlの「aws.s3.localfake.type」が「file」であり、「aws.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+    * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
     * MinIOの場合
         * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
+            
+            > [!NOTE]
+            > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。
+
         * 以下は、Windows版での起動例
             * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
         ```sh        
         C:\minio\minio.exe server C:\minio\data --console-address ":9001"
         ```
-        *  application-dev.ymlの「aws.s3.localfake.type」を「minio」に変更し、以下の通り設定
+        *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
         ```yaml
-        aws:
+        example:
           s3:
             localfake:
               type: minio
@@ -282,13 +286,17 @@ postgres> CREATE DATABASE testdb;
         ```
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
+
+            > [!NOTE]
+            > s3rverは、現在、アーカイブされているので、利用等には注意すること。
+
         * 以下、起動例
         ```
         s3rver -d C:\s3rver
         ```
-        *  application-dev.ymlの「aws.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
+        *  application-dev.ymlの「example.s3.localfake.type」を「s3rver」に変更し、以下の通り設定
         ```yaml
-        aws:
+        example:
           s3:
             localfake:
               type: s3rver
@@ -297,7 +305,7 @@ postgres> CREATE DATABASE testdb;
         ```
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
-    * application-production.ymlの「aws.s3.bucket」プロパティを作成したバケット名に変更する。
+    * application-production.ymlの「example.s3.bucket」プロパティを作成したバケット名に変更する。
     * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
 ## X-Rayデーモンのローカル起動
@@ -373,7 +381,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 * Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
 ```
--XX:StartFlightRecording:filename=recording.jfr,duration=10s
+-XX:StartFlightRecording:filename=recording.jfr
 ```
 
 * APを動作させて、JFRを記録する

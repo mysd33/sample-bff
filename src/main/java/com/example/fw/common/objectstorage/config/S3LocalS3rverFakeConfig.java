@@ -24,9 +24,12 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 
 /**
  * 
- * S3が開発環境上でのローカルサーバFake（s3rver）実行に置き換える設定クラス
+ * S3が開発環境上でのローカルサーバFake（s3rver）実行に置き換える設定クラス<br>
+ * 
+ * s3verは、現在、Public archiveとなっており、メンテナンスされていないため非推奨とする
  *
  */
+@Deprecated
 @Profile("dev")
 @ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "s3rver")
 @EnableConfigurationProperties({ S3ConfigurationProperties.class })
