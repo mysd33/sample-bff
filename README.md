@@ -261,13 +261,15 @@ postgres> CREATE DATABASE testdb;
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
     * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
-* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
-    * MinIOの場合
-        * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動
-            
-            > [!NOTE]
-            > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。
 
+* Profileが「dev」でも、S3のローカル起動用のFake（MinIOやs3rver）を起動したい場合には、以下の通り
+
+> [!NOTE]
+> MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。  
+> s3rverは、現在、アーカイブされているので、利用等には注意すること。
+
+    * MinIOの場合
+        * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動           
         * 以下は、Windows版での起動例
             * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
         ```sh        
@@ -284,12 +286,9 @@ postgres> CREATE DATABASE testdb;
               secret-access-key: minioadmin
             bucket: mysd33bucket123
         ```
+
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
-
-            > [!NOTE]
-            > s3rverは、現在、アーカイブされているので、利用等には注意すること。
-
         * 以下、起動例
         ```
         s3rver -d C:\s3rver
