@@ -76,14 +76,14 @@ example:
   s3:
     localfake:
 #S3 Fake by local file system
-#      type: file
-#      base-dir: C:\tmp\objectstorage
-#S3 Fake by LocalStack    
-      type: localstack
-      port: 4566
-      access-key-id: dummy
-      secret-access-key: dummy
-    bucket: mysd33bucket123 
+      type: file
+      base-dir: C:\tmp\objectstorage
+#S3 Fake by LocalStack
+#      type: localstack
+#      port: 4566
+#      access-key-id: dummy
+#      secret-access-key: dummy
+#    bucket: mysd33bucket123 
 #S3 Fake by s3rver
 #      type: s3rver
 #      port: 4568

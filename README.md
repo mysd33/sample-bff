@@ -264,6 +264,7 @@ postgres> CREATE DATABASE testdb;
 
 > [!NOTE]
 > MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。  
+> また、現在、MinIOは、[Dockerイメージの配布を停止してしまった](https://github.com/minio/minio/issues/21647)ようなので、今後、コミュニティでの利用状況が悪化することも踏まえ、代替案としてLocalStackを利用する方法を整理した。これにより、他のAWSサービスのローカル実行もLocalStackで一元的に実行する手順も今後整備する。
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
 
 * Profileが「dev」でも、S3のローカル起動用のFake（LocalStackやMinIO、s3rver）を起動したい場合には、以下の通り
