@@ -35,4 +35,6 @@ build/
 log/
 *.bkp
 *.dtmp
+localstack/volume
+
 /recording.jfr
