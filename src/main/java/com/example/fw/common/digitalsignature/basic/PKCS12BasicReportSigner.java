@@ -87,6 +87,7 @@ public class PKCS12BasicReportSigner implements ReportSigner {
             // PDFがパスワード保護されている場合はパスワードを指定してPdfReaderを作成する
             if (StringUtils.isNotEmpty(options.getPassword())) {
                 originalPdfReader = new PdfReader(originalReport.getInputStream(), options.getPassword().getBytes());
+                // TODO: 署名付与後にパスワード保護されない課題への対応
             } else {
                 originalPdfReader = new PdfReader(originalReport.getInputStream());
             }
@@ -147,7 +148,7 @@ public class PKCS12BasicReportSigner implements ReportSigner {
 
             // OpenPDFの標準実装では、ハッシュアルゴリズムがSHA-1が固定になってしまうため
             // ハッシュアルゴリズムをSHA-256の明示的な設定の上書きのための拡張実装をする
-            DefaultPdfSignature sig = new DefaultPdfSignature(digitalSignatureConfig.getHashAlgorithm());
+            DefaultPdfSignature sig = new DefaultPdfSignature(digitalSignatureConfig.getPkcs12().getHashAlgorithm());
             sig.setSignInfo(key, chain, null);
             sig.put(PdfName.M, new PdfDate(new GregorianCalendar()));
             sap.setCryptoDictionary(sig);

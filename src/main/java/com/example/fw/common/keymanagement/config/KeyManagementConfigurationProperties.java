@@ -17,12 +17,13 @@ import software.amazon.awssdk.services.kms.model.SigningAlgorithmSpec;
 public class KeyManagementConfigurationProperties {
     // 鍵管理機能のプロパティのプレフィックス
     static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "keymanagement";
-    // java.securityのKeyFactoryで指定するのアルゴリズム（デフォルト: EC = 楕円曲線暗号）
-    // 参考：https://docs.oracle.com/javase/jp/21/docs/specs/security/standard-names.html
+    // 暗号化アルゴリズム。公開鍵情報作成時にjava.securityのKeyFactoryで指定するアルゴリズム（デフォルト: EC = 楕円曲線暗号）
+    // 参考：https://docs.oracle.com/javase/jp/21/docs/specs/security/standard-names.html#keyfactory-algorithms
     private String keyFactoryAlgorithm = "EC";
-    // 署名アルゴリズム（デフォルト： SHA256WITHECDSA = SHA-256ハッシュとECDSA署名の組み合わせ）
+    // CSR/自己署名証明書作成時の署名アルゴリズム（デフォルト： SHA256WITHECDSA = SHA-256ハッシュとECDSA署名の組み合わせ）
+    // org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinderクラス参照
     private String signatureAlgorithm = "SHA256WITHECDSA";
-    // 署名のハッシュアルゴリズム名（デフォルト：SHAR-256）
+    // CSR/自己署名証明書作成時の署名のハッシュアルゴリズム名（デフォルト：SHA-256）
     private String hashAlgorithm = "SHA-256";
     // 証明書のPEMファイルのオブジェクトストレージ配置先のベースプレフィックス
     private String certsBasePrefix = "certs/";

@@ -10,6 +10,7 @@ import com.example.fw.common.digitalsignature.basic.PKCS12BasicReportSigner;
 import com.example.fw.common.digitalsignature.pades.AWSKmsPAdESReportSigner;
 import com.example.fw.common.digitalsignature.pades.PKCS12PAdESReportSiginer;
 import com.example.fw.common.keymanagement.KeyManager;
+import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
 import com.example.fw.common.reports.config.ReportsConfigurationProperties;
 
@@ -20,11 +21,13 @@ import lombok.RequiredArgsConstructor;
  */
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties(DigitalSignatureConfigurationProperties.class)
+@EnableConfigurationProperties({ DigitalSignatureConfigurationProperties.class,
+        KeyManagementConfigurationProperties.class })
 public class DigitalSignatureConfig {
     private static final String DIGITAL_SIGNATURE_TYPE = //
             DigitalSignatureConfigurationProperties.PROPERTY + ".type";
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
+    private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
     private final ReportsConfigurationProperties reportsConfigurationProperties;
 
     /**
@@ -59,8 +62,8 @@ public class DigitalSignatureConfig {
     ReportSigner reportSignerByKms(KeyManager keyManager, ObjectStorageFileAccessor objectStorageFileAccessor) {
         return new AWSKmsPAdESReportSigner(keyManager, //
                 reportsConfigurationProperties, //
-                digitalSignatureConfigurationProperties);
-
+                digitalSignatureConfigurationProperties, //
+                keyManagementConfigurationProperties);
     }
 
 }
