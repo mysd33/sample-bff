@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -98,6 +99,25 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         }
         // 証明書の取得
         certificate = keyManager.getCertificateFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
+        // 証明書が取得できない場合は例外をスロー
+        if (certificate == null) {
+            throw new IllegalStateException(String.format("No certificate found for the specified key ID: %s", keyId));
+        }
+        // KMSから公開鍵を取得
+        PublicKey publicKey = keyManager.getPublicKey(KeyInfo.builder().keyId(keyId).build());
+        // 証明書の公開鍵を取得
+        PublicKey publicKeyInCertificate = null;
+        try {
+            X509Certificate x509Certificate = certificate.getX509Certificate();
+            publicKeyInCertificate = x509Certificate.getPublicKey();
+        } catch (CertificateException | IOException e) {
+            throw new IllegalStateException("Failed to get X509Certificate from certificate.", e);
+        }
+        // KMSから取得した公開鍵と証明書の公開鍵の内容が一致するか確認
+        if (!publicKey.equals(publicKeyInCertificate)) {
+            throw new IllegalStateException(
+                    "The public key from KMS does not match the public key in the certificate.");
+        }
     }
 
     @Override
