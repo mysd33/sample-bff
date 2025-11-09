@@ -22,8 +22,8 @@ public class KeyManagementConfigurationProperties {
     // RSASSA-PSSの場合は、「RSASSA-PSS」を指定
     // 参考：https://docs.oracle.com/javase/jp/21/docs/specs/security/standard-names.html#keyfactory-algorithms
     private String keyFactoryAlgorithm = "EC";
-    // ハッシュアルゴリズム名（デフォルト：SHA-256）
-    private String hashAlgorithm = "SHA-256";
+    // ハッシュアルゴリズム名（デフォルト：SHA256）
+    private String hashAlgorithm = "SHA256";
     // 署名アルゴリズム（デフォルト： SHA256WITHECDSA = SHA-256ハッシュとECDSA署名の組み合わせ）
     // CSR/自己署名証明書作成時の署名アルゴリズムの指定として使用
     // RSSA-PSSの場合は、「SHA256WITHRSAANDMGF1」を指定

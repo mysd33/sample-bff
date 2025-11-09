@@ -72,6 +72,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
     private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
     // 電子署名に使用するキーID
     private String keyId;
+    // TODO: 証明書チェーンで中間証明書が必要な場合は修正が必要
     // 電子署名に使用する証明書
     private Certificate certificate;
 
@@ -225,8 +226,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         // 署名のパッケージング形式をENVELOPED（署名をPDF文書に埋め込む）に設定
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
         // 署名に使用するハッシュアルゴリズムの設定
-        pAdESSignatureParameters.setDigestAlgorithm(
-                DigestAlgorithm.forJavaName(keyManagementConfigurationProperties.getHashAlgorithm()));
+        pAdESSignatureParameters
+                .setDigestAlgorithm(DigestAlgorithm.forName(keyManagementConfigurationProperties.getHashAlgorithm()));
 
         // 署名に使用する暗号化アルゴリズムを設定
         // 例えば公開鍵の暗号化アルゴリズムから取得するとrsaEncryption（RSA）となるが、rsassaPss(RSASSA-PSS)にするには、明示的に設定が必要。
