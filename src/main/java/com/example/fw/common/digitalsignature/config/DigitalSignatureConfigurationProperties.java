@@ -11,6 +11,8 @@ import lombok.Data;
 public class DigitalSignatureConfigurationProperties {
     // 電子署名の設定を保持するプロパティのプレフィックス
     static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "digitalsignature";
+    // 電子署名するアプリケーション名
+    private String applicationName = "MyApplication";
     // PKCS#12固有の設定(digitalsignature.pkcs12.*)
     private PKCS12Properties pkcs12 = new PKCS12Properties();
     // AWS KMS固有の設定(digitalsignature.aws-kms.*)

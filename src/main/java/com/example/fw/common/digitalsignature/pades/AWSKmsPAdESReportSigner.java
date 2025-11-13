@@ -234,7 +234,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         pAdESSignatureParameters.setEncryptionAlgorithm(
                 EncryptionAlgorithm.forName(keyManagementConfigurationProperties.getKeyFactoryAlgorithm()));
 
-        // 署名の理由、場所を設定
+        // アプリケーション名、署名の理由、場所を設定
+        pAdESSignatureParameters.setAppName(digitalSignatureConfigurationProperties.getApplicationName());
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
 

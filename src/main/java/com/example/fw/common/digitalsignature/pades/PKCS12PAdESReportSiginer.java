@@ -168,7 +168,8 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         pAdESSignatureParameters.setDigestAlgorithm(
                 DigestAlgorithm.valueOf(digitalSignatureConfigurationProperties.getPkcs12().getHashAlgorithm()));
 
-        // 署名の理由、場所を設定
+        // アプリケーション名、署名の理由、場所を設定
+        pAdESSignatureParameters.setAppName(digitalSignatureConfigurationProperties.getApplicationName());
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
 
