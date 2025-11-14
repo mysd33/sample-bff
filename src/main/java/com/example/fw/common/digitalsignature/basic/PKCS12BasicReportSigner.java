@@ -36,6 +36,7 @@ import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfWriter;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -85,9 +86,9 @@ public class PKCS12BasicReportSigner implements ReportSigner {
         PdfReader originalPdfReader = null;
         try {
             // PDFがパスワード保護されている場合はパスワードを指定してPdfReaderを作成する
-            if (StringUtils.isNotEmpty(options.getPassword())) {
-                originalPdfReader = new PdfReader(originalReport.getInputStream(), options.getPassword().getBytes());
-                // TODO: 署名付与後にパスワード保護されない課題への対応
+            if (StringUtils.isNotEmpty(options.getUserPassword())) {
+                originalPdfReader = new PdfReader(originalReport.getInputStream(),
+                        options.getUserPassword().getBytes());
             } else {
                 originalPdfReader = new PdfReader(originalReport.getInputStream());
             }
@@ -139,6 +140,7 @@ public class PKCS12BasicReportSigner implements ReportSigner {
         try (PdfStamperWrapper pdfStamperWrapper = new PdfStamperWrapper(
                 PdfStamper.createSignature(originalPdfReader, fos, '\0'))) {
             PdfSignatureAppearance sap = pdfStamperWrapper.getSignatureAppearance();
+            // TODO: 署名したアプリケーション名の設定
             sap.setReason(options.getReason());
             sap.setLocation(options.getLocation());
             if (options.isVisible()) {
@@ -152,6 +154,10 @@ public class PKCS12BasicReportSigner implements ReportSigner {
             sig.setSignInfo(key, chain, null);
             sig.put(PdfName.M, new PdfDate(new GregorianCalendar()));
             sap.setCryptoDictionary(sig);
+            // PDFのセキュリティ設定を行う
+            pdfStamperWrapper.setEncryption(
+                    originalPdfReader.is128Key() ? PdfWriter.STANDARD_ENCRYPTION_128 : PdfWriter.STANDARD_ENCRYPTION_40,
+                    options.getUserPassword(), options.getOwnerPassword(), originalPdfReader.getPermissions());
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9003);
         }

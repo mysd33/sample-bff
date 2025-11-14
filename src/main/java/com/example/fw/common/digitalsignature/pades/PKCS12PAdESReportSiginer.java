@@ -174,8 +174,8 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         pAdESSignatureParameters.setLocation(options.getLocation());
 
         // パスワード保護されたPDFの場合のパスワード設定
-        if (StringUtils.isNotEmpty(options.getPassword())) {
-            pAdESSignatureParameters.setPasswordProtection(options.getPassword().toCharArray());
+        if (StringUtils.isNotEmpty(options.getUserPassword())) {
+            pAdESSignatureParameters.setPasswordProtection(options.getUserPassword().toCharArray());
         }
 
         // 可視署名

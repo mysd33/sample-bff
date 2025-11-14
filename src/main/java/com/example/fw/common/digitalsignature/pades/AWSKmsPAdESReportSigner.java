@@ -239,11 +239,6 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
 
-        // パスワード保護されたPDFの場合のパスワード設定
-        if (StringUtils.isNotEmpty(options.getPassword())) {
-            pAdESSignatureParameters.setPasswordProtection(options.getPassword().toCharArray());
-        }
-
         // 可視署名
         // https://github.com/esig/dss/blob/master/dss-cookbook/src/test/java/eu/europa/esig/dss/cookbook/example/sign/SignPdfPadesBVisibleTest.java
         if (options.isVisible()) {

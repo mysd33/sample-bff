@@ -45,6 +45,20 @@ public class PdfStamperWrapper implements AutoCloseable {
         stamper.setEnforcedModificationDate(modificationDate);
     }
 
+    /**
+     * PdfStamplerのsetEncryptionを呼び出す<br>
+     * 
+     * @param encryptionType
+     * @param userPassword
+     * @param ownerPassword
+     * @param permissions
+     * @throws DocumentException
+     */
+    public void setEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions)
+            throws DocumentException {
+        stamper.setEncryption(encryptionType, userPassword, ownerPassword, permissions);
+    }
+
     @Override
     public void close() throws DocumentException, IOException {
         // 標準実装のPdfStamperのclose()は呼び出すと、

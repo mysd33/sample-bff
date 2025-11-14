@@ -33,5 +33,7 @@ public class SignOptions {
     @Builder.Default
     private int visibleSignPage = 1;
     // パスワード保護されたPDFの場合のパスワード
-    private String password = null;
+    private String userPassword;
+    // セキュリティ設定したPDFの場合のオーナーパスワード（PKCS12BasiceReportSignerのみ利用）
+    private String ownerPassword;
 }
