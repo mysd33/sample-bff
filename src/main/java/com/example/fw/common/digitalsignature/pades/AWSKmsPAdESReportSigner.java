@@ -85,10 +85,12 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         pdfTempPath.get().toFile().mkdirs();
 
         // キーIDの取得
+        String keyAlias = null;
+        // キーIDが明示的に設定されている場合はそのまま使用
         keyId = digitalSignatureConfigurationProperties.getAwsKms().getKeyId();
         if (StringUtils.isEmpty(keyId)) {
-            // キーIDが指定されていない場合、キーエイリアスからキーIDを取得
-            String keyAlias = digitalSignatureConfigurationProperties.getAwsKms().getKeyAlias();
+            // キーIDが設定されていない場合、キーエイリアスからキーIDを取得
+            keyAlias = digitalSignatureConfigurationProperties.getAwsKms().getKeyAlias();
             if (StringUtils.isEmpty(keyAlias)) {
                 throw new IllegalStateException(
                         "Either keyId or keyAlias must be specified in digital signature configuration.");
@@ -100,6 +102,9 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
                         String.format("No key found for the specified key alias: %s", keyAlias));
             }
         }
+        // 解析用にキーIDをログ出力
+        appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0001, keyAlias, keyId);
+
         // 証明書の取得
         certificate = keyManager.getCertificateFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
         // 証明書が取得できない場合は例外をスロー
@@ -238,6 +243,11 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         pAdESSignatureParameters.setAppName(digitalSignatureConfigurationProperties.getApplicationName());
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
+
+        // パスワード保護されたPDFの場合のパスワード設定
+        if (StringUtils.isNotEmpty(options.getUserPassword())) {
+            pAdESSignatureParameters.setPasswordProtection(options.getUserPassword().toCharArray());
+        }
 
         // 可視署名
         // https://github.com/esig/dss/blob/master/dss-cookbook/src/test/java/eu/europa/esig/dss/cookbook/example/sign/SignPdfPadesBVisibleTest.java
