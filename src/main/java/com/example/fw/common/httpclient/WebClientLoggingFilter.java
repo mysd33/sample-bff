@@ -22,15 +22,11 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 
-import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.logging.MonitoringLogger;
 import com.example.fw.common.message.CommonFrameworkMessageIds;
 import com.example.fw.common.systemdate.SystemDateUtils;
 
-import io.micrometer.tracing.Span;
-import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -48,95 +44,44 @@ public class WebClientLoggingFilter {
     private static final String TRACE_ID = "traceId";
     private static final String SPAN_ID = "spanId";
     private static final String USER_ID = "userId";
-    private static final String UTF_8 = "UTF-8";
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
-
-    private final Tracer tracer;
 
     /**
      * WebClient呼び出し時のログを出力する
      * 
-     * @return
      */
     public ExchangeFilterFunction filter() {
         return (request, next) -> {
             final ClientRequest clientRequest;
             // 処理時間を計測しログ出力
             long startTime = System.nanoTime();
-            try {
-                appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
-                        URLDecoder.decode(request.url().toASCIIString(), UTF_8));
-            } catch (Exception e) {
-                // マルチスレッド下の想定外のエラーのため、エラーログを出力
-                monitoringLogger.error(CommonFrameworkMessageIds.E_FW_CMMN_9001, e);
-                throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
-            }
-
-            // レスポンス受領時にログを出力するため、Tracerから現在のTraceID、SpanIDを取得しておく
-            final Span currentSpan = tracer.currentSpan();
-            // MDCにユーザIDが設定されている場合、取得しておく
-            final String userId = MDC.get(USER_ID);
-
+            appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
+                    URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8));
             // 電文ログのデバッグログ出力対応したClientRequestを作成
-            clientRequest = createClientRequestForDebugLog(request, currentSpan, userId);
-
+            String currentTraceId = MDC.get(TRACE_ID);
+            String currentSpanId = MDC.get(SPAN_ID);
+            String userId = MDC.get(USER_ID);
+            clientRequest = createClientRequestForDebugLog(request, new MDCData(currentTraceId, currentSpanId, userId));
             return next.exchange(clientRequest).flatMap(response -> {
                 // 呼び出し処理実行後、処理時間を計測しログ出力
                 long endTime = System.nanoTime();
                 double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
-
-                // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
-                new MDCTrackIdScope(currentSpan, userId).execute(request, r -> {
-                    try {
-                        appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0002, r.method(),
-                                URLDecoder.decode(r.url().toASCIIString(), UTF_8), elapsedTime);
-                    } catch (Exception e) {
-                        // マルチスレッド下の想定外のエラーのため、エラーログを出力
-                        monitoringLogger.error(CommonFrameworkMessageIds.E_FW_CMMN_9001, e);
-                        throw new SystemException(e, CommonFrameworkMessageIds.E_FW_CMMN_9001);
-                    }
-                });
-
-                return createResponseMonoForDebugLog(response, currentSpan, userId);
+                appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0002, request.method(),
+                        URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8), elapsedTime);
+                return createResponseMonoForDebugLog(response);
             });
         };
     }
 
     /**
-     * レスポンスデータの電文ログをデバッグログ出力するためのMono<ClientResponse>を作成する
+     * リクエストデータの電文ログをデバッグログ出力するためのClientRequest作成</br>
      * 
-     * @param response    レスポンスデータ
-     * @param currentSpan 現在のSpan
-     * @return 電文ログ出力対応したレスポンスデータ
-     */
-    private Mono<? extends ClientResponse> createResponseMonoForDebugLog(final ClientResponse response,
-            final Span currentSpan, final String userId) {
-        // レスポンスデータのログを出力する
-        // https://stackoverflow.com/questions/73299170/how-to-log-response-body-from-client-by-overriding-exchangefilterfunction-ofresp
-        // https://stackoverflow.com/questions/67300470/webclient-request-and-response-body-logging
-        return appLogger.isDebugEnabled() ? Mono.just(response.mutate().body(data -> data.map(dataBuffer -> {
-            try {
-                // 別スレッドで動作するため、TraceID、SpanID等をMDCに設定してログ出力
-                new MDCTrackIdScope(currentSpan, userId).execute(dataBuffer,
-                        d -> appLogger.debug("レスポンスデータ: {}", d.toString(StandardCharsets.UTF_8)));
-                return dataBuffer;
-            } finally {
-                MDC.remove(TRACE_ID);
-                MDC.remove(SPAN_ID);
-            }
-        })).build()) : Mono.just(response);
-    }
-
-    /**
-     * リクエストデータの電文ログをデバッグログ出力するためのClientRequest作成
+     * この時点で、MDCに設定したデータが引き継がれていないので、引き継ぐためにパラメータで渡す
      * 
-     * @param request     リクエストデータ
-     * @param currentSpan 現在のSpan
+     * @param request リクエストデータ
      * @return 電文ログ出力対応したリクエストデータ
      */
-    private ClientRequest createClientRequestForDebugLog(final ClientRequest request, final Span currentSpan,
-            final String userId) {
+    private ClientRequest createClientRequestForDebugLog(final ClientRequest request, MDCData mdcData) {
         final ClientRequest clientRequest;
         if (appLogger.isDebugEnabled()) {
             // リクエストデータの電文ログをデバッグログ出力するよう設定
@@ -144,11 +89,28 @@ public class WebClientLoggingFilter {
             // https://stackoverflow.com/questions/67300470/webclient-request-and-response-body-logging
             BodyInserter<?, ? super ClientHttpRequest> bodyInserter = request.body();
             clientRequest = ClientRequest.from(request).body((outputMessage, context) -> bodyInserter
-                    .insert(new LoggingClientHttpRequest(outputMessage, currentSpan, userId), context)).build();
+                    .insert(new LoggingClientHttpRequest(outputMessage, mdcData), context)).build();
         } else {
             clientRequest = request;
         }
         return clientRequest;
+    }
+
+    /**
+     * レスポンスデータの電文ログをデバッグログ出力するためのMono<ClientResponse>を作成する
+     * 
+     * @param response レスポンスデータ
+     */
+    private Mono<? extends ClientResponse> createResponseMonoForDebugLog(final ClientResponse response) {
+        // レスポンスデータのログを出力する
+        // https://stackoverflow.com/questions/73299170/how-to-log-response-body-from-client-by-overriding-exchangefilterfunction-ofresp
+        // https://stackoverflow.com/questions/67300470/webclient-request-and-response-body-logging
+        return appLogger.isDebugEnabled() ? //
+                Mono.just(response.mutate().body(data -> data.map(dataBuffer -> {
+                    appLogger.debug("レスポンスデータ: {}", dataBuffer.toString(StandardCharsets.UTF_8));
+                    return dataBuffer;
+                })).build()) //
+                : Mono.just(response);
     }
 
     /**
@@ -157,8 +119,7 @@ public class WebClientLoggingFilter {
     @RequiredArgsConstructor
     class LoggingClientHttpRequest implements ClientHttpRequest {
         private final ClientHttpRequest delegateRequest;
-        private final Span currentSpan;
-        private final String userId;
+        private final MDCData mdcData;
 
         @Override
         public DataBufferFactory bufferFactory() {
@@ -179,7 +140,7 @@ public class WebClientLoggingFilter {
         public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
             return appLogger.isDebugEnabled() ? delegateRequest.writeWith(DataBufferUtils.join(body).doOnNext(data ->
             // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
-            new MDCTrackIdScope(currentSpan, userId).execute(data,
+            new MDCScope(mdcData).execute(data,
                     d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8)))))
                     // デバッグレベルじゃない場合は通常の処理
                     : this.delegateRequest.writeWith(body);
@@ -190,7 +151,7 @@ public class WebClientLoggingFilter {
             return appLogger.isDebugEnabled() ? delegateRequest
                     .writeAndFlushWith(Flux.from(body).map(b -> DataBufferUtils.join(b).doOnNext(data ->
                     // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
-                    new MDCTrackIdScope(currentSpan, userId).execute(data,
+                    new MDCScope(mdcData).execute(data,
                             d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8))))))
                     // デバッグレベルじゃない場合は通常の処理
                     : this.delegateRequest.writeAndFlushWith(body);
@@ -234,30 +195,45 @@ public class WebClientLoggingFilter {
     }
 
     /**
-     * MDCにTrackID、SpanID等が設定されたスコープを実現するクラス
+     * MDCに設定するデータを保持するクラス
      */
     @RequiredArgsConstructor
-    class MDCTrackIdScope {
-        private final Span currentSpan;
+    class MDCData {
+        private final String traceId;
+        private final String spanId;
         private final String userId;
+
+        void putToMDC() {
+            if (traceId != null && spanId != null) {
+                MDC.put(TRACE_ID, traceId);
+                MDC.put(SPAN_ID, spanId);
+            }
+            if (userId != null) {
+                MDC.put(USER_ID, userId);
+            }
+        }
+
+        void removeFromMDC() {
+            MDC.remove(TRACE_ID);
+            MDC.remove(SPAN_ID);
+            MDC.remove(USER_ID);
+        }
+    }
+
+    /**
+     * MDCの設定スコープを実現するクラス
+     */
+    @RequiredArgsConstructor
+    class MDCScope {
+        private final MDCData mdcData;
 
         <T> void execute(T data, Consumer<T> consumer) {
             try {
                 // 単体テスト実行時等、Spanが存在しない場合があるため、nullチェックを行ってからMDCに設定
-                if (currentSpan != null) {
-                    String traceId = currentSpan.context().traceId();
-                    String spanId = currentSpan.context().spanId();
-                    MDC.put(TRACE_ID, traceId);
-                    MDC.put(SPAN_ID, spanId);
-                }
-                if (userId != null) {
-                    MDC.put(USER_ID, userId);
-                }
+                mdcData.putToMDC();
                 consumer.accept(data);
             } finally {
-                MDC.remove(TRACE_ID);
-                MDC.remove(SPAN_ID);
-                MDC.remove(USER_ID);
+                mdcData.removeFromMDC();
             }
         }
     }
