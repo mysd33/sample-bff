@@ -10,21 +10,29 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+import org.bouncycastle.util.Store;
 
 import com.example.fw.common.exception.SystemException;
 import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
@@ -311,17 +319,17 @@ public class AWSKmsKeyManager implements KeyManager {
     public Certificate getSelfSignedCertificateFromObjectStorage(final KeyInfo keyInfo) {
         String selfSignedCertificateFileName = keyManagementConfigurationProperties.getSelfSignedCertPemFileName();
         try {
-            return getCertificateFromObjectStorage(keyInfo, selfSignedCertificateFileName);
+            return getCertificatesFromObjectStorage(keyInfo, selfSignedCertificateFileName).get(0);
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9010);
         }
     }
 
     @Override
-    public Certificate getCertificateFromObjectStorage(final KeyInfo keyInfo) {
+    public List<Certificate> getCertificatesFromObjectStorage(final KeyInfo keyInfo) {
         String certificateFileName = keyManagementConfigurationProperties.getCertPemFileName();
         try {
-            return getCertificateFromObjectStorage(keyInfo, certificateFileName);
+            return getCertificatesFromObjectStorage(keyInfo, certificateFileName);
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9011);
         }
@@ -363,17 +371,38 @@ public class AWSKmsKeyManager implements KeyManager {
      * @return
      * @throws IOException
      */
-    private Certificate getCertificateFromObjectStorage(final KeyInfo keyInfo, final String certificateFileName)
+    private List<Certificate> getCertificatesFromObjectStorage(final KeyInfo keyInfo, final String certificateFileName)
             throws IOException {
         final String certsBassPrefix = keyManagementConfigurationProperties.getCertsBasePrefix();
         final String certifacatePrefix = certsBassPrefix + keyInfo.getKeyId() + "/" + certificateFileName;
-        // オブジェクトストレージから自己署名証明書のpemをダウンロード
+        final List<Certificate> certificates = new ArrayList<>();
+        // オブジェクトストレージからファイルダウンロード
         DownloadObject downloadObject = objectStorageFileAccessor.download(certifacatePrefix);
-
-        return Certificate.builder()//
-                .der(downloadObject.getInputStream().readAllBytes()) // 証明書のDERエンコードされたバイト配列を設定
-                .build();
-
+        // PKCS#7形式の証明書チェーンのファイル（拡張子がp7b）の場合
+        if (downloadObject.getFileName().endsWith(".p7b")) {
+            // PKCS#7形式の証明書チェーンとして処理
+            byte[] pkcs7Bytes = downloadObject.getInputStream().readAllBytes();
+            CMSSignedData cmsSignedData;
+            try {
+                cmsSignedData = new CMSSignedData(pkcs7Bytes);
+            } catch (CMSException e) {
+                throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9011);
+            }
+            // 証明書を抽出してリストに追加
+            Store<X509CertificateHolder> certStore = cmsSignedData.getCertificates();
+            for (X509CertificateHolder certHolder : certStore.getMatches(null)) {
+                try {
+                    X509Certificate x509Certificate = new JcaX509CertificateConverter().getCertificate(certHolder);
+                    certificates.add(Certificate.builder().der(x509Certificate.getEncoded()).build());
+                } catch (CertificateException e) {
+                    throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9011);
+                }
+            }
+            return certificates;
+        }
+        // それ以外の場合は、pem形式の証明書として処理
+        return List.of(Certificate.builder()//
+                .der(downloadObject.getInputStream().readAllBytes()).build());
     }
 
 }

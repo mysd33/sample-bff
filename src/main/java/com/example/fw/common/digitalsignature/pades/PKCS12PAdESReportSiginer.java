@@ -6,13 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyStore.PasswordProtection;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
@@ -100,7 +97,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
 
             // 証明書の有効性を確認
             X509Certificate certificate = privateKey.getCertificate().getCertificate();
-            validateCertificate(certificate);
+            CertificateUtils.validateCertificate(certificate);
 
             // PAdESSignatureの署名パラメータを作成
             PAdESSignatureParameters signatureParameters = createSignatureParameters(privateKey, options);
@@ -126,23 +123,6 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             return DefaultReport.builder().file(file).build();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9002);
-        }
-    }
-
-    /**
-     * 証明書の有効性を検証する
-     * 
-     * @param certificate 検証対象の証明書
-     */
-    private void validateCertificate(X509Certificate certificate) {
-        Assert.notNull(certificate, "Certificate must not be null");
-        try {
-            // 証明書の有効期限を確認
-            certificate.checkValidity();
-        } catch (CertificateNotYetValidException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9004);
-        } catch (CertificateExpiredException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9005);
         }
     }
 

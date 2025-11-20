@@ -6,14 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
@@ -72,9 +68,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
     private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
     // 電子署名に使用するキーID
     private String keyId;
-    // TODO: 証明書チェーンで中間証明書が必要な場合は修正が必要
-    // 電子署名に使用する証明書
-    private Certificate certificate;
+    // 電子署名に使用する証明書チェーンのCertificateToken
+    private List<CertificateToken> certificateTokens;
 
     @PostConstruct
     public void init() {
@@ -106,21 +101,19 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0001, keyAlias, keyId);
 
         // 証明書の取得
-        certificate = keyManager.getCertificateFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
+        List<Certificate> certificates = keyManager
+                .getCertificatesFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
         // 証明書が取得できない場合は例外をスロー
-        if (certificate == null) {
+        if (certificates == null) {
             throw new IllegalStateException(String.format("No certificate found for the specified key ID: %s", keyId));
         }
+        // 証明書チェーンをCertificateToken形式で取得
+        certificateTokens = CertificateUtils.exchageOrderdCertifcateTokens(certificates);
+
         // KMSから公開鍵を取得
         PublicKey publicKey = keyManager.getPublicKey(KeyInfo.builder().keyId(keyId).build());
-        // 証明書の公開鍵を取得
-        PublicKey publicKeyInCertificate = null;
-        try {
-            X509Certificate x509Certificate = certificate.getX509Certificate();
-            publicKeyInCertificate = x509Certificate.getPublicKey();
-        } catch (CertificateException | IOException e) {
-            throw new IllegalStateException("Failed to get X509Certificate from certificate.", e);
-        }
+        // エンドエンティティ証明書の公開鍵を取得
+        PublicKey publicKeyInCertificate = certificateTokens.getFirst().getPublicKey();
         // KMSから取得した公開鍵と証明書の公開鍵の内容が一致するか確認
         if (!publicKey.equals(publicKeyInCertificate)) {
             throw new IllegalStateException(
@@ -146,20 +139,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
         try (AWSKmsSignatureToken token = new AWSKmsSignatureToken(keyManager, keyId)) {
 
-            // 証明書をX.509証明書形式で取得
-            X509Certificate x509Certificate;
-            try {
-                x509Certificate = certificate.getX509Certificate();
-            } catch (CertificateException | IOException e) {
-                throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9008);
-            }
-
-            // 証明書の有効性を確認
-            validateCertificate(x509Certificate);
-
             // PAdESSignatureの署名パラメータを作成
-            CertificateToken certificateToken = new CertificateToken(x509Certificate);
-            PAdESSignatureParameters signatureParameters = createSignatureParameters(certificateToken, options);
+            PAdESSignatureParameters signatureParameters = createSignatureParameters(certificateTokens, options);
 
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
@@ -195,35 +176,19 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
     }
 
     /**
-     * 証明書の有効性を検証する
-     * 
-     * @param certificate 検証対象の証明書
-     */
-    private void validateCertificate(X509Certificate certificate) {
-        Assert.notNull(certificate, "Certificate must not be null");
-        try {
-            // 証明書の有効期限を確認
-            certificate.checkValidity();
-        } catch (CertificateNotYetValidException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9004);
-        } catch (CertificateExpiredException e) {
-            throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9005);
-        }
-    }
-
-    /**
      * PAdESSignatureParametersを作成する
      * 
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
-    private PAdESSignatureParameters createSignatureParameters(CertificateToken certificateToken, SignOptions options) {
+    private PAdESSignatureParameters createSignatureParameters(List<CertificateToken> certificateTokens,
+            SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
-        pAdESSignatureParameters.setSigningCertificate(certificateToken);
-        // TODO: 証明書チェーンで中間証明書が必要な場合は修正が必要
-        pAdESSignatureParameters.setCertificateChain(certificateToken);
+        pAdESSignatureParameters.setSigningCertificate(certificateTokens.getFirst());
+        // 証明書チェーンの設定
+        pAdESSignatureParameters.setCertificateChain(certificateTokens);
 
         // 署名の設定
         // 署名レベルをPAdES_BASELINE Bプロファイルに設定

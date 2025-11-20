@@ -1,6 +1,7 @@
 package com.example.fw.common.keymanagement;
 
 import java.security.PublicKey;
+import java.util.List;
 
 /**
  * キーを管理するためのインターフェース。
@@ -115,7 +116,7 @@ public interface KeyManager {
      * @param keyInfo 証明書を取得するための暗号鍵の情報
      * @return 取得した証明書
      */
-    Certificate getCertificateFromObjectStorage(KeyInfo keyInfo);
+    List<Certificate> getCertificatesFromObjectStorage(KeyInfo keyInfo);
 
     /**
      * メッセージダイジェスト（ハッシュ）をもとに電子署名を生成します。
