@@ -41,9 +41,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 public class WebClientLoggingFilter {
-    private static final String TRACE_ID = "traceId";
-    private static final String SPAN_ID = "spanId";
-    private static final String USER_ID = "userId";
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     /**
@@ -57,11 +54,10 @@ public class WebClientLoggingFilter {
             long startTime = System.nanoTime();
             appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
                     URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8));
+            // MDCの内容をコピーして取得
+            Map<String, String> mdcData = MDC.getCopyOfContextMap();
             // 電文ログのデバッグログ出力対応したClientRequestを作成
-            String currentTraceId = MDC.get(TRACE_ID);
-            String currentSpanId = MDC.get(SPAN_ID);
-            String userId = MDC.get(USER_ID);
-            clientRequest = createClientRequestForDebugLog(request, new MDCData(currentTraceId, currentSpanId, userId));
+            clientRequest = createClientRequestForDebugLog(request, mdcData);
             return next.exchange(clientRequest).flatMap(response -> {
                 // 呼び出し処理実行後、処理時間を計測しログ出力
                 long endTime = System.nanoTime();
@@ -81,7 +77,7 @@ public class WebClientLoggingFilter {
      * @param request リクエストデータ
      * @return 電文ログ出力対応したリクエストデータ
      */
-    private ClientRequest createClientRequestForDebugLog(final ClientRequest request, MDCData mdcData) {
+    private ClientRequest createClientRequestForDebugLog(final ClientRequest request, Map<String, String> mdcData) {
         final ClientRequest clientRequest;
         if (appLogger.isDebugEnabled()) {
             // リクエストデータの電文ログをデバッグログ出力するよう設定
@@ -119,7 +115,7 @@ public class WebClientLoggingFilter {
     @RequiredArgsConstructor
     class LoggingClientHttpRequest implements ClientHttpRequest {
         private final ClientHttpRequest delegateRequest;
-        private final MDCData mdcData;
+        private final Map<String, String> mdcData;
 
         @Override
         public DataBufferFactory bufferFactory() {
@@ -142,7 +138,7 @@ public class WebClientLoggingFilter {
             // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
             new MDCScope(mdcData).execute(data,
                     d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8)))))
-                    // デバッグレベルじゃない場合は通常の処理
+                    // デバッグレベルでない場合は通常の処理
                     : this.delegateRequest.writeWith(body);
         }
 
@@ -153,7 +149,7 @@ public class WebClientLoggingFilter {
                     // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
                     new MDCScope(mdcData).execute(data,
                             d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8))))))
-                    // デバッグレベルじゃない場合は通常の処理
+                    // デバッグレベルでない場合は通常の処理
                     : this.delegateRequest.writeAndFlushWith(body);
         }
 
@@ -195,45 +191,19 @@ public class WebClientLoggingFilter {
     }
 
     /**
-     * MDCに設定するデータを保持するクラス
-     */
-    @RequiredArgsConstructor
-    class MDCData {
-        private final String traceId;
-        private final String spanId;
-        private final String userId;
-
-        void putToMDC() {
-            if (traceId != null && spanId != null) {
-                MDC.put(TRACE_ID, traceId);
-                MDC.put(SPAN_ID, spanId);
-            }
-            if (userId != null) {
-                MDC.put(USER_ID, userId);
-            }
-        }
-
-        void removeFromMDC() {
-            MDC.remove(TRACE_ID);
-            MDC.remove(SPAN_ID);
-            MDC.remove(USER_ID);
-        }
-    }
-
-    /**
      * MDCの設定スコープを実現するクラス
      */
     @RequiredArgsConstructor
     class MDCScope {
-        private final MDCData mdcData;
+        private final Map<String, String> mdcData;
 
         <T> void execute(T data, Consumer<T> consumer) {
             try {
                 // 単体テスト実行時等、Spanが存在しない場合があるため、nullチェックを行ってからMDCに設定
-                mdcData.putToMDC();
+                MDC.setContextMap(mdcData);
                 consumer.accept(data);
             } finally {
-                mdcData.removeFromMDC();
+                MDC.clear();
             }
         }
     }

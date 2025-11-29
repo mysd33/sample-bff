@@ -23,7 +23,10 @@ spring:
   h2:
     console:
       enabled: true
-
+# WebClient ログ詳細化
+  http:
+    codecs:
+      log-request-details: true
 # Spring Boot Actuator
 management:
   endpoints:
@@ -52,7 +55,10 @@ logging:
 #    org.springframework.security: DEBUG
 #    org.thymeleaf: DEBUG
     com.example: DEBUG
+# LogAspect 性能ログ出力
     com.example.fw.web.aspect.LogAspect: TRACE
+# WebClient ログ詳細化    
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 
 # 拡張フレームワークのプロパティ
 example:
