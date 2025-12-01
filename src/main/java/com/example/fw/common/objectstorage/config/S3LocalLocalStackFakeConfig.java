@@ -61,7 +61,7 @@ public class S3LocalLocalStackFakeConfig {
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
-                //MinIOはデフォルトPath-Styleのため
+                //Path-Styleの設定
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true).build())
                 .build();        

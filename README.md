@@ -286,7 +286,9 @@ postgres> CREATE DATABASE testdb;
             Default output format [None]: json
             ```
 
-            * LocalStackが起動したら、AWS CLIでS3のバケットを作成する。
+            * バケット作成
+                * サンプルAPが起動時のにアクセスするS3のバケットを作成してくれるので通常は作成不要。
+                * 明示的に作成する場合は、LocalStackが起動したら、AWS CLIでS3のバケットを作成する。
 
             ```sh
             aws s3 mb --endpoint-url=http://localhost:4566 --profile localstack s3://mysd33bucket123
