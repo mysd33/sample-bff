@@ -1,8 +1,8 @@
 package com.example.fw.web.view;
 
-import static com.fasterxml.jackson.dataformat.csv.CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static tools.jackson.dataformat.csv.CsvWriteFeature.ALWAYS_QUOTE_STRINGS;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStreamWriter;
@@ -16,13 +16,11 @@ import java.util.Map;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
-import lombok.val;
+import tools.jackson.dataformat.csv.CsvMapper;
+import tools.jackson.dataformat.csv.CsvSchema;
 
 /**
  * CSVダウンロード用のビュークラス
@@ -47,10 +45,8 @@ public class CsvDownloadView extends AbstractView {
      * @return
      */
     static CsvMapper createCsvMapper() {
-        CsvMapper mapper = new CsvMapper();
-        mapper.configure(ALWAYS_QUOTE_STRINGS, true);
-        mapper.findAndRegisterModules();
-        return mapper;
+        // TODO: Spring Boot4.x対応で修正したための動作確認要
+        return CsvMapper.builder().configure(ALWAYS_QUOTE_STRINGS, true).build();
     }
 
     /**

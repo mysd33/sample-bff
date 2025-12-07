@@ -1,5 +1,6 @@
 package com.example.bff.domain.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Todo implements Serializable {
+    @Serial
     private static final long serialVersionUID = -8221174350955399012L;
     // ID
     private String todoId;

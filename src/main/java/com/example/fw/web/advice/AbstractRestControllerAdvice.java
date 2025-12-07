@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,14 +26,13 @@ import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.exception.SystemException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies.NamingBase;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * 
@@ -46,11 +46,19 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
 
     // ObjectMapperのPropertyNamingStrategyを取得するためのフィールド
     private ObjectMapper objectMapper;
+    // JsonPropertyアノテーションの値を取得するためのフィールド
+    private JacksonProperties jacksonProperties;
 
     // 業務のRestControllerAdviceクラスのコンストラクタが煩雑にならないようSetterインジェクションを利用
     @Autowired
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    // 業務のRestControllerAdviceクラスのコンストラクタが煩雑にならないようSetterインジェクションを利用
+    @Autowired
+    public void setJacksonProperties(JacksonProperties jacksonProperties) {
+        this.jacksonProperties = jacksonProperties;
     }
 
     /**
@@ -72,6 +80,9 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        // TODO: SpringBoot4バージョンアップ動作確認
+        // TODO: Jackson3で例外がStreamReadException、DatabindExceptionに変わったため動作確認要
+
         // リソースのフォーマットとしてJSONを使用する場合、HttpMessageNotReadableExceptionの原因例外として格納されるものをハンドリング
         // (参考)
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebServiceDetail/REST.html#resthowtouseexceptionhandlingforvalidationerror
@@ -81,19 +92,21 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
         // ObjectMapperのDeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIESがfalseで作成されるため
         // UnrecognizedPropertyExceptionはスローされない
         // spring.jackson.deserialization.fail-on-unknown-properties=trueをapplication.yamlに設定することで、例外発生する。
-        if (ex.getCause() instanceof JsonParseException cause) {
+        if (ex.getCause() instanceof StreamReadException cause) {
             // JSONとして不正な構文の場合
             Object body = errorResponseCreator.createRequestParseErrorResponse(cause, request);
             return handleExceptionInternal(ex, body, headers, statusCode, request);
-        } else if (ex.getCause() instanceof JsonMappingException cause) {
+        } else if (ex.getCause() instanceof DatabindException cause) {
             // JSONからResourceオブジェクトへ変換する際に、値の型変換またはエラーが発生した場合、
             // もしくは、spring.jackson.deserialization.fail-on-unknown-properties=trueの場合に、
             // Resourceオブジェクトに存在しないフィールドがJSONに指定された場合に、エラーの原因となったフィールドを抽出
             List<InvalidFormatField> fields = new ArrayList<>();
             InvalidFormatField.ErrorType errorType = getFieldErrorType(cause);
             cause.getPath().forEach(ref -> {
-                Class<?> fromClass = ref.getFrom().getClass();
-                String jsonFieldName = ref.getFieldName();
+                // TODO: API変更で修正したので動作確認要
+                Class<?> fromClass = ref.from().getClass();
+                // TODO: API変更で修正したので動作確認要
+                String jsonFieldName = ref.getPropertyName();
                 String propertyDescription = getPropertyDescription(fromClass, jsonFieldName);
                 if (StringUtils.hasLength(propertyDescription)) {
                     fields.add(InvalidFormatField.builder().fieldName(jsonFieldName).description(propertyDescription)
@@ -117,7 +130,7 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
      * @param cause JsonMappingExceptionの原因例外
      * @return フィールドのエラータイプ
      */
-    private InvalidFormatField.ErrorType getFieldErrorType(JsonMappingException cause) {
+    private InvalidFormatField.ErrorType getFieldErrorType(DatabindException cause) {
         InvalidFormatField.ErrorType errorType;
         switch (cause) {
         case UnrecognizedPropertyException unrecognizedPropertyException -> //
@@ -139,10 +152,19 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
         List<Field> fields = List.of(clazz.getDeclaredFields());
         for (Field field : fields) {
             JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+
+            // TODO: Spring Boot4、Jackson3対応で動作確認しながら、修正が必要。
+
             // @JsonPropertyが付与されている場合はその値を優先して使用、
             // 付与されていない場合はPropertyNamingStrategyで変換した値を使用する
-            String fieldName = jsonProperty != null ? jsonProperty.value()
-                    : ((NamingBase) objectMapper.getPropertyNamingStrategy()).translate(field.getName());
+            String fieldName = jsonProperty != null ? jsonProperty.value() : field.getName();
+
+            // TODO: PropertyNamingStrategyの変換処理を実装する必要があるが、現在仮置き
+            // 本来は、Jackson3ではPropertyNamingStrategyへのアクセスが隠蔽されているため、実装変更が必要
+            // String fieldName = jsonProperty != null ? jsonProperty.value()
+            // : ((NamingBase)
+            // objectMapper.getPropertyNamingStrategy()).translate(field.getName());
+
             if (!fieldName.equals(jsonFieldName)) {
                 continue;
             }

@@ -1,5 +1,6 @@
 package com.example.bff.domain.model;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import lombok.Getter;
  *
  */
 public class LoginUserDetails implements UserDetails {
+    @Serial
     private static final long serialVersionUID = -3792232397594810206L;
 
     @Getter

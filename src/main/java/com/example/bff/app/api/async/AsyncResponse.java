@@ -1,5 +1,6 @@
 package com.example.bff.app.api.async;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +22,7 @@ public class AsyncResponse implements Serializable {
     // 拒絶
     public static final AsyncResponse Reject = new AsyncResponse("reject");
 
+    @Serial
     private static final long serialVersionUID = 8603261817673346760L;
 
     private AsyncResponse(final String result) {

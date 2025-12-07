@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -252,7 +251,7 @@ public abstract class AbstractJasperReportCreator<T> {
      */
     private File getJasperFile(final String jrxmlFile) {
         // JRXMLのファイルパスから、拡張子を置き換えてjaperファイル名を取得
-        Path path = Paths.get(jrxmlFile);
+        Path path = Path.of(jrxmlFile);
         String jasperFileName = path.getFileName().toString().replace(ReportsConstants.JRXML_FILE_EXTENSION,
                 ReportsConstants.JASPER_FILE_EXTENSION);
         // 一時フォルダにあるファイルパスを返却

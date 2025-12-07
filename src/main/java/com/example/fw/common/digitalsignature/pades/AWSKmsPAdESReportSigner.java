@@ -94,7 +94,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             keyId = keyManager.findKeyByAlias(keyAlias).getKeyId();
             if (StringUtils.isEmpty(keyId)) {
                 throw new IllegalStateException(
-                        String.format("No key found for the specified key alias: %s", keyAlias));
+                        "No key found for the specified key alias: %s".formatted(keyAlias));
             }
         }
         // 解析用にキーIDをログ出力
@@ -105,7 +105,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
                 .getCertificatesFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
         // 証明書が取得できない場合は例外をスロー
         if (certificates == null) {
-            throw new IllegalStateException(String.format("No certificate found for the specified key ID: %s", keyId));
+            throw new IllegalStateException("No certificate found for the specified key ID: %s".formatted(keyId));
         }
         // 証明書チェーンをCertificateToken形式で取得
         certificateTokens = CertificateUtils.exchageOrderdCertifcateTokens(certificates);

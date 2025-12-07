@@ -24,10 +24,11 @@ spring:
 
 #Spring Session Data Redis
   session:
-    redis:
-      configure-action: none
-#RedisIndexedSessionRepository is selected to support session expiration and deletion         
-      repository-type: indexed
+    data:
+      redis:
+        configure-action: none
+#RedisIndexedSessionRepository is selected to support session expiration and deletion
+        repository-type: indexed
   data:
     redis:
 #      host: localhost

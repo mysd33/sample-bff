@@ -1,5 +1,6 @@
 package com.example.bff.app.web.todo;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.example.fw.common.validation.CharSet;
@@ -11,6 +12,7 @@ import lombok.Data;
 
 @Data
 public class TodoForm implements Serializable {
+    @Serial
     private static final long serialVersionUID = 6388192822188679641L;
 
     public static interface TodoCreate {

@@ -1,5 +1,6 @@
 package com.example.bff.app.web.user;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,6 +21,7 @@ import lombok.Data;
 @Data
 public class UserCsv implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1883999589975469540L;
 
     @JsonProperty("ユーザーID")

@@ -1,5 +1,6 @@
 package com.example.fw.common.async.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class JobRequest implements Serializable {
+    @Serial
     private static final long serialVersionUID = -7463515743016612451L;
 
     // ジョブID
