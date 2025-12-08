@@ -16,7 +16,6 @@
     <description>Spring Boot Backend for Frontend Sample</description>
     <properties>
         <java.version>21</java.version>
-    <lombok.version>1.18.42</lombok.version>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <!-- TODO: change Release Version-->
         <spring-cloud-aws.version>4.0.0-M1</spring-cloud-aws.version>
@@ -128,12 +127,12 @@
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
-        <!-- Srping Boot H2 Console-->
+        <!-- Spring Boot H2 Console-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-h2console</artifactId>
-        <!-- TERASOLUNA Web (for TransactionToken Check) -->
         </dependency>
+        <!-- TERASOLUNA Web (for TransactionToken Check) -->
         <dependency>
             <groupId>org.terasoluna.gfw</groupId>
             <artifactId>terasoluna-gfw-web</artifactId>
