@@ -103,9 +103,7 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
             List<InvalidFormatField> fields = new ArrayList<>();
             InvalidFormatField.ErrorType errorType = getFieldErrorType(cause);
             cause.getPath().forEach(ref -> {
-                // TODO: API変更で修正したので動作確認要
                 Class<?> fromClass = ref.from().getClass();
-                // TODO: API変更で修正したので動作確認要
                 String jsonFieldName = ref.getPropertyName();
                 String propertyDescription = getPropertyDescription(fromClass, jsonFieldName);
                 if (StringUtils.hasLength(propertyDescription)) {
@@ -152,23 +150,16 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
         List<Field> fields = List.of(clazz.getDeclaredFields());
         for (Field field : fields) {
             JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-
-            // TODO: Spring Boot4、Jackson3対応で動作確認しながら、修正が必要。
-
             // @JsonPropertyが付与されている場合はその値を優先して使用、
-            // 付与されていない場合はPropertyNamingStrategyで変換した値を使用する
-            String fieldName = jsonProperty != null ? jsonProperty.value() : field.getName();
-
-            // TODO: PropertyNamingStrategyの変換処理を実装する必要があるが、現在仮置き
-            // 本来は、Jackson3ではPropertyNamingStrategyへのアクセスが隠蔽されているため、実装変更が必要
-            // String fieldName = jsonProperty != null ? jsonProperty.value()
-            // : ((NamingBase)
-            // objectMapper.getPropertyNamingStrategy()).translate(field.getName());
-
+            // 付与されていない場合はObjectMapperからPropertyNamingStrategyで変換した値を使用する
+            String fieldName = jsonProperty != null ? jsonProperty.value()
+                    : objectMapper._deserializationContext().getConfig().getPropertyNamingStrategy().nameForField(null,
+                            null, jsonFieldName);
             if (!fieldName.equals(jsonFieldName)) {
                 continue;
             }
-            // フィルード名が一致する場合に、@JsonPropertyDescriptionがあればその値を返却
+            // TODO: なぜかアノテーションが空になってしまうため、和名が取得できないので継続検討要
+            // フィールド名が一致する場合に、@JsonPropertyDescriptionがあればその値を返却
             JsonPropertyDescription jsonPropertyDescription = field.getAnnotation(JsonPropertyDescription.class);
             if (jsonPropertyDescription != null) {
                 return jsonPropertyDescription.value();
