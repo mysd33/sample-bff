@@ -15,7 +15,12 @@ import com.example.fw.web.aspect.LogAspect;
 import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
+//springdoc-openapiの内部io.swagger.v3.core.jacksonはJackson2を使用しているため
+//Jackson2のObjectMapperをインポートする
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
+import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
@@ -64,14 +69,16 @@ public class AppConfig {
         return new LogAspect(systemDate, messageSource, MessageIds.W_EX_2001, MessageIds.E_EX_9001);
     }
 
-    // TODO: Spring Boot4.0で不要、もしくはまったく違う回避方法の可能性があるのでいったん削除
     /**
      * Springdoc-openapiでスネークケースの設定が反映されるようにするための回避策
      */
-    /*
-     * @Bean ModelResolver modelResolver(ObjectMapper objectMapper) { return new
-     * ModelResolver(objectMapper); }
-     */
+    @Bean
+    ModelResolver modelResolver() {
+        // Jackson2のObjectMapperを使用して、スネークケースの設定を反映させる
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        return new ModelResolver(objectMapper);
+    }
 
     /**
      * Springdoc-openapiの定義
