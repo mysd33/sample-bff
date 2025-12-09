@@ -75,7 +75,8 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
         // (参考)
         // https://terasolunaorg.github.io/guideline/current/ja/ArchitectureInDetail/WebServiceDetail/REST.html#resthowtouseexceptionhandlingforvalidationerror
         // なお、Resourceオブジェクトに存在しないフィールドがJSONに指定されてUnrecognizedPropertyExceptionがスローされるが
-        // JsonMappingExceptionのサブクラスであるため、JsonParseException、JsonMappingExceptionの２つをハンドリングする
+        // JsonMappingExceptionのサブクラスであるため、StreamReadException（SpringBoot3まではJsonParseException）、
+        // DatabindException（Spring Boot3まではJsonMappingException）の２つをハンドリングする
         // また、Spring Bootの場合、デフォルトでは、
         // ObjectMapperのDeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIESがfalseで作成されるため
         // UnrecognizedPropertyExceptionはスローされない
@@ -139,9 +140,10 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
             JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
             // @JsonPropertyが付与されている場合はその値を優先して使用、
             // 付与されていない場合はObjectMapperからPropertyNamingStrategyで変換した値を使用する
+            // _
             String fieldName = jsonProperty != null ? jsonProperty.value()
-                    : objectMapper._deserializationContext().getConfig().getPropertyNamingStrategy().nameForField(null,
-                            null, field.getName());
+                    : objectMapper.deserializationConfig().getPropertyNamingStrategy().nameForField(null, null,
+                            field.getName());
             if (!fieldName.equals(jsonFieldName)) {
                 continue;
             }
