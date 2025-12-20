@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -17,6 +18,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +62,15 @@ import software.amazon.awssdk.services.kms.model.SignRequest;
 public class AWSKmsKeyManager implements KeyManager {
     private static final String KEY_ALIAS_PREFIX = "alias/"; // キーエイリアスはalias/で始まる必要がある
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    // PEM形式かどうかを判定する条件用のマーカー
+    private static final String PEM_BEGIN_MARKER = "-----BEGIN";
+    // PEM形式のヘッダーを除去するための正規表現
+    private static final String PEM_HEADER_REGEX = "(?s)-----BEGIN[^-]*-----";
+    // PEM形式のフッターを除去するための正規表現
+    private static final String PEM_FOOTER_REGEX = "(?s)-----END[^-]*-----";
+    // 空白文字を除去するための正規表現
+    private static final String WHITESPACE_REGEX = "\\s+";
+
     private final KmsAsyncClient kmsAsyncClient;
     private final ObjectStorageFileAccessor objectStorageFileAccessor;
     private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
@@ -382,9 +393,21 @@ public class AWSKmsKeyManager implements KeyManager {
         if (downloadObject.getFileName().endsWith(".p7b")) {
             // PKCS#7形式の証明書チェーンとして処理
             byte[] pkcs7Bytes = downloadObject.getInputStream().readAllBytes();
+            byte[] derBytes;
+            String content = new String(pkcs7Bytes, StandardCharsets.UTF_8);
+            if (content.contains(PEM_BEGIN_MARKER)) {
+                // PEM形式の場合は、DER形式に変換
+                // ヘッダー、フッター、空白文字を除去してBase64デコード
+                String base64Content = content.replaceAll(PEM_HEADER_REGEX, "")//
+                        .replaceAll(PEM_FOOTER_REGEX, "")//
+                        .replaceAll(WHITESPACE_REGEX, "");
+                derBytes = Base64.getDecoder().decode(base64Content);
+            } else {
+                derBytes = pkcs7Bytes;
+            }
             CMSSignedData cmsSignedData;
             try {
-                cmsSignedData = new CMSSignedData(pkcs7Bytes);
+                cmsSignedData = new CMSSignedData(derBytes);
             } catch (CMSException e) {
                 throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9011);
             }
