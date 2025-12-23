@@ -102,8 +102,8 @@ example:
 #    bucket: mysd33bucket123
 
 # 業務APのプロパティ
-#  websecurity:
-#    debug: true
+  security:
+    debug: true
   api:
     backend:
       url: http://localhost:8000
@@ -111,6 +111,5 @@ example:
       max-attempts: 3
       min-backoff: 200
     
-  delayed:
-    batch:
-      queue: SampleQueue
+  async:
+    queue: SampleQueue

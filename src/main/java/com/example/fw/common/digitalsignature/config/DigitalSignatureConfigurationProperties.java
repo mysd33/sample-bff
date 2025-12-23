@@ -7,10 +7,10 @@ import com.example.fw.common.constants.FrameworkConstants;
 import lombok.Data;
 
 @Data
-@ConfigurationProperties(prefix = DigitalSignatureConfigurationProperties.PROPERTY)
+@ConfigurationProperties(prefix = DigitalSignatureConfigurationProperties.PROPERTY_PREFIX)
 public class DigitalSignatureConfigurationProperties {
     // 電子署名の設定を保持するプロパティのプレフィックス
-    static final String PROPERTY = FrameworkConstants.PROPERTY_BASE_NAME + "digitalsignature";
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "digitalsignature";
     // 電子署名するアプリケーション名
     private String applicationName = "MyApplication";
     // PKCS#12固有の設定(digitalsignature.pkcs12.*)

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.example.fw.common.constants.FrameworkConstants;
+
 import lombok.Data;
 
 /**
@@ -16,7 +18,7 @@ import lombok.Data;
 @ConfigurationProperties(TransactionTokenConfigurationProperties.PROPERTY_PREFIX)
 public class TransactionTokenConfigurationProperties {
     // トランザクショントークンチェック機能のプロパティプレフィックス
-    static final String PROPERTY_PREFIX = "transaction-token";
+    static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "transaction-token";
     // トランザクショントークン機能の有効化フラグ
     private boolean enabled = true;
 
