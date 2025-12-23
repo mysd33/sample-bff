@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
         KeyManagementConfigurationProperties.class })
 public class DigitalSignatureConfig {
     private static final String DIGITAL_SIGNATURE_TYPE = //
-            DigitalSignatureConfigurationProperties.PROPERTY + ".type";
+            DigitalSignatureConfigurationProperties.PROPERTY_PREFIX + ".type";
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
     private final ReportsConfigurationProperties reportsConfigurationProperties;
