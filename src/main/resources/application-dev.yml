@@ -32,15 +32,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"      
+        include: "*"
   info:
     os:
       enabled: true
     java:
-      enabled: true      
-  health:
-    redis:
-      enabled: false 
+      enabled: true
 # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
 #  cloudwatch:
 #    metrics:
