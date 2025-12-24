@@ -102,8 +102,9 @@ example:
 #    bucket: mysd33bucket123
 
 # 業務APのプロパティ
-  security:
-    debug: true
+# Spring Security Debug Mode
+#  security:
+#    debug: true
   api:
     backend:
       url: http://localhost:8000
