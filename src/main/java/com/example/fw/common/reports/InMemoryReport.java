@@ -5,6 +5,9 @@ import java.io.InputStream;
 
 import lombok.Builder;
 
+/**
+ * Reportインタフェースのメモリ保存での実装クラス
+ */
 @Builder
 public class InMemoryReport implements Report {
     // byte[]データ

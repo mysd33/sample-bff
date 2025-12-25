@@ -117,11 +117,16 @@ example:
 #  report:
 # コンパイル済の様式ファイルを保管する一時ディレクトリを変更する場合に設定
 #    jasper-file-tmpdir: jasper2
-# PDFを一時保存するディレクトリを変更する場合に設定
-#    report-tmpdir: pdf2
-# PDFを一時保存するディレクトリを削除する間隔を変更する場合に設定
-#    delete-tempfiles-initial-delay-seconds: 60
-#    delete-tempfiles-fixed-rate-seconds: 60
+
+# 一時ファイル作成機能の設定
+#  file:
+# 一時保存するディレクトリ  
+#    base-dir: tmpFilesDir2
+# 一時ファイルを削除するスケジュール
+#    delete-initial-delay-seconds: 120
+#    delete-fixed-rate-seconds: 60
+# 一時ファイルの保存期間（秒）
+#    expiration-seconds: 60
 
 # 鍵管理機能の設定
 #  keymanagement:

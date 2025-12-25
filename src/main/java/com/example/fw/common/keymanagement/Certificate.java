@@ -43,7 +43,7 @@ public class Certificate {
      * @param filePath 保存先のファイルパス
      * @throws IOException 入出力エラーが発生した場合
      */
-    public void exportPemTo(String filePath) throws IOException {
+    public void exportPemTo(final String filePath) throws IOException {
         exportPemTo(new FileWriter(filePath));
     }
 
@@ -53,7 +53,7 @@ public class Certificate {
      * @param writer 保存先のWriter
      * @throws IOException 入出力エラーが発生した場合
      */
-    public void exportPemTo(Writer writer) throws IOException {
+    public void exportPemTo(final Writer writer) throws IOException {
         try (PemWriter pemWriter = new PemWriter(writer)) {
             pemWriter.writeObject(new PemObject(PEM_TYPE, der));
         }

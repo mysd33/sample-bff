@@ -41,7 +41,7 @@ public class PdfStamperWrapper implements AutoCloseable {
      * 
      * @param modificationDate
      */
-    public void setEnforcedModificationDate(Calendar modificationDate) {
+    public void setEnforcedModificationDate(final Calendar modificationDate) {
         stamper.setEnforcedModificationDate(modificationDate);
     }
 
@@ -54,8 +54,8 @@ public class PdfStamperWrapper implements AutoCloseable {
      * @param permissions
      * @throws DocumentException
      */
-    public void setEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions)
-            throws DocumentException {
+    public void setEncryption(final int encryptionType, final String userPassword, final String ownerPassword,
+            final int permissions) throws DocumentException {
         stamper.setEncryption(encryptionType, userPassword, ownerPassword, permissions);
     }
 

@@ -2,12 +2,10 @@ package com.example.fw.common.digitalsignature.pades;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.KeyStore.PasswordProtection;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,13 +13,11 @@ import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
 import com.example.fw.common.exception.SystemException;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.file.TempFileCreator;
 import com.example.fw.common.message.CommonFrameworkMessageIds;
 import com.example.fw.common.reports.DefaultReport;
 import com.example.fw.common.reports.Report;
 import com.example.fw.common.reports.ReportsConstants;
-import com.example.fw.common.reports.config.ReportsConfigurationProperties;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -40,7 +36,6 @@ import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs12SignatureToken;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,32 +49,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class PKCS12PAdESReportSiginer implements ReportSigner {
-    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    private final ReportsConfigurationProperties config;
+    private final TempFileCreator tempFileCreator;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
-    // PDFの一時保存ファイルのディレクトリ（パスを初期化設定後、定期削除のための別スレッドで参照されるためAtomicReferenceにしておく）
-    private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
-
-    /**
-     * 初期化処理
-     * 
-     */
-    @PostConstruct
-    public void init() {
-        // 帳票を一時保存する一時ディレクトリを作成する
-        pdfTempPath.set(Path.of(ReportsConstants.TMP_DIR, config.getReportTmpdir()));
-        appLogger.debug("pdfTempPath: {}", pdfTempPath);
-        // 一時ディレクトリが存在しない場合は作成する
-        pdfTempPath.get().toFile().mkdirs();
-    }
 
     @Override
-    public Report sign(Report originalReport) {
+    public Report sign(final Report originalReport) {
         return sign(originalReport, SignOptions.builder().build());
     }
 
     @Override
-    public Report sign(Report originalReport, SignOptions options) {
+    public Report sign(final Report originalReport, final SignOptions options) {
         DSSDocument toSignDocument = null;
         if (originalReport instanceof DefaultReport defultReport) {
             // Fileに対して電子署名付与を実装
@@ -114,13 +93,12 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             // 署名をPDFに適用
             DSSDocument signedDocument = padesService.signDocument(toSignDocument, //
                     signatureParameters, signatureValue);
-            Path tempFielPath = Files.createTempFile(pdfTempPath.get(), ReportsConstants.PDF_TEMP_FILE_PREFIX,
+            File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
                     ReportsConstants.PDF_FILE_EXTENSION);
-            try (BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(tempFielPath))) {
+            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
                 signedDocument.writeTo(bos);
             }
-            File file = tempFielPath.toFile();
-            return DefaultReport.builder().file(file).build();
+            return DefaultReport.builder().file(tempFile).build();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9002);
         }
@@ -132,7 +110,8 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
-    private PAdESSignatureParameters createSignatureParameters(DSSPrivateKeyEntry privateKey, SignOptions options) {
+    private PAdESSignatureParameters createSignatureParameters(final DSSPrivateKeyEntry privateKey,
+            final SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定

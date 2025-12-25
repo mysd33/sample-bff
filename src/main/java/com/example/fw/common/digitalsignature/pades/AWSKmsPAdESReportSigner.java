@@ -2,12 +2,10 @@ package com.example.fw.common.digitalsignature.pades;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.PublicKey;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +13,7 @@ import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
 import com.example.fw.common.exception.SystemException;
+import com.example.fw.common.file.TempFileCreator;
 import com.example.fw.common.keymanagement.Certificate;
 import com.example.fw.common.keymanagement.KeyInfo;
 import com.example.fw.common.keymanagement.KeyManager;
@@ -25,7 +24,6 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 import com.example.fw.common.reports.DefaultReport;
 import com.example.fw.common.reports.Report;
 import com.example.fw.common.reports.ReportsConstants;
-import com.example.fw.common.reports.config.ReportsConfigurationProperties;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
@@ -60,12 +58,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AWSKmsPAdESReportSigner implements ReportSigner {
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final KeyManager keyManager;
-    private final ReportsConfigurationProperties reportsConfigurationProperties;
+    private final TempFileCreator tempFileCreator;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
 
-    // PDFの一時保存ファイルのディレクトリ（パスを初期化設定後、定期削除のための別スレッドで参照されるためAtomicReferenceにしておく）
-    private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
     // 電子署名に使用するキーID
     private String keyId;
     // 電子署名に使用する証明書チェーンのCertificateToken
@@ -73,11 +69,6 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
     @PostConstruct
     public void init() {
-        // 帳票を一時保存する一時ディレクトリを作成する
-        pdfTempPath.set(Path.of(ReportsConstants.TMP_DIR, reportsConfigurationProperties.getReportTmpdir()));
-        appLogger.debug("pdfTempPath: {}", pdfTempPath);
-        // 一時ディレクトリが存在しない場合は作成する
-        pdfTempPath.get().toFile().mkdirs();
 
         // キーIDの取得
         String keyAlias = null;
@@ -122,12 +113,12 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
     }
 
     @Override
-    public Report sign(Report originalReport) {
+    public Report sign(final Report originalReport) {
         return sign(originalReport, SignOptions.builder().build());
     }
 
     @Override
-    public Report sign(Report originalReport, SignOptions options) {
+    public Report sign(final Report originalReport, final SignOptions options) {
         DSSDocument toSignDocument = null;
         if (originalReport instanceof DefaultReport defaultReport) {
             // Fileに対して電子署名付与を実装
@@ -160,15 +151,14 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
                     signatureParameters, signatureValue);
 
             // 署名済みPDFを一時ファイルに保存しReportオブジェクトを生成して返却
-            Path tempFielPath;
+
             try {
-                tempFielPath = Files.createTempFile(pdfTempPath.get(), ReportsConstants.PDF_TEMP_FILE_PREFIX,
+                File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
                         ReportsConstants.PDF_FILE_EXTENSION);
-                try (BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(tempFielPath))) {
+                try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
                     signedDocument.writeTo(bos);
                 }
-                File file = tempFielPath.toFile();
-                return DefaultReport.builder().file(file).build();
+                return DefaultReport.builder().file(tempFile).build();
             } catch (IOException e) {
                 throw new SystemException(e, CommonFrameworkMessageIds.E_FW_PDFSGN_9002);
             }
@@ -181,8 +171,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
-    private PAdESSignatureParameters createSignatureParameters(List<CertificateToken> certificateTokens,
-            SignOptions options) {
+    private PAdESSignatureParameters createSignatureParameters(final List<CertificateToken> certificateTokens,
+            final SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
