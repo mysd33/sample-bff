@@ -27,32 +27,32 @@ public class AWSKmsSignatureToken implements SignatureTokenConnection {
     }
 
     @Override
-    public SignatureValue sign(ToBeSigned toBeSigned, DigestAlgorithm digestAlgorithm, DSSPrivateKeyEntry keyEntry)
-            throws DSSException {
+    public SignatureValue sign(final ToBeSigned toBeSigned, final DigestAlgorithm digestAlgorithm,
+            final DSSPrivateKeyEntry keyEntry) throws DSSException {
         throw new UnsupportedOperationException(
                 "sign(ToBeSigned, DigestAlgorithm, DSSPrivateKeyEntry) is not supported in AWSKmsSignatureTokenConnection");
     }
 
     @Override
-    public SignatureValue sign(ToBeSigned toBeSigned, SignatureAlgorithm signatureAlgorithm,
-            DSSPrivateKeyEntry keyEntry) throws DSSException {
+    public SignatureValue sign(final ToBeSigned toBeSigned, final SignatureAlgorithm signatureAlgorithm,
+            final DSSPrivateKeyEntry keyEntry) throws DSSException {
         return doSign(toBeSigned.getBytes(), signatureAlgorithm);
     }
 
     @Override
-    public SignatureValue signDigest(Digest digest, DSSPrivateKeyEntry keyEntry) throws DSSException {
+    public SignatureValue signDigest(final Digest digest, final DSSPrivateKeyEntry keyEntry) throws DSSException {
         throw new UnsupportedOperationException(
                 "signDigest(Digest, DSSPrivateKeyEntry) is not supported in AWSKmsSignatureTokenConnection");
     }
 
     @Override
-    public SignatureValue signDigest(Digest digest, SignatureAlgorithm signatureAlgorithm, DSSPrivateKeyEntry keyEntry)
-            throws DSSException {
+    public SignatureValue signDigest(final Digest digest, final SignatureAlgorithm signatureAlgorithm,
+            final DSSPrivateKeyEntry keyEntry) throws DSSException {
         throw new UnsupportedOperationException(
                 "signDigest(Digest, SignatureAlgorithm, DSSPrivateKeyEntry) is not supported in AWSKmsSignatureTokenConnection");
     }
 
-    private SignatureValue doSign(byte[] data, SignatureAlgorithm signatureAlgorithm) throws DSSException {
+    private SignatureValue doSign(final byte[] data, final SignatureAlgorithm signatureAlgorithm) throws DSSException {
         // ダイジェストから署名を生成
         Signature signature = keyManager.createSignatureFromRawData(data, // ,
                 KeyInfo.builder().keyId(keyId).build());

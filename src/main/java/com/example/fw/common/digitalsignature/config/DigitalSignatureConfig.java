@@ -9,10 +9,10 @@ import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.basic.PKCS12BasicReportSigner;
 import com.example.fw.common.digitalsignature.pades.AWSKmsPAdESReportSigner;
 import com.example.fw.common.digitalsignature.pades.PKCS12PAdESReportSiginer;
+import com.example.fw.common.file.TempFileCreator;
 import com.example.fw.common.keymanagement.KeyManager;
 import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
 import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
-import com.example.fw.common.reports.config.ReportsConfigurationProperties;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 public class DigitalSignatureConfig {
     private static final String DIGITAL_SIGNATURE_TYPE = //
             DigitalSignatureConfigurationProperties.PROPERTY_PREFIX + ".type";
+    private final TempFileCreator tempFileCreator;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
-    private final ReportsConfigurationProperties reportsConfigurationProperties;
 
     /**
      * PKCS#12ファイルを使用し、通常のPDF署名を付与するReportSignerのBean定義
@@ -36,8 +36,7 @@ public class DigitalSignatureConfig {
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "pkcs12-basic")
     ReportSigner reportSignerByPKCS12Basic() {
-        return new PKCS12BasicReportSigner(reportsConfigurationProperties, //
-                digitalSignatureConfigurationProperties);
+        return new PKCS12BasicReportSigner(tempFileCreator, digitalSignatureConfigurationProperties);
     }
 
     /**
@@ -46,8 +45,7 @@ public class DigitalSignatureConfig {
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "pkcs12-pades")
     ReportSigner reportSignerByPKCS12() {
-        return new PKCS12PAdESReportSiginer(reportsConfigurationProperties, //
-                digitalSignatureConfigurationProperties);
+        return new PKCS12PAdESReportSiginer(tempFileCreator, digitalSignatureConfigurationProperties);
     }
 
     /**
@@ -60,8 +58,7 @@ public class DigitalSignatureConfig {
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "aws-kms-pades")
     ReportSigner reportSignerByKms(KeyManager keyManager, ObjectStorageFileAccessor objectStorageFileAccessor) {
-        return new AWSKmsPAdESReportSigner(keyManager, //
-                reportsConfigurationProperties, //
+        return new AWSKmsPAdESReportSigner(keyManager, tempFileCreator, //
                 digitalSignatureConfigurationProperties, //
                 keyManagementConfigurationProperties);
     }

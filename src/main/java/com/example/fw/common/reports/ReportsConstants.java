@@ -5,7 +5,10 @@ package com.example.fw.common.reports;
  * 
  * このクラスは、帳票の一時保存ディレクトリやファイル名のプレフィックス、拡張子などの定数を定義します。
  */
-public class ReportsConstants {
+public final class ReportsConstants {
+    private ReportsConstants() {
+    }
+
     // 一時ディレクトリのパス
     public static final String TMP_DIR = System.getProperty("java.io.tmpdir");
     // PDFの一時保存ファイルのプレフィックス

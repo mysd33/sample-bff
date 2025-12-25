@@ -31,7 +31,7 @@ final class CertificateUtils {
      * @return 証明書パス順に並び替えられたCertificateTokenのリスト
      * @throws SystemException 証明書の取得や有効性確認に失敗した場合にスローされる例外
      */
-    static List<CertificateToken> exchageOrderdCertifcateTokens(List<Certificate> certificates) {
+    static List<CertificateToken> exchageOrderdCertifcateTokens(final List<Certificate> certificates) {
         if (certificates == null || certificates.isEmpty()) {
             return List.of();
         }
@@ -60,7 +60,7 @@ final class CertificateUtils {
      * @param certificate 検証対象の証明書
      * @throws SystemException 有効期限外の場合にスローされる例外
      */
-    static void validateCertificate(X509Certificate certificate) {
+    static void validateCertificate(final X509Certificate certificate) {
         Assert.notNull(certificate, "Certificate must not be null");
         try {
             // 証明書の有効期限を確認

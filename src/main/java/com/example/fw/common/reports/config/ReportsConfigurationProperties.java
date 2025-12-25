@@ -16,24 +16,11 @@ public class ReportsConfigurationProperties {
     static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "report";
     // コンパイル済の帳票様式を保存するデフォルトの一時ディレクトリ名
     private static final String DEFAULT_TEMP_JASPER_DIR = "jasper";
-    // 帳票を一時保存するデフォルトの一時ディレクトリ名
-    private static final String DEFAULT_TEMP_REPORT_DIR = "report";
-    // PDFの一時保存ファイルを更新日時から何秒経過していたら削除対象とするか デフォルト60秒（1分）
-    private static final int DEFAULT_DELETE_DURATION_SECONDS = 60;
+
     /**
      * コンパイル済の帳票様式を保存する一時ディレクトリのパス
      */
     private String jasperFileTmpdir = DEFAULT_TEMP_JASPER_DIR;
-
-    /**
-     * 帳票を一時保存する一時ディレクトリのパス
-     */
-    private String reportTmpdir = DEFAULT_TEMP_REPORT_DIR;
-
-    /**
-     * 帳票の一時保存ファイルの更新日時から何秒経過していたら削除対象とするか
-     */
-    private int deleteDurationSeconds = DEFAULT_DELETE_DURATION_SECONDS;
 
     /**
      * 128Bit暗号化を使用するか

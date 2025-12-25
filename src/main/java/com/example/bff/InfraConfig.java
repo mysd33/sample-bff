@@ -14,6 +14,7 @@ import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.async.config.SQSCommonConfigPackage;
 import com.example.fw.common.async.repository.JobRequestRepository;
 import com.example.fw.common.async.repository.JobRequestRepositoryImpl;
+import com.example.fw.common.file.config.FileConfigPackage;
 import com.example.fw.common.httpclient.config.WebClientConfigPackage;
 import com.example.fw.common.logging.config.LoggingConfigPackage;
 import com.example.fw.common.metrics.config.MetricsConfig;
@@ -28,9 +29,9 @@ import com.example.fw.web.token.TransactionTokenPackage;
  *
  */
 @Configuration
-// RESTクライアント、オブジェクトストレージアクセス、非同期処理依頼の設定、
+// RESTクライアント、オブジェクトストレージアクセス、一時ファイル管理、非同期処理依頼の設定、
 // 帳票出力の設定、ロギング拡張機能の設定を追加
-@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class, //
+@ComponentScan(basePackageClasses = { WebClientConfigPackage.class, S3ConfigPackage.class, FileConfigPackage.class, //
         SQSCommonConfigPackage.class, ReportsConfigPackage.class, LoggingConfigPackage.class }) //
 // 鍵管理機能とPDF電子署名機能を有効化するには、ComponentScanに以下を追加する
 // , KeyManagementConfigPackage.class, DigitalSignatureConfigPackage.class })

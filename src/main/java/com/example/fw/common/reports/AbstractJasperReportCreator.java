@@ -9,19 +9,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import com.example.fw.common.exception.SystemException;
+import com.example.fw.common.file.TempFileCreator;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
 import com.example.fw.common.logging.MonitoringLogger;
@@ -58,11 +55,12 @@ public abstract class AbstractJasperReportCreator<T> {
     private static final MonitoringLogger monitoringLogger = LoggerFactory.getMonitoringLogger(log);
     // 帳票作成のための設定情報
     private ReportsConfigurationProperties config;
+    // 一時ファイル作成クラス
+    private TempFileCreator tempFileCreator;
 
     // コンパイル済の帳票様式を保存する一時ディレクトリ
     private Path jasperPath;
-    // PDFの一時保存ファイルのディレクトリ（パスを初期化設定後、定期削除のための別スレッドで参照されるためAtomicReferenceにしておく）
-    private final AtomicReference<Path> pdfTempPath = new AtomicReference<>();
+
     // 帳票ID
     private String reportId;
     // 帳票名
@@ -71,6 +69,11 @@ public abstract class AbstractJasperReportCreator<T> {
     @Autowired
     public void setConfig(final ReportsConfigurationProperties config) {
         this.config = config;
+    }
+
+    @Autowired
+    public void setTempFileCreator(final TempFileCreator tempFileCreator) {
+        this.tempFileCreator = tempFileCreator;
     }
 
     /**
@@ -103,11 +106,6 @@ public abstract class AbstractJasperReportCreator<T> {
             throw e;
         }
 
-        // 帳票を一時保存する一時ディレクトリを作成する
-        pdfTempPath.set(Path.of(ReportsConstants.TMP_DIR, config.getReportTmpdir()));
-        appLogger.debug("pdfTempPath: {}", pdfTempPath);
-        // 一時ディレクトリが存在しない場合は作成する
-        pdfTempPath.get().toFile().mkdirs();
     }
 
     @PreDestroy
@@ -385,15 +383,15 @@ public abstract class AbstractJasperReportCreator<T> {
      */
     private Report exportPDF(final JasperPrint jasperPrint, final PDFOptions options) throws JRException, IOException {
         // メモリを極力使わないよう、PDFのファイルサイズが大きい場合も考慮し一時ファイルに出力してInputStreamで返却するようにする
-        Path tempFilePath = Files.createTempFile(pdfTempPath.get(), ReportsConstants.PDF_TEMP_FILE_PREFIX,
+        File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
                 ReportsConstants.PDF_FILE_EXTENSION);
 
         // （参考）通常のPDF出力の実装例
         // JasperExportManager.exportReportToPdfFile(jasperPrint,
-        // tempFilePath.toString());
+        // tempFile.getAbsolutePath());
 
         JRPdfExporter exporter = new JRPdfExporter();
-        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFilePath.toFile()))) {
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
             // PDFのセキュリティ設定を取得
             SimplePdfExporterConfiguration configuration = getPdfExproterConfiguration(options);
             if (configuration != null) {
@@ -405,7 +403,7 @@ public abstract class AbstractJasperReportCreator<T> {
         }
         // 一時ファイルのInputStreamを返す
         return DefaultReport.builder()//
-                .file(tempFilePath.toFile())//
+                .file(tempFile)//
                 .build();
     }
 
@@ -461,37 +459,5 @@ public abstract class AbstractJasperReportCreator<T> {
             }
         }
         return configuration;
-    }
-
-    /**
-     * PDFの一時保存ファイルを定期的に削除する処理
-     * 
-     */
-    @Scheduled(initialDelayString = "${report.delete-tempfiles-initial-delay-seconds:120}", //
-            fixedRateString = "${report.delete-tempfiles-fixed-rate-seconds:60}", timeUnit = TimeUnit.SECONDS)
-    protected void deleteTempFiles() { // @Scheduledで実行されるため、アクセス修飾子をprivateにできないのでprotectedに
-        appLogger.debug("Delete temporary files Task run.");
-        if (pdfTempPath.get() == null) {
-            return;
-        }
-        // javaの一時ディレクトリにあるファイルを取得する
-        File[] files = pdfTempPath.get().toFile().listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            try {
-                // 一時ファイルの更新日時を取得し、現在時刻より指定時間経過していた場合は、ファイル削除する
-                FileTime lastModifiedTime = Files.getLastModifiedTime(file.toPath());
-                if (lastModifiedTime.toMillis() < System.currentTimeMillis()
-                        - config.getDeleteDurationSeconds() * 1000) {
-                    Files.delete(file.toPath());
-                    appLogger.debug("Delete temporary file: {}", file.getName());
-                }
-            } catch (IOException e) {
-                appLogger.warn(CommonFrameworkMessageIds.W_FW_RPRT_8002, file.getName());
-            }
-
-        }
     }
 }
