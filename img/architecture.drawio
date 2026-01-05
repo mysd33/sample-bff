@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.2.9 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.2.9">
   <diagram name="ページ1" id="JfgeRLQyspjmbmCauW2L">
-    <mxGraphModel dx="1678" dy="989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -133,9 +133,22 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="KstfBxtPR78TtcnD23Tk-18" edge="1" parent="1" source="KstfBxtPR78TtcnD23Tk-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="KstfBxtPR78TtcnD23Tk-5">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="208" />
+              <mxPoint x="390" y="150" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="KstfBxtPR78TtcnD23Tk-15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&amp;lt;&amp;lt;コントローラ&lt;/font&gt;&lt;span style=&quot;font-size: 12px; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 12px;&quot;&gt;Controller, RestController&lt;/span&gt;&lt;/div&gt;" vertex="1">
+        <mxCell id="QYXSzcad--qEQFjI3IyK-1" edge="1" parent="1" source="KstfBxtPR78TtcnD23Tk-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="KstfBxtPR78TtcnD23Tk-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="195" y="160" />
+              <mxPoint x="365" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KstfBxtPR78TtcnD23Tk-15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&amp;lt;&amp;lt;コントローラ&lt;/font&gt;&lt;span style=&quot;font-size: 12px; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 12px;&quot;&gt;Controller&lt;/span&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="55" width="110" x="140" y="180" as="geometry" />
         </mxCell>
         <mxCell id="KstfBxtPR78TtcnD23Tk-31" edge="1" parent="1" source="KstfBxtPR78TtcnD23Tk-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="2DQNlEueCRgbyU9XymV5-26">
