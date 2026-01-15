@@ -10,7 +10,7 @@
 <body class="bg-light">
     <span id="headerButton" class="d-none"><a class="btn btn-outline-primary" th:href="@{/menu}">メニューに戻る</a></span>
     <div class="container">
-
+        <div th:replace="~{layout/parts :: part_message}"></div>
         <div th:if="${userPage} != null" th:remove="tag">
             <table class="table table-bordered table-hover table-striped">
                 <thead>
@@ -44,9 +44,7 @@
             <nav th:replace="~{layout/parts :: pagination (${userPage})}"></nav>
 
             <!-- ユーザー一覧の件数 -->
-            <label th:text=" '合計：' + ${userPage.totalElements} + '件' "></label><br />
-            <!-- 更新・削除処理の結果表示用 -->
-            <label class="text-info" th:text="${result}">結果表示</label><br />
+            <span th:text=" '合計：' + ${userPage.totalElements} + '件' "></span><br />
             <!-- CSV出力用のリンク -->
             <a class="btn btn-primary" th:href="@{'/userList/csv'}">CSV出力</a>
             <!-- CSV出力用のリンク -->

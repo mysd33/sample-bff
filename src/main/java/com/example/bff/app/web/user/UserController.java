@@ -3,7 +3,6 @@ package com.example.bff.app.web.user;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +17,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
 import com.example.bff.app.web.user.UserForm.GroupOrder;
+import com.example.bff.domain.message.MessageIds;
 import com.example.bff.domain.model.User;
 import com.example.bff.domain.reports.ReportFile;
 import com.example.bff.domain.reports.UserListReportCreator;
@@ -31,6 +32,8 @@ import com.example.bff.domain.service.user.UserService;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.message.ResultMessage;
+import com.example.fw.common.message.ResultMessageType;
 import com.example.fw.web.io.ResponseUtil;
 import com.example.fw.web.view.CsvDownloadView;
 
@@ -74,7 +77,7 @@ public class UserController {
     @PostMapping("/user")
     @TransactionTokenCheck()
     public String postUserResist(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model, RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return "user/regist";
         }
@@ -85,6 +88,8 @@ public class UserController {
             boolean result = userService.insert(user);
             if (result) {
                 appLogger.debug("insert成功");
+                attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
+                        .code(MessageIds.I_EX_0005).args(new String[] { user.getUserId() }).build());
             } else {
                 appLogger.debug("insert失敗");
             }
@@ -119,7 +124,7 @@ public class UserController {
 
         appLogger.debug("userId = " + userId);
         // ユーザーIDのチェック
-        if (userId != null && userId.length() > 0) {
+        if (userId != null && !userId.isEmpty()) {
             // ユーザー情報を取得
             User user = userService.findOne(userId);
             UserForm newForm = userMapper.modelToForm(user);
@@ -135,7 +140,7 @@ public class UserController {
      */
     @PostMapping(value = "/userDetail", params = "update")
     public String postUserDetailUpdate(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 
         appLogger.debug("更新ボタンの処理");
         if (bindingResult.hasErrors()) {
@@ -143,19 +148,14 @@ public class UserController {
         }
 
         User user = userMapper.formToModel(form);
-
         try {
             // 更新実行
-            boolean result = userService.updateOne(user);
-
-            if (result) {
-                model.addAttribute("result", "更新成功");
-            } else {
-                model.addAttribute("result", "更新失敗");
-            }
-
-        } catch (DataAccessException e) {
-            model.addAttribute("result", "更新失敗");
+            userService.updateOne(user);
+            attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0006)
+                    .args(new String[] { user.getUserId() }).build());
+        } catch (BusinessException e) {
+            model.addAttribute(e.getResultMessage());
+            return "user/userDetail";
         }
 
         // ユーザー一覧画面を表示
@@ -166,19 +166,17 @@ public class UserController {
      * ユーザー削除用処理.
      */
     @PostMapping(value = "/userDetail", params = "delete")
-    public String postUserDetailDelete(@ModelAttribute UserForm form, Model model) {
+    public String postUserDetailDelete(@ModelAttribute UserForm form, Model model, RedirectAttributes attributes) {
         appLogger.debug("削除ボタンの処理");
-
-        // TODO:自分のユーザ情報は削除できないようにする
         // 削除実行
-        boolean result = userService.deleteOne(form.getUserId());
-
-        if (result) {
-            model.addAttribute("result", "削除成功");
-        } else {
-            model.addAttribute("result", "削除失敗");
+        try {
+            userService.deleteOne(form.getUserId());
+            attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0007)
+                    .args(new String[] { form.getUserId() }).build());
+        } catch (BusinessException e) {
+            model.addAttribute(e.getResultMessage());
+            return "user/userDetail";
         }
-
         // ユーザー一覧画面を表示
         return "redirect:/userList";
     }
@@ -186,7 +184,6 @@ public class UserController {
     /**
      * ユーザー一覧のCSV出力用処理.
      */
-
     @GetMapping("/userList/csv")
     public ModelAndView getUserListCsv(Model model) {
         String filename = "userList.csv";
@@ -198,7 +195,7 @@ public class UserController {
         return new ModelAndView(view);
 
     }
-    
+
     /**
      * ユーザー一覧のPDF出力用処理.
      *
@@ -209,7 +206,7 @@ public class UserController {
     public ResponseEntity<Resource> getUserListPdf(Model model) {
         List<User> users = userService.findAll();
         List<UserListReportItem> reportItems = userMapper.modelsToReportItems(users);
-        ReportFile reportFile = userListReportCreator.createUserListReport(new  UserListReportData(reportItems));
+        ReportFile reportFile = userListReportCreator.createUserListReport(new UserListReportData(reportItems));
         return ResponseUtil.createResponseForPDF(reportFile.getInputStream(), reportFile.getFileName(),
                 reportFile.getFileSize());
     }

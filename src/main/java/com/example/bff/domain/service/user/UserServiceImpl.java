@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    
+
     /**
      * ユーザ登録
      */
@@ -91,18 +91,26 @@ public class UserServiceImpl implements UserService {
      * １件更新用メソッド.
      */
     @Override
-    public boolean updateOne(User user) {
+    public void updateOne(User user) {
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
-        return repository.updateOne(user);
+        boolean result = repository.updateOne(user);
+        if (!result) {
+            throw new BusinessException(MessageIds.W_EX_8008, user.getUserId());
+        }
     }
 
     /**
      * １件削除用メソッド.
      */
     @Override
-    public boolean deleteOne(String userId) {
-        return repository.deleteOne(userId);
+    public void deleteOne(String userId) {
+        // TODO:自分のユーザ情報は削除できないようにする
+
+        boolean result = repository.deleteOne(userId);
+        if (!result) {
+            throw new BusinessException(MessageIds.W_EX_8009, userId);
+        }
     }
 
 }
