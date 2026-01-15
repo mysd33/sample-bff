@@ -42,11 +42,11 @@ public interface UserService {
     /**
      * １件更新
      */
-    boolean updateOne(User user);
+    void updateOne(User user);
 
     /**
      * １件削除
      */
-    boolean deleteOne(String userId);
+    void deleteOne(String userId);
 
 }

@@ -9,6 +9,9 @@ public class MessageIds {
     public static final String I_EX_0002 = "i.ex.0002";
     public static final String I_EX_0003 = "i.ex.0003";
     public static final String I_EX_0004 = "i.ex.0004";
+    public static final String I_EX_0005 = "i.ex.0005";
+    public static final String I_EX_0006 = "i.ex.0006";
+    public static final String I_EX_0007 = "i.ex.0007";
     public static final String W_EX_2001 = "w.ex.2001";
     public static final String W_EX_2002 = "w.ex.2002";
     public static final String W_EX_2003 = "w.ex.2003";
@@ -22,5 +25,7 @@ public class MessageIds {
     public static final String W_EX_8005 = "w.ex.8005";
     public static final String W_EX_8006 = "w.ex.8006";
     public static final String W_EX_8007 = "w.ex.8007";
+    public static final String W_EX_8008 = "w.ex.8008";
+    public static final String W_EX_8009 = "w.ex.8009";
     public static final String E_EX_9001 = "e.ex.9001";
 }
