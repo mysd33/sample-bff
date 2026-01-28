@@ -28,6 +28,8 @@ import com.example.fw.common.systemdate.SystemDateUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -59,7 +61,8 @@ public abstract class AbstractJasperReportCreator<T> {
     private TempFileCreator tempFileCreator;
 
     // コンパイル済の帳票様式を保存する一時ディレクトリ
-    private Path jasperPath;
+    @Getter(AccessLevel.PROTECTED)
+    private Path jasperDirPath;
 
     // 帳票ID
     private String reportId;
@@ -90,10 +93,10 @@ public abstract class AbstractJasperReportCreator<T> {
         reportName = annotation.name();
 
         // コンパイル済の帳票様式を保存する一時ディレクトリを作成する
-        jasperPath = Path.of(ReportsConstants.TMP_DIR, config.getJasperFileTmpdir());
-        appLogger.debug("jasperPath: {}", jasperPath);
+        jasperDirPath = Path.of(ReportsConstants.TMP_DIR, config.getJasperFileTmpdir());
+        appLogger.debug("jasperPath: {}", jasperDirPath);
         // 一時ディレクトリが存在しない場合は作成する
-        jasperPath.toFile().mkdirs();
+        jasperDirPath.toFile().mkdirs();
 
         // あらかじめ帳票様式ファイルをコンパイルする
         try {
@@ -250,11 +253,11 @@ public abstract class AbstractJasperReportCreator<T> {
      */
     private File getJasperFile(final String jrxmlFile) {
         // JRXMLのファイルパスから、拡張子を置き換えてjaperファイル名を取得
-        Path path = Path.of(jrxmlFile);
+        Path path = Paths.get(jrxmlFile);
         String jasperFileName = path.getFileName().toString().replace(ReportsConstants.JRXML_FILE_EXTENSION,
                 ReportsConstants.JASPER_FILE_EXTENSION);
         // 一時フォルダにあるファイルパスを返却
-        return jasperPath.resolve(jasperFileName).toFile();
+        return jasperDirPath.resolve(jasperFileName).toFile();
     }
 
     /**
