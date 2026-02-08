@@ -271,6 +271,11 @@ postgres> CREATE DATABASE testdb;
 > また、現在、MinIOは、[Dockerイメージの配布を停止してしまった](https://github.com/minio/minio/issues/21647)ようなので、今後、コミュニティでの利用状況が悪化することも踏まえ、代替案としてLocalStackを利用する方法を整理した。これにより、他のAWSサービスのローカル実行もLocalStackで一元的に実行する手順も今後整備する。
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
 
+> [!NOTE]
+> LocalStackの無料版では、CIクレジット（CI環境での実行）は含まれていないため、利用には注意すること。  
+> また、[LocalStackの今後の展望](https://blog.localstack.cloud/the-road-ahead-for-localstack/)では、Community版とPro版を1つのDockerイメージに統合することや、無料版であっても、アカウント登録が必要になることがアナウンスされているため、今後の動向に注意すること。
+
+
 * Profileが「dev」でも、S3のローカル起動用のFake（LocalStackやMinIO、s3rver）を起動したい場合には、以下の通り
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
