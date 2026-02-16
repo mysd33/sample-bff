@@ -12,6 +12,7 @@ import com.example.fw.common.systemdate.config.SystemDateConfig;
 import com.example.fw.web.advice.DefaultErrorResponseCreator;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
+import com.example.fw.web.converter.SpecialCharConvertConfig;
 import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
@@ -30,7 +31,7 @@ import io.swagger.v3.oas.models.info.Info;
 // ページネーション機能、トランザクショントークンチェック機能の追加
 @ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
 // システム日時機能の追加、Tomcatのログ設定の追加
-@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class })
+@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class, SpecialCharConvertConfig.class })
 public class AppConfig {
 
     /**
@@ -44,12 +45,12 @@ public class AppConfig {
         // オプション引数未指定の場合の例
         // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
         // MessageIds.E_EX_9001);
-        
+
         // オプション引数を指定した場合の例
         // return new DefaultErrorResponseCreator(messageSource, MessageIds.W_EX_2001,
         // MessageIds.E_EX_9001,
         // MessageIds.W_EX_2002);
-        
+
         // Builderパターンを使用した場合の記載例
         return DefaultErrorResponseCreator.builder().messageSource(messageSource)
                 .inputErrorMessageId(MessageIds.W_EX_2001)//
@@ -57,6 +58,7 @@ public class AppConfig {
                 .requestBodyValidationErrorMessageId(MessageIds.W_EX_2002)//
                 .build();
     }
+
     /**
      * ロギング機能
      */
