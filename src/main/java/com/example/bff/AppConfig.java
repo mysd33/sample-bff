@@ -12,6 +12,7 @@ import com.example.fw.common.systemdate.config.SystemDateConfig;
 import com.example.fw.web.advice.DefaultErrorResponseCreator;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
+import com.example.fw.web.converter.FormSpecialCharConvertConfig;
 import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
@@ -32,8 +33,8 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 // ページネーション機能、トランザクショントークンチェック機能の追加
 @ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
-// システム日時機能の追加、Tomcatのログ設定の追加
-@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class })
+// システム日時機能の追加、Tomcatのログ設定の追加、Formの特殊文字のコードポイント変換機能の追加
+@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class, FormSpecialCharConvertConfig.class })
 public class AppConfig {
 
     /**
