@@ -30,7 +30,7 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 // ページネーション機能、トランザクショントークンチェック機能の追加
 @ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
-// システム日時機能の追加、Tomcatのログ設定の追加
+// システム日時機能の追加、Tomcatのログ設定の追加、Formの特殊文字のコードポイント変換機能の追加
 @Import({ SystemDateConfig.class, TomcatAccessLogConfig.class, FormSpecialCharConvertConfig.class })
 public class AppConfig {
 
