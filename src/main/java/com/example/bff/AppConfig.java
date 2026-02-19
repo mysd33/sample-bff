@@ -12,7 +12,7 @@ import com.example.fw.common.systemdate.config.SystemDateConfig;
 import com.example.fw.web.advice.DefaultErrorResponseCreator;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
-import com.example.fw.web.converter.FormSpecialCharConvertConfig;
+import com.example.fw.web.conversion.FormSpecialCharConvertConfig;
 import com.example.fw.web.page.config.PaginationConfigPackage;
 import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;

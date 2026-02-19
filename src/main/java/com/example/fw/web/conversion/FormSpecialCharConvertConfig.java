@@ -1,5 +1,5 @@
 
-package com.example.fw.web.converter;
+package com.example.fw.web.conversion;
 
 import org.springframework.boot.web.servlet.FilterRegistration;
 import org.springframework.context.annotation.Bean;
