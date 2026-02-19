@@ -21,7 +21,7 @@ public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper 
 
         convertedParams = request.getParameterMap().entrySet().stream()//
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.stream(e.getValue())//
-                        .map(JapaneseStringUtils::convertSpecialChar).toArray(String[]::new)));
+                        .map(JapaneseStringUtils::convertCodePoints).toArray(String[]::new)));
     }
 
     @Override
