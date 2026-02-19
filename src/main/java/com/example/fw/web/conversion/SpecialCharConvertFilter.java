@@ -1,4 +1,4 @@
-package com.example.fw.web.converter;
+package com.example.fw.web.conversion;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.example.fw.web.converter;
+package com.example.fw.web.conversion;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper 
 
         convertedParams = request.getParameterMap().entrySet().stream()//
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.stream(e.getValue())//
-                        .map(JapaneseStringUtils::exchageSpecialChar).toArray(String[]::new)));
+                        .map(JapaneseStringUtils::convertSpecialChar).toArray(String[]::new)));
     }
 
     @Override

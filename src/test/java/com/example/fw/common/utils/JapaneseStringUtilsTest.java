@@ -19,6 +19,6 @@ class JapaneseStringUtilsTest {
             "￢,¬", //
             "―＼～∥－￠￡￢,—\\〜‖−¢£¬" })
     void testExchageSpecialChar(String input, String expected) {
-        assertEquals(expected, JapaneseStringUtils.exchageSpecialChar(input));
+        assertEquals(expected, JapaneseStringUtils.convertSpecialChar(input));
     }
 }
