@@ -217,7 +217,7 @@
         <!-- Micrometer Tracing -->
         <dependency>
             <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-tracing-bridge-otel</artifactId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
         </dependency>
         <!-- Spring Cloud Circuit Breaker Resilience4J -->
         <dependency>
