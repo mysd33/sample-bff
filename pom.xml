@@ -392,6 +392,14 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <!-- JUnit Bom (Spring BootのJUnitバージョンが6にならないので回避策 -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <!-- DSS -->
             <dependency>
                 <groupId>eu.europa.ec.joinup.sd-dss</groupId>
