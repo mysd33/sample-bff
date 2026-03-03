@@ -28,7 +28,7 @@
         <commons-io.version>2.19.0</commons-io.version>
         <!-- Jasper Reports-->
         <jasperreports.version>7.0.3</jasperreports.version>
-        <dss.bom.version>6.2</dss.bom.version>
+        <dss.bom.version>6.3</dss.bom.version>
         <!-- logback-access -->
         <logback-access.version>2.0.6</logback-access.version>
         <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
@@ -364,6 +364,10 @@
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-pades-openpdf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-cms-object</artifactId>
+       </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-utils-apache-commons</artifactId>
