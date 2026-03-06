@@ -267,16 +267,43 @@ postgres> CREATE DATABASE testdb;
         * 「sample-batch」アプリケーション側も変更が必要
 
 > [!NOTE]
-> MinIOは、GNU AGPL v3によるOSSライセンスと商用ライセンスのデュアルライセンスで提供されており、MinIOを同梱しての配布、利用等には注意すること。  
-> また、現在、MinIOは、[Dockerイメージの配布を停止してしまった](https://github.com/minio/minio/issues/21647)ようなので、今後、コミュニティでの利用状況が悪化することも踏まえ、代替案としてLocalStackを利用する方法を整理した。これにより、他のAWSサービスのローカル実行もLocalStackで一元的に実行する手順も今後整備する。
-> s3rverは、現在、アーカイブされているので、利用等には注意すること。
+> [MinIOのOSSのGitHub](https://github.com/minio/minio)はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
+> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
+> なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)であったためMinIOを同梱しての配布、利用等には注意すること。
 
 > [!NOTE]
 > LocalStackの無料版では、CIクレジット（CI環境での実行）は含まれていないため、利用には注意すること。  
 > また、[LocalStackの今後の展望](https://blog.localstack.cloud/the-road-ahead-for-localstack/)では、Community版とPro版を1つのDockerイメージに統合することや、無料版であっても、アカウント登録が必要になることがアナウンスされているため、今後の動向に注意すること。
 
+> [!NOTE]
+> s3rverは、現在、アーカイブされているので、利用等には注意すること。
 
-* Profileが「dev」でも、S3のローカル起動用のFake（LocalStackやMinIO、s3rver）を起動したい場合には、以下の通り
+* Profileが「dev」でも、S3のローカル起動用のFake（MinIO、LocalStack、s3rver）を起動したい場合には、以下の通り
+    * MinIOの場合
+        * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
+        * [REQUEST TRIAL LICENSE]のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
+        * 取得したライセンスキーを、`minio.license`というファイル名で保存する
+    
+        * 以下は、Windows版での起動例
+            * C:\minioフォルダにminio.exe、minio.licenseを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動するので適宜変更すること）
+
+            ```sh        
+            C:\minio\minio.exe server C:\minio\data --license C:\minio\minio.license --address ":9000" --console-address ":9001"
+            ```
+
+        *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
+
+            ```yaml
+            example:
+              s3:
+                localfake:
+                  type: minio
+                  port: 9000
+                  access-key-id: minioadmin
+                  secret-access-key: minioadmin
+                bucket: mysd33bucket123
+            ```
+
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
         * [LocalStackのサイト](https://docs.localstack.cloud/aws/getting-started/installation/)に記載された、いずれかの手順に従いインストールし、LocalStackを起動
@@ -320,28 +347,6 @@ postgres> CREATE DATABASE testdb;
                   port: 4566
                   access-key-id: dummy
                   secret-access-key: dummy
-                bucket: mysd33bucket123
-            ```
-
-    * MinIOの場合
-        * [MinIOのサイト](https://min.io/download#/windows)の手順に従い、インストールし、MinIOを起動           
-        * 以下は、Windows版での起動例
-            * C:\minioフォルダにminio.exeを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動）
-
-            ```sh        
-            C:\minio\minio.exe server C:\minio\data --console-address ":9001"
-            ```
-
-        *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
-
-            ```yaml
-            example:
-              s3:
-                localfake:
-                  type: minio
-                  port: 9000
-                  access-key-id: minioadmin
-                  secret-access-key: minioadmin
                 bucket: mysd33bucket123
             ```
 
