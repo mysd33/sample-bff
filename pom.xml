@@ -186,7 +186,7 @@
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-lite</artifactId>
         </dependency>
-        <!-- MyBatis -->
+        <!-- MyBatis Spring Boot Starter-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
