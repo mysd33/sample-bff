@@ -125,7 +125,7 @@ public class SecurityConfig {
     @Profile("adot")
     @Bean
     ObservationRegistryCustomizer<ObservationRegistry> noSpringSecurityObservations() {
-        ObservationPredicate predicate = (name, context) -> !name.startsWith("spring.security.");
+        ObservationPredicate predicate = (name, _) -> !name.startsWith("spring.security.");
         return (registry) -> registry.observationConfig().observationPredicate(predicate);
     }
 

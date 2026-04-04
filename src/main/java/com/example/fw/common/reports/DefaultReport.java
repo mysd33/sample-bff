@@ -22,7 +22,7 @@ public class DefaultReport implements Report {
     public InputStream getInputStream() {
         try {
             return new BufferedInputStream(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException _) {
             // Fileが見つからない場合はnullを返す
             return null;
         }

@@ -330,7 +330,7 @@ public class AWSKmsKeyManager implements KeyManager {
     public Certificate getSelfSignedCertificateFromObjectStorage(final KeyInfo keyInfo) {
         String selfSignedCertificateFileName = keyManagementConfigurationProperties.getSelfSignedCertPemFileName();
         try {
-            return getCertificatesFromObjectStorage(keyInfo, selfSignedCertificateFileName).get(0);
+            return getCertificatesFromObjectStorage(keyInfo, selfSignedCertificateFileName).getFirst();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9010);
         }

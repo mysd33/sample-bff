@@ -57,7 +57,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         if (httpStatusCode.is4xxClientError()) {
             try {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
-            } catch (Exception e) {
+            } catch (Exception _) {
                 // ErrorResponseに変換できない場合
                 throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
             }
@@ -68,7 +68,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (httpStatusCode.is5xxServerError()) {
             try {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
-            } catch (Exception e) {
+            } catch (Exception _) {
                 // ErrorResponseに変換できない場合
                 throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
             }
@@ -103,7 +103,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     protected byte[] getResponseBody(ClientHttpResponse response) {
         try {
             return FileCopyUtils.copyToByteArray(response.getBody());
-        } catch (IOException ex) {
+        } catch (IOException _) {
             // ignore
         }
         return new byte[0];

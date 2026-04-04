@@ -62,7 +62,7 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
 
             tokenRepository.delete(name, key, sessionId);
             return token.getTokenValue();
-        } catch (PessimisticLockingFailureException e) {
+        } catch (PessimisticLockingFailureException _) {
         }
         return null;
     }

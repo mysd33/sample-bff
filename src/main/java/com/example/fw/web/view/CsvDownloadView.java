@@ -106,7 +106,7 @@ public class CsvDownloadView extends AbstractView {
 
         try {
             encoded = URLEncoder.encode(filename, "UTF-8");
-        } catch (UnsupportedEncodingException ignore) {
+        } catch (UnsupportedEncodingException _) {
             // 例外は発生しない
         }
 

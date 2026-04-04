@@ -100,7 +100,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 // サーキットブレーカによる処理				
 				// Fallback時にエラーとせずに空のリストを例
 				.transform(it -> cbFactory.create("todo_findAll")
-						.run(it, throwable -> Mono.just(new TodoList())));
+						.run(it, _ -> Mono.just(new TodoList())));
 		// @formatter:on 
         return todoListMono.block();
     }

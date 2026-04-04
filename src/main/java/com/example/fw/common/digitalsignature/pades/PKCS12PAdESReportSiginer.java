@@ -72,7 +72,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
                 digitalSignatureConfigurationProperties.getPkcs12().getKeystoreFilePath(), //
                 new PasswordProtection(
                         digitalSignatureConfigurationProperties.getPkcs12().getPassword().toCharArray()))) {
-            privateKey = pkcs12SignatureToken.getKeys().get(0);
+            privateKey = pkcs12SignatureToken.getKeys().getFirst();
 
             // 証明書の有効性を確認
             X509Certificate certificate = privateKey.getCertificate().getCertificate();

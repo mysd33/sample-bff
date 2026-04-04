@@ -13,13 +13,10 @@ public class UserListReportItem {
     private String note = ""; // 備考欄
     
     public String getRoleName() {
-        switch (role) {
-            case "ROLE_ADMIN":
-                return "管理者";
-            case "ROLE_GENERAL":
-                return "一般ユーザ";
-            default:
-                return "不明";
-        }
+        return switch (role) {
+            case "ROLE_ADMIN" -> "管理者";
+            case "ROLE_GENERAL" -> "一般ユーザ";
+            default -> "不明";
+        };
     }
 }
