@@ -299,12 +299,6 @@ public abstract class AbstractJasperReportCreator<T> {
      * @throws JRException 様式のコンパイルエラーまたはコンパイル済の帳票の保存時のエラー
      */
     private JasperReport compileJRXML(final String jrxmlFile) throws IOException, JRException {
-        // TODO: JDK21の場合は、帳票コンパイル時に以下のメッセージが出てしまうため、様子見（JDK17では出力されない）
-        // 「n.s.j.engine.design.JRJdk13Compiler : ノート:
-        // クラス・パスに1つ以上のプロセッサが見つかったため、注釈処理が有効化されています。少なくとも1つのプロセッサが名前(-processor)で指定されるか、
-        // 検索パス(--processor-path、--processor-module-path)が指定されるか、注釈処理が明示的に有効化(-proc:only、-proc:full)されている場合を除き、
-        // 将来のリリースのjavacでは注釈処理が無効化される可能性があります。-Xlint:オプションを使用すると、このメッセージを非表示にできます。-proc:noneを使用すると、注釈処理を無効化できます。」
-
         appLogger.info(CommonFrameworkMessageIds.I_FW_RPRT_0001, reportId, reportName, jrxmlFile);
         // jrxmlの帳票様式ファイルをコンパイルする
         // https://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/JasperCompileManager.html
