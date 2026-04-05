@@ -36,5 +36,6 @@ log/
 *.bkp
 *.dtmp
 localstack/volume
+floci/data
 
 /recording.jfr
