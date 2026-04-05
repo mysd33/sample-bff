@@ -272,8 +272,7 @@ postgres> CREATE DATABASE testdb;
 > なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)であったためMinIOを同梱しての配布、利用等には注意すること。
 
 > [!NOTE]
-> LocalStackの無料版では、CIクレジット（CI環境での実行）は含まれていないため、利用には注意すること。  
-> また、[LocalStackの今後の展望](https://blog.localstack.cloud/the-road-ahead-for-localstack/)では、Community版とPro版を1つのDockerイメージに統合することや、無料版であっても、アカウント登録が必要になることがアナウンスされているため、今後の動向に注意すること。
+> LocalStackのHobbyプラン（無料版）は非商用利用限定となったため、注意すること。
 
 > [!NOTE]
 > s3rverは、現在、アーカイブされているので、利用等には注意すること。
@@ -306,7 +305,10 @@ postgres> CREATE DATABASE testdb;
 
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
-        * [LocalStackのサイト](https://docs.localstack.cloud/aws/getting-started/installation/)に記載された、いずれかの手順に従いインストールし、LocalStackを起動
+            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)（個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)（商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
+        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create Your Accountでアカウントを構築しておく。
+            * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuth Tokenを設定しておく必要がある。
+        * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
             * ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
 
             ```sh
