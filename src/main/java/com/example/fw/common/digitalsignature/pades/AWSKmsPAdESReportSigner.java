@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +72,6 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
     @PostConstruct
     public void init() {
-
         // キーIDの取得
         String keyAlias = null;
         // キーIDが明示的に設定されている場合はそのまま使用
@@ -84,8 +86,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             // キーエイリアスからキーIDを取得
             keyId = keyManager.findKeyByAlias(keyAlias).getKeyId();
             if (StringUtils.isEmpty(keyId)) {
-                throw new IllegalStateException(
-                        "No key found for the specified key alias: %s".formatted(keyAlias));
+                throw new IllegalStateException("No key found for the specified key alias: %s".formatted(keyAlias));
             }
         }
         // 解析用にキーIDをログ出力
@@ -102,11 +103,14 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         certificateTokens = CertificateUtils.exchageOrderdCertifcateTokens(certificates);
 
         // KMSから公開鍵を取得
-        PublicKey publicKey = keyManager.getPublicKey(KeyInfo.builder().keyId(keyId).build());
-        // エンドエンティティ証明書の公開鍵を取得
+        PublicKey publicKeyFromKMS = keyManager.getPublicKey(KeyInfo.builder().keyId(keyId).build());
+        // 鍵と証明書管理運用を誤った場合にエラー原因特定できるように情報ログを取得
+        logCertificateInfo(certificateTokens, publicKeyFromKMS);
+        // エンドエンティティ証明書内の公開鍵を取得
         PublicKey publicKeyInCertificate = certificateTokens.getFirst().getPublicKey();
-        // KMSから取得した公開鍵と証明書の公開鍵の内容が一致するか確認
-        if (!publicKey.equals(publicKeyInCertificate)) {
+        // 鍵と証明書管理の運用の誤りを防止するため、
+        // KMSから取得した公開鍵とエンドエンティティ証明書の公開鍵の内容が一致するか確認
+        if (!publicKeyFromKMS.equals(publicKeyInCertificate)) {
             throw new IllegalStateException(
                     "The public key from KMS does not match the public key in the certificate.");
         }
@@ -222,6 +226,70 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         }
 
         return pAdESSignatureParameters;
+    }
+
+    /**
+     * 証明書ファイル内の証明書情報とKMSから取得した公開鍵との比較情報をログ出力する
+     * 
+     * @param certificateTokens
+     * @param publicKeyFromKMS
+     */
+    private void logCertificateInfo(List<CertificateToken> certificateTokensFromFile, PublicKey publicKeyFromKMS) {
+        // 証明書パスの総数
+        int totalSize = certificateTokensFromFile.size();
+
+        // KMSの公開鍵のBase64値を取得
+        byte[] kmsPublicKeyBytes = encodeBytesFromPublicKey(publicKeyFromKMS);
+        String kmsPublicKeyBase64String = Base64.getEncoder().encodeToString(kmsPublicKeyBytes);
+
+        int certificateIndex = 1;
+        for (CertificateToken certificateToken : certificateTokensFromFile) {
+            X509Certificate cert = certificateToken.getCertificate();
+            // 証明書のメタ情報をログ出力
+            appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0002, //
+                    certificateIndex, // 0
+                    totalSize, // 1
+                    cert.getType(), // 2
+                    cert.getSubjectX500Principal().getName(), // 3
+                    cert.getIssuerX500Principal().getName(), // 4
+                    cert.getSerialNumber(), // 5
+                    cert.getNotBefore(), // 6
+                    cert.getNotAfter(), // 7
+                    cert.getSigAlgName(), // 8
+                    cert.getSigAlgOID(), // 9
+                    cert.getVersion()); // 10
+            // 証明書内の公開鍵取得
+            PublicKey publicKeyInCertificate = cert.getPublicKey();
+            byte[] certPublicKeyBytes = encodeBytesFromPublicKey(publicKeyInCertificate);
+            String certPublicKeyBase64String = Base64.getEncoder().encodeToString(publicKeyInCertificate.getEncoded());
+            // KMSから取得した公開鍵と証明書内の公開鍵を比較するログ出力
+            appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0003, //
+                    certificateIndex, // 0
+                    totalSize, // 1
+                    publicKeyFromKMS.getAlgorithm(), // 2
+                    publicKeyFromKMS.getFormat(), // 3
+                    publicKeyInCertificate.getAlgorithm(), // 4
+                    publicKeyInCertificate.getFormat(), // 5
+                    kmsPublicKeyBase64String, // 6
+                    certPublicKeyBase64String, // 7
+                    kmsPublicKeyBytes.length, // 8
+                    certPublicKeyBytes.length, // 9
+                    Arrays.equals(kmsPublicKeyBytes, certPublicKeyBytes));// 10
+            certificateIndex++;
+        }
+    }
+
+    /**
+     * 公開鍵からエンコードされたバイト配列を取得する
+     * 
+     * @param publicKey 公開鍵
+     * @return エンコードされたバイト配列
+     */
+    private byte[] encodeBytesFromPublicKey(PublicKey publicKey) {
+        if (publicKey == null || publicKey.getEncoded() == null) {
+            return new byte[0];
+        }
+        return publicKey.getEncoded();
     }
 
 }
