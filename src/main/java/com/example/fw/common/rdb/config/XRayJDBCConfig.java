@@ -46,7 +46,7 @@ public class XRayJDBCConfig {
         /**
          * DataSourceでのAWS X-RayのJDBCトレーシング設定
          */
-        @Deprecated(since = "2024-06", forRemoval = true)
+        @Deprecated(forRemoval = true)
         @Bean
         DataSource dataSourceForXray(DataSourceProperties dataSourceProperties) {
         // @formatter:off
