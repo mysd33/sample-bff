@@ -24,7 +24,7 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 
 /**
  * 
- * S3が開発環境上でのローカルサーバFake（LocalStackFake）実行に置き換える設定クラス<br>
+ * S3が開発環境上でのローカルサーバFake（LocalStack）実行に置き換える設定クラス<br>
  *
  */
 @Profile("dev")
@@ -44,11 +44,11 @@ public class S3LocalLocalStackFakeConfig {
     }
 
     /**
-     * S3クライアント（X-Rayトレースなし）
+     * S3クライアント
      */
     @Profile("!xray")
     @Bean
-    S3Client s3ClientWithoutXRay() {
+    S3Client s3Client() {
         // ダミーのクレデンシャル
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
                 s3ConfigurationProperties.getLocalfake().getAccessKeyId(),
@@ -69,8 +69,11 @@ public class S3LocalLocalStackFakeConfig {
     }
 
     /**
-     * S3クライアント（X-Rayトレースあり）
+     * S3クライアント（X-Ray SDK）<br>
+     *
+     * X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
      */
+    @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
     S3Client s3ClientWithXRay() {
