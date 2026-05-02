@@ -1,24 +1,25 @@
 package com.example.bff.app.web.user;
 
+import com.example.bff.domain.message.MessageIds;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import com.example.bff.domain.message.MessageIds;
 
 /**
  * パスワード比較を行う相関項目チェックのValidatorクラス
  */
 @Component
 public class PasswordComparisonValidator implements Validator {
+
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return UserForm.class.isAssignableFrom(clazz);
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void validate(@NonNull Object target, @NonNull Errors errors) {
         UserForm form = (UserForm) target;
         String password = form.getPassword();
         if (!StringUtils.hasLength(password)) {

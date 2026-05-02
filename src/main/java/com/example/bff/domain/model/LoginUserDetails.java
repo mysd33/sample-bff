@@ -1,21 +1,21 @@
 package com.example.bff.domain.model;
 
 import java.io.Serial;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
+import java.util.List;
+import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import lombok.Getter;
 
 /**
  * JDBCによる認証処理用UserDetails実装クラス
  *
  */
 public class LoginUserDetails implements UserDetails {
+
     @Serial
     private static final long serialVersionUID = -3792232397594810206L;
 
@@ -25,12 +25,12 @@ public class LoginUserDetails implements UserDetails {
 
     public LoginUserDetails(User user) {
         this.user = user;
-        authorities = user != null ? Arrays.asList(new SimpleGrantedAuthority(user.getRole()))
-                : Collections.emptyList();
+        authorities = user != null ? List.of(new SimpleGrantedAuthority(user.getRole()))
+            : Collections.emptyList();
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
@@ -40,8 +40,8 @@ public class LoginUserDetails implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return user != null ? user.getUserId() : null;
+    public @NonNull String getUsername() {
+        return user != null ? user.getUserId() : "";
     }
 
     @Override

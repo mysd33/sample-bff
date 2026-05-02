@@ -1,5 +1,12 @@
 package com.example.bff.infra.common.httpclient;
 
+import com.example.bff.domain.message.MessageIds;
+import com.example.bff.infra.common.resource.ErrorResponse;
+import com.example.fw.common.exception.BusinessException;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.message.ResultMessage;
+import com.example.fw.common.message.ResultMessageType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +15,8 @@ import java.net.URI;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,35 +26,28 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.ResponseErrorHandler;
-
-import com.example.bff.domain.message.MessageIds;
-import com.example.bff.infra.common.resource.ErrorResponse;
-import com.example.fw.common.exception.BusinessException;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.ResultMessage;
-import com.example.fw.common.message.ResultMessageType;
-
-import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
 /**
  * REST API呼び出し時のエラーハンドラクラス
- * 
+ *
  */
 @Slf4j
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     // TODO: DI
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
-        return (httpResponse.getStatusCode().is4xxClientError() || httpResponse.getStatusCode().is5xxServerError());
+        return (httpResponse.getStatusCode().is4xxClientError() || httpResponse.getStatusCode()
+            .is5xxServerError());
     }
 
     @Override
-    public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
+    public void handleError(@NonNull URI url, @NonNull HttpMethod method,
+        ClientHttpResponse response) throws IOException {
         HttpStatusCode httpStatusCode = response.getStatusCode();
         String statusText = response.getStatusText();
         byte[] responseBody = getResponseBody(response);
@@ -59,45 +60,53 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
             } catch (Exception _) {
                 // ErrorResponseに変換できない場合
-                throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
+                throwBusinessExceptionForUnknownErrorResponse(httpStatusCode, statusText,
+                    responseBody, charset);
             }
             // サーバ側のErrorResponseに含まれるメッセージをもとにエラーメッセージを画面表示する
-            message = errorResponse.getMessage();
-            throw new BusinessException(ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
+            message = errorResponse != null ? errorResponse.getMessage() : "";
+            throw new BusinessException(
+                ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8001)
                     .message(message).build());
         } else if (httpStatusCode.is5xxServerError()) {
             try {
                 errorResponse = mapper.readValue(responseBody, ErrorResponse.class);
             } catch (Exception _) {
                 // ErrorResponseに変換できない場合
-                throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
+                throwBusinessExceptionForUnknownErrorResponse(httpStatusCode, statusText,
+                    responseBody, charset);
             }
-            code = errorResponse.getCode();
-            message = errorResponse.getMessage();
+            code = errorResponse != null ? errorResponse.getCode() : "unknown";
+            message = errorResponse != null ? errorResponse.getMessage() : "unknown";
             // サービスから取得したErrorResponseを警告ログ出力し、定型的なメッセージを画面表示する
-            String logMessage = new StringBuilder("[").append(code).append("]").append(message).toString();
+            String logMessage = "[" + code + "]" + message;
             appLogger.warn(MessageIds.W_EX_8001, logMessage);
             throw new BusinessException(
-                    ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());
+                ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002)
+                    .build());
         } else {
-            throwBussinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody, charset);
+            throwBusinessExceptionForUnknownErrorResponse(httpStatusCode, statusText, responseBody,
+                charset);
         }
     }
 
     /**
      * 不明なエラーの場合は、サービスから取得したエラー情報を警告ログ出力し、定型的なメッセージを画面表示する
-     * 
+     *
      * @param httpStatusCode
      * @param statusText
      * @param responseBody
      * @param charset
      */
-    private void throwBussinessExceptionForUnknownErrorResponse(HttpStatusCode httpStatusCode, String statusText,
-            byte[] responseBody, Charset charset) {
-        String logMessage = getErrorMessage(httpStatusCode.value(), statusText, responseBody, charset);
+    private void throwBusinessExceptionForUnknownErrorResponse(HttpStatusCode httpStatusCode,
+        String statusText,
+        byte[] responseBody, Charset charset) {
+        String logMessage = getErrorMessage(httpStatusCode.value(), statusText, responseBody,
+            charset);
         appLogger.warn(MessageIds.W_EX_8001, logMessage);
         throw new BusinessException(
-                ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002).build());
+            ResultMessage.builder().type(ResultMessageType.WARN).code(MessageIds.W_EX_8002)
+                .build());
     }
 
     protected byte[] getResponseBody(ClientHttpResponse response) {
@@ -115,8 +124,9 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         return (contentType != null ? contentType.getCharset() : null);
     }
 
-    private String getErrorMessage(int rawStatusCode, String statusText, @Nullable byte[] responseBody,
-            @Nullable Charset charset) {
+    private String getErrorMessage(int rawStatusCode, String statusText,
+        byte[] responseBody,
+        @Nullable Charset charset) {
 
         String preface = rawStatusCode + " " + statusText + ": ";
         if (ObjectUtils.isEmpty(responseBody)) {

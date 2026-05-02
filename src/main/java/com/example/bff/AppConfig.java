@@ -1,11 +1,5 @@
 package com.example.bff;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.systemdate.SystemDate;
 import com.example.fw.common.systemdate.config.SystemDateConfig;
@@ -20,26 +14,29 @@ import com.example.fw.web.token.config.TransactionTokenConfigPackage;
 //Jackson2のObjectMapperをインポートする
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
 
 /**
- * 
+ *
  * アプリケーション層の設定クラス
  *
  */
 @Configuration
 // ページネーション機能、トランザクショントークンチェック機能の追加
-@ComponentScan(basePackageClasses = { PaginationConfigPackage.class, TransactionTokenConfigPackage.class })
+@ComponentScan(basePackageClasses = {PaginationConfigPackage.class,
+    TransactionTokenConfigPackage.class})
 // システム日時機能の追加、Tomcatのログ設定の追加、Formの特殊文字のコードポイント変換機能の追加
-@Import({ SystemDateConfig.class, TomcatAccessLogConfig.class, FormSpecialCharConvertConfig.class })
+@Import({SystemDateConfig.class, TomcatAccessLogConfig.class, FormSpecialCharConvertConfig.class})
 public class AppConfig {
 
-    /**
-     * エラーレスポンス作成クラス
-     */
     /**
      * エラーレスポンス作成クラス
      */
@@ -56,10 +53,10 @@ public class AppConfig {
 
         // Builderパターンを使用した場合の記載例
         return DefaultErrorResponseCreator.builder().messageSource(messageSource)
-                .inputErrorMessageId(MessageIds.W_EX_2001)//
-                .unexpectedErrorMessageId(MessageIds.E_EX_9001)//
-                .requestBodyValidationErrorMessageId(MessageIds.W_EX_2002)//
-                .build();
+            .inputErrorMessageId(MessageIds.W_EX_2001)//
+            .unexpectedErrorMessageId(MessageIds.E_EX_9001)//
+            .requestBodyValidationErrorMessageId(MessageIds.W_EX_2002)//
+            .build();
     }
 
     /**
@@ -86,7 +83,8 @@ public class AppConfig {
      */
     @Bean
     OpenAPI springDocOpenAPI() {
-        return new OpenAPI().info(new Info().title("非同期実行APIドキュメント").description("非同期実行管理のためのAPIです。").version("v1.0"));
+        return new OpenAPI().info(new Info().title("非同期実行APIドキュメント")
+            .description("非同期実行管理のためのAPIです。").version("v1.0"));
     }
 
 }

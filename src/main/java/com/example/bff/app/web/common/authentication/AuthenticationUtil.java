@@ -1,16 +1,16 @@
 package com.example.bff.app.web.common.authentication;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.example.bff.domain.model.LoginUserDetails;
 import com.example.bff.domain.model.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 認証情報取得ユーティリティクラス
  *
  */
 public class AuthenticationUtil {
+
     /**
      * コンストラクタ
      */
@@ -19,7 +19,7 @@ public class AuthenticationUtil {
 
     /**
      * ログイン済みかどうか取得する
-     * 
+     *
      * @return trueならログイン済
      */
     public static boolean isAuthenticated() {
@@ -29,13 +29,13 @@ public class AuthenticationUtil {
 
     /**
      * ログイン済みのユーザを取得する
-     * 
+     *
      * @return ログインユーザ
      */
     public static User getLoginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof LoginUserDetails) {
-            LoginUserDetails loginUserDetails = LoginUserDetails.class.cast(authentication.getPrincipal());
+        if (authentication != null
+            && authentication.getPrincipal() instanceof LoginUserDetails loginUserDetails) {
             return loginUserDetails.getUser();
         }
         return null;

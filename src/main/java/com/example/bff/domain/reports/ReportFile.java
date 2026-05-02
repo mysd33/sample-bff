@@ -11,11 +11,12 @@ import lombok.Value;
 @Builder
 @Value
 public class ReportFile {
+
     // InputStreamデータ
-    private final InputStream inputStream;
+    InputStream inputStream;
     // ファイルサイズ
-    private final long fileSize;
+    long fileSize;
     // ファイル名
-    private final String fileName;
+    String fileName;
 
 }

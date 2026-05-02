@@ -6,12 +6,13 @@ import lombok.Value;
 
 @Value
 public class UserListReportItem {
-    private String userId;
-    private String userName;
-    private Date birthday;
-    private String role;
-    private String note = ""; // 備考欄
-    
+
+    String userId;
+    String userName;
+    Date birthday;
+    String role;
+    String note = ""; // 備考欄
+
     public String getRoleName() {
         return switch (role) {
             case "ROLE_ADMIN" -> "管理者";

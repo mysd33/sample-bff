@@ -6,5 +6,6 @@ import lombok.Value;
 
 @Value
 public class UserListReportData {
-    private final List<UserListReportItem> userList;
+
+    List<UserListReportItem> userList;
 }
