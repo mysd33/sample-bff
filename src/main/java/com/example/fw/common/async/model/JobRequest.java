@@ -5,14 +5,13 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringJoiner;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 
+ *
  * ジョブの要求情報を管理するクラス
  *
  */
@@ -21,6 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class JobRequest implements Serializable {
+
     @Serial
     private static final long serialVersionUID = -7463515743016612451L;
 
@@ -36,7 +36,7 @@ public class JobRequest implements Serializable {
 
     /**
      * ジョブパラメータ文字列を返却する
-     * 
+     *
      * @return ジョブパラメータの文字列
      */
     public String toParameterString() {
@@ -46,22 +46,23 @@ public class JobRequest implements Serializable {
         }
         return sj.toString();
     }
-    
+
     /**
      * ジョブパラメータをProperties形式で返却する
+     *
      * @return ジョブパラメータのProperties形式で返却する
      */
     public Properties toParameterProperties() {
         Properties properties = new Properties();
-        parameters.forEach(properties::put);        
+        properties.putAll(parameters);
         return properties;
     }
-    
+
 
     /**
-     * 
+     *
      * JobRequestが有効な値かを返却する
-     * 
+     *
      */
     public boolean isValid() {
         if (restart) {

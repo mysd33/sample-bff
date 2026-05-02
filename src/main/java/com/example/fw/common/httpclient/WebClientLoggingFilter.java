@@ -1,12 +1,18 @@
 package com.example.fw.common.httpclient;
 
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.message.CommonFrameworkMessageIds;
+import com.example.fw.common.systemdate.SystemDateUtils;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.reactivestreams.Publisher;
 import org.slf4j.MDC;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -21,31 +27,23 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.CommonFrameworkMessageIds;
-import com.example.fw.common.systemdate.SystemDateUtils;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * 
- * WebClient呼び出し時のログを出力する機能</br>
- * TrackIDやREST API呼び出しの処理時間をログに出力するために使用する
+ *
+ * WebClient呼び出し時のログを出力する機能</br> TrackIDやREST API呼び出しの処理時間をログに出力するために使用する
  *
  */
 @Slf4j
 @RequiredArgsConstructor
 public class WebClientLoggingFilter {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     /**
      * WebClient呼び出し時のログを出力する
-     * 
+     *
      */
     public ExchangeFilterFunction filter() {
         return (request, next) -> {
@@ -53,7 +51,7 @@ public class WebClientLoggingFilter {
             // 処理時間を計測しログ出力
             long startTime = System.nanoTime();
             appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
-                    URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8));
+                URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8));
             // MDCの内容をコピーして取得
             Map<String, String> mdcData = MDC.getCopyOfContextMap();
             // 電文ログのデバッグログ出力対応したClientRequestを作成
@@ -61,9 +59,11 @@ public class WebClientLoggingFilter {
             return next.exchange(clientRequest).flatMap(response -> {
                 // 呼び出し処理実行後、処理時間を計測しログ出力
                 long endTime = System.nanoTime();
-                double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime, endTime);
+                double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime,
+                    endTime);
                 appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0002, request.method(),
-                        URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8), elapsedTime);
+                    URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8),
+                    elapsedTime);
                 return createResponseMonoForDebugLog(response);
             });
         };
@@ -71,20 +71,22 @@ public class WebClientLoggingFilter {
 
     /**
      * リクエストデータの電文ログをデバッグログ出力するためのClientRequest作成</br>
-     * 
+     * <p>
      * この時点で、MDCに設定したデータが引き継がれていないので、引き継ぐためにパラメータで渡す
-     * 
+     *
      * @param request リクエストデータ
      * @return 電文ログ出力対応したリクエストデータ
      */
-    private ClientRequest createClientRequestForDebugLog(final ClientRequest request, Map<String, String> mdcData) {
+    private ClientRequest createClientRequestForDebugLog(final ClientRequest request,
+        Map<String, String> mdcData) {
         final ClientRequest clientRequest;
         if (appLogger.isDebugEnabled()) {
             // リクエストデータの電文ログをデバッグログ出力するよう設定
             // https://ik.am/entries/632
             // https://stackoverflow.com/questions/67300470/webclient-request-and-response-body-logging
             BodyInserter<?, ? super ClientHttpRequest> bodyInserter = request.body();
-            clientRequest = ClientRequest.from(request).body((outputMessage, context) -> bodyInserter
+            clientRequest = ClientRequest.from(request)
+                .body((outputMessage, context) -> bodyInserter
                     .insert(new LoggingClientHttpRequest(outputMessage, mdcData), context)).build();
         } else {
             clientRequest = request;
@@ -94,36 +96,39 @@ public class WebClientLoggingFilter {
 
     /**
      * レスポンスデータの電文ログをデバッグログ出力するためのMono<ClientResponse>を作成する
-     * 
+     *
      * @param response レスポンスデータ
      */
-    private Mono<? extends ClientResponse> createResponseMonoForDebugLog(final ClientResponse response) {
+    private Mono<? extends ClientResponse> createResponseMonoForDebugLog(
+        final ClientResponse response) {
         // レスポンスデータのログを出力する
         // https://stackoverflow.com/questions/73299170/how-to-log-response-body-from-client-by-overriding-exchangefilterfunction-ofresp
         // https://stackoverflow.com/questions/67300470/webclient-request-and-response-body-logging
         return appLogger.isDebugEnabled() ? //
-                Mono.just(response.mutate().body(data -> data.map(dataBuffer -> {
-                    appLogger.debug("レスポンスデータ: {}", dataBuffer.toString(StandardCharsets.UTF_8));
-                    return dataBuffer;
-                })).build()) //
-                : Mono.just(response);
+            Mono.just(response.mutate().body(data -> data.map(dataBuffer -> {
+                appLogger.debug("レスポンスデータ: {}",
+                    dataBuffer.toString(StandardCharsets.UTF_8));
+                return dataBuffer;
+            })).build()) //
+            : Mono.just(response);
     }
 
     /**
      * リクエストデータをデバッグログに出力するためのClientHttpRequest実装クラス
      */
     @RequiredArgsConstructor
-    class LoggingClientHttpRequest implements ClientHttpRequest {
+    static class LoggingClientHttpRequest implements ClientHttpRequest {
+
         private final ClientHttpRequest delegateRequest;
         private final Map<String, String> mdcData;
 
         @Override
-        public DataBufferFactory bufferFactory() {
+        public @NonNull DataBufferFactory bufferFactory() {
             return delegateRequest.bufferFactory();
         }
 
         @Override
-        public void beforeCommit(Supplier<? extends Mono<Void>> action) {
+        public void beforeCommit(@NonNull Supplier<? extends Mono<Void>> action) {
             delegateRequest.beforeCommit(action);
         }
 
@@ -133,58 +138,65 @@ public class WebClientLoggingFilter {
         }
 
         @Override
-        public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-            return appLogger.isDebugEnabled() ? delegateRequest.writeWith(DataBufferUtils.join(body).doOnNext(data ->
+        public @NonNull Mono<Void> writeWith(@NonNull Publisher<? extends DataBuffer> body) {
             // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
-            new MDCScope(mdcData).execute(data,
-                    d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8)))))
-                    // デバッグレベルでない場合は通常の処理
-                    : this.delegateRequest.writeWith(body);
-        }
-
-        @Override
-        public Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
-            return appLogger.isDebugEnabled() ? delegateRequest
-                    .writeAndFlushWith(Flux.from(body).map(b -> DataBufferUtils.join(b).doOnNext(data ->
-                    // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
+            return appLogger.isDebugEnabled() ? delegateRequest.writeWith(
+                DataBufferUtils.join(body).doOnNext(data ->
                     new MDCScope(mdcData).execute(data,
-                            d -> appLogger.debug("リクエストデータ: {}", d.toString(StandardCharsets.UTF_8))))))
-                    // デバッグレベルでない場合は通常の処理
-                    : this.delegateRequest.writeAndFlushWith(body);
+                        d -> appLogger.debug("リクエストデータ: {}",
+                            d.toString(StandardCharsets.UTF_8)))))
+                // デバッグレベルでない場合は通常の処理
+                : this.delegateRequest.writeWith(body);
         }
 
         @Override
-        public Mono<Void> setComplete() {
+        public @NonNull Mono<Void> writeAndFlushWith(
+            @NonNull Publisher<? extends Publisher<? extends DataBuffer>> body) {
+            // 別スレッドで動作するため、TraceID、SpanIDをMDCに設定してログ出力
+            return appLogger.isDebugEnabled() ? delegateRequest
+                                                .writeAndFlushWith(Flux.from(body).map(
+                                                    b -> DataBufferUtils.join(b).doOnNext(data ->
+
+                                                        new MDCScope(mdcData).execute(data,
+                                                            d -> appLogger.debug(
+                                                                "リクエストデータ: {}", d.toString(
+                                                                    StandardCharsets.UTF_8))))))
+                // デバッグレベルでない場合は通常の処理
+                : this.delegateRequest.writeAndFlushWith(body);
+        }
+
+        @Override
+        public @NonNull Mono<Void> setComplete() {
             return delegateRequest.setComplete();
         }
 
         @Override
-        public HttpHeaders getHeaders() {
+        public @NonNull HttpHeaders getHeaders() {
             return delegateRequest.getHeaders();
         }
 
         @Override
-        public HttpMethod getMethod() {
+        public @NonNull HttpMethod getMethod() {
             return delegateRequest.getMethod();
         }
 
         @Override
-        public URI getURI() {
+        public @NonNull URI getURI() {
             return delegateRequest.getURI();
         }
 
         @Override
-        public MultiValueMap<String, HttpCookie> getCookies() {
+        public @NonNull MultiValueMap<String, HttpCookie> getCookies() {
             return delegateRequest.getCookies();
         }
 
         @Override
-        public <T> T getNativeRequest() {
+        public <T> @NonNull T getNativeRequest() {
             return delegateRequest.getNativeRequest();
         }
 
         @Override
-        public Map<String, Object> getAttributes() {
+        public @NonNull Map<String, Object> getAttributes() {
             return delegateRequest.getAttributes();
         }
 
@@ -194,7 +206,8 @@ public class WebClientLoggingFilter {
      * MDCの設定スコープを実現するクラス
      */
     @RequiredArgsConstructor
-    class MDCScope {
+    static class MDCScope {
+
         private final Map<String, String> mdcData;
 
         <T> void execute(T data, Consumer<T> consumer) {

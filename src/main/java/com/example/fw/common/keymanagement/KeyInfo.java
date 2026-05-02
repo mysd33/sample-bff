@@ -5,13 +5,14 @@ import lombok.Value;
 
 /**
  * 暗号鍵の情報を保持するクラス。
- * 
+ *
  */
 @Value
 @Builder
 public class KeyInfo {
+
     // キーのID
-    private final String keyId;
+    String keyId;
     // キーの状態
-    private final String state;
+    String state;
 }

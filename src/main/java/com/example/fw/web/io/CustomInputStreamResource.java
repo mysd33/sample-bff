@@ -7,16 +7,17 @@ import java.util.Objects;
 import org.springframework.core.io.InputStreamResource;
 
 /**
- * InputStreamResourceの拡張クラス
- * 
+ * InputStreamResourceの拡張クラス<br>
+ * <p>
  * Content-Lengthをあらかじめ指定しておくことで、Content-Lengthヘッダを正しく返すようにする
  */
 public class CustomInputStreamResource extends InputStreamResource {
+
     private final long contentLength;
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param inputStream   コンテンツの入力ストリーム
      * @param contentLength コンテンツサイズ
      */

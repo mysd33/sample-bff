@@ -4,21 +4,20 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static tools.jackson.dataformat.csv.CsvWriteFeature.ALWAYS_QUOTE_STRINGS;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
+import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractView;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.Setter;
 import tools.jackson.dataformat.csv.CsvMapper;
 import tools.jackson.dataformat.csv.CsvSchema;
 
@@ -72,9 +71,9 @@ public class CsvDownloadView extends AbstractView {
     }
 
     @Override
-    protected final void renderMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request,
-            final HttpServletResponse response) throws Exception {
-
+    protected final void renderMergedOutputModel(final @NonNull Map<String, Object> model,
+        final @NonNull HttpServletRequest request,
+        final HttpServletResponse response) throws Exception {
         // ファイル名に日本語を含めても文字化けしないようにUTF-8にエンコードする
         final var encodedFilename = encodeUtf8(filename);
         final var contentDisposition = "attachment; filename*=UTF-8''%s".formatted(encodedFilename);
@@ -104,11 +103,7 @@ public class CsvDownloadView extends AbstractView {
     private String encodeUtf8(final String filename) {
         String encoded = null;
 
-        try {
-            encoded = URLEncoder.encode(filename, "UTF-8");
-        } catch (UnsupportedEncodingException _) {
-            // 例外は発生しない
-        }
+        encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8);
 
         return encoded;
     }

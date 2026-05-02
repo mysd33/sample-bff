@@ -11,7 +11,6 @@ public interface KeyManager {
     /**
      * 新しい暗号鍵を作成します。
      *
-     * @param keyAlias 作成する暗号鍵のエイリアス
      * @return 作成された暗号鍵の情報
      */
     KeyInfo createKey();
@@ -26,7 +25,7 @@ public interface KeyManager {
 
     /**
      * 指定された暗号鍵にエイリアスを追加します。
-     * 
+     *
      * @param keyInfo エイリアスを追加する暗号鍵の情報
      * @param alias   追加するエイリアス
      */
@@ -34,7 +33,7 @@ public interface KeyManager {
 
     /**
      * エイリアスを削除します。
-     * 
+     *
      * @param alias 削除するエイリアス
      */
     void deleteKeyAlias(String alias);
@@ -62,7 +61,7 @@ public interface KeyManager {
 
     /**
      * CSR（証明書署名要求）を作成します。
-     * 
+     *
      * @param keyInfo 証明書作成のための暗号鍵の情報
      * @param subject CSRに指定する項目
      * @return 証明書署名要求
@@ -71,7 +70,7 @@ public interface KeyManager {
 
     /**
      * CSR（証明書署名要求）を使ってテスト用に自己署名証明書を作成します。
-     * 
+     *
      * @param keyInfo 証明書に自己署名をするための暗号鍵の情報
      * @param csr     証明書署名要求
      * @return 作成された自己署名証明書
@@ -80,15 +79,15 @@ public interface KeyManager {
 
     /**
      * CSR（証明書署名要求）をオブジェクトストレージに保存します。
-     * 
-     * @param csr
-     * @param keyInfo
+     *
+     * @param csr     証明書署名要求
+     * @param keyInfo 暗号鍵の情報
      */
     void saveCsrToObjectStorage(CertificateSigningRequest csr, KeyInfo keyInfo);
 
     /**
      * オブジェクトストレージからCSR（証明書署名要求）を取得します。
-     * 
+     *
      * @param keyInfo CSRを取得するための暗号鍵の情報
      * @return 取得した証明書署名要求
      */
@@ -96,7 +95,7 @@ public interface KeyManager {
 
     /**
      * オブジェクトストレージに自己署名証明書を保存します。
-     * 
+     *
      * @param certificate 証明書
      * @param keyInfo     証明書を保存するための暗号鍵の情報
      */
@@ -104,7 +103,7 @@ public interface KeyManager {
 
     /**
      * オブジェクトストレージに保存された自己署名証明書を取得します。
-     * 
+     *
      * @param keyInfo 証明書を取得するための暗号鍵の情報
      * @return 取得した自己署名証明書
      */
@@ -112,7 +111,7 @@ public interface KeyManager {
 
     /**
      * オブジェクトストレージに保存された証明書を取得します。
-     * 
+     *
      * @param keyInfo 証明書を取得するための暗号鍵の情報
      * @return 取得した証明書
      */
@@ -120,7 +119,7 @@ public interface KeyManager {
 
     /**
      * メッセージダイジェスト（ハッシュ）をもとに電子署名を生成します。
-     * 
+     *
      * @param digestData 署名対象のダイジェスト（ハッシュ）データ
      * @param keyInfo    署名に使用する暗号鍵の情報
      * @return 生成された電子署名
@@ -129,7 +128,7 @@ public interface KeyManager {
 
     /**
      * 生データをもとに電子署名を生成します。
-     * 
+     *
      * @param rawData 署名対象のメッセージデータ
      * @param keyInfo 署名に使用する暗号鍵の情報
      * @return 生成された電子署名

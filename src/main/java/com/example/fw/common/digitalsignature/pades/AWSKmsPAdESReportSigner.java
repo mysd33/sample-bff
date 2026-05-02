@@ -1,17 +1,5 @@
 package com.example.fw.common.digitalsignature.pades;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
@@ -27,7 +15,6 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 import com.example.fw.common.reports.DefaultReport;
 import com.example.fw.common.reports.Report;
 import com.example.fw.common.reports.ReportsConstants;
-
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -41,24 +28,34 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
-import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import jakarta.annotation.PostConstruct;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * AWS KMSを使用してPDFにPAdES形式の電子署名を付与するクラス
- * 
+ * <p>
  * このクラスは、AWS KMSを使用してPDFにPAdES形式の電子署名を付与します。
- * 
+ *
  * @see ReportSigner
  */
 @Slf4j
 @RequiredArgsConstructor
 public class AWSKmsPAdESReportSigner implements ReportSigner {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     private final KeyManager keyManager;
     private final TempFileCreator tempFileCreator;
@@ -81,12 +78,13 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             keyAlias = digitalSignatureConfigurationProperties.getAwsKms().getKeyAlias();
             if (StringUtils.isEmpty(keyAlias)) {
                 throw new IllegalStateException(
-                        "Either keyId or keyAlias must be specified in digital signature configuration.");
+                    "Either keyId or keyAlias must be specified in digital signature configuration.");
             }
             // キーエイリアスからキーIDを取得
             keyId = keyManager.findKeyByAlias(keyAlias).getKeyId();
             if (StringUtils.isEmpty(keyId)) {
-                throw new IllegalStateException("No key found for the specified key alias: %s".formatted(keyAlias));
+                throw new IllegalStateException(
+                    "No key found for the specified key alias: %s".formatted(keyAlias));
             }
         }
         // 解析用にキーIDをログ出力
@@ -94,16 +92,18 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
         // 証明書の取得
         List<Certificate> certificates = keyManager
-                .getCertificatesFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
+            .getCertificatesFromObjectStorage(KeyInfo.builder().keyId(keyId).build());
         // 証明書が取得できない場合は例外をスロー
         if (certificates == null) {
-            throw new IllegalStateException("No certificate found for the specified key ID: %s".formatted(keyId));
+            throw new IllegalStateException(
+                "No certificate found for the specified key ID: %s".formatted(keyId));
         }
         // 証明書チェーンをCertificateToken形式で取得
-        certificateTokens = CertificateUtils.exchageOrderdCertifcateTokens(certificates);
+        certificateTokens = CertificateUtils.exchangeOrderedCertificateTokens(certificates);
 
         // KMSから公開鍵を取得
-        PublicKey publicKeyFromKMS = keyManager.getPublicKey(KeyInfo.builder().keyId(keyId).build());
+        PublicKey publicKeyFromKMS = keyManager.getPublicKey(
+            KeyInfo.builder().keyId(keyId).build());
         // 鍵と証明書管理運用を誤った場合にエラー原因特定できるように情報ログを取得
         logCertificateInfo(certificateTokens, publicKeyFromKMS);
         // エンドエンティティ証明書内の公開鍵を取得
@@ -112,7 +112,7 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         // KMSから取得した公開鍵とエンドエンティティ証明書の公開鍵の内容が一致するか確認
         if (!publicKeyFromKMS.equals(publicKeyInCertificate)) {
             throw new IllegalStateException(
-                    "The public key from KMS does not match the public key in the certificate.");
+                "The public key from KMS does not match the public key in the certificate.");
         }
     }
 
@@ -135,7 +135,8 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         try (AWSKmsSignatureToken token = new AWSKmsSignatureToken(keyManager, keyId)) {
 
             // PAdESSignatureの署名パラメータを作成
-            PAdESSignatureParameters signatureParameters = createSignatureParameters(certificateTokens, options);
+            PAdESSignatureParameters signatureParameters = createSignatureParameters(
+                certificateTokens, options);
 
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
@@ -148,18 +149,21 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             ToBeSigned dataToSign = padesService.getDataToSign(toSignDocument, signatureParameters);
 
             // 署名を生成
-            SignatureValue signatureValue = token.sign(dataToSign, signatureParameters.getSignatureAlgorithm(), null);
+            SignatureValue signatureValue = token.sign(dataToSign,
+                signatureParameters.getSignatureAlgorithm(), null);
 
             // 署名をPDFに適用
             DSSDocument signedDocument = padesService.signDocument(toSignDocument, //
-                    signatureParameters, signatureValue);
+                signatureParameters, signatureValue);
 
             // 署名済みPDFを一時ファイルに保存しReportオブジェクトを生成して返却
 
             try {
-                File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
-                        ReportsConstants.PDF_FILE_EXTENSION);
-                try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
+                File tempFile = tempFileCreator.createTempFile(
+                    ReportsConstants.PDF_TEMP_FILE_PREFIX,
+                    ReportsConstants.PDF_FILE_EXTENSION);
+                try (BufferedOutputStream bos = new BufferedOutputStream(
+                    new FileOutputStream(tempFile))) {
                     signedDocument.writeTo(bos);
                 }
                 return DefaultReport.builder().file(tempFile).build();
@@ -171,12 +175,13 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
     /**
      * PAdESSignatureParametersを作成する
-     * 
-     * @param privateKey 署名に使用する秘密鍵
-     * @return PAdESSignatureParameters
+     *
+     * @param certificateTokens 証明書チェーンのCertificateTokenのリスト
+     * @param options           署名オプション
      */
-    private PAdESSignatureParameters createSignatureParameters(final List<CertificateToken> certificateTokens,
-            final SignOptions options) {
+    private PAdESSignatureParameters createSignatureParameters(
+        final List<CertificateToken> certificateTokens,
+        final SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
@@ -191,15 +196,18 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
         // 署名に使用するハッシュアルゴリズムの設定
         pAdESSignatureParameters
-                .setDigestAlgorithm(DigestAlgorithm.forName(keyManagementConfigurationProperties.getHashAlgorithm()));
+            .setDigestAlgorithm(
+                DigestAlgorithm.forName(keyManagementConfigurationProperties.getHashAlgorithm()));
 
         // 署名に使用する暗号化アルゴリズムを設定
         // 例えば公開鍵の暗号化アルゴリズムから取得するとrsaEncryption（RSA）となるが、rsassaPss(RSASSA-PSS)にするには、明示的に設定が必要。
         pAdESSignatureParameters.setEncryptionAlgorithm(
-                EncryptionAlgorithm.forName(keyManagementConfigurationProperties.getKeyFactoryAlgorithm()));
+            EncryptionAlgorithm.forName(
+                keyManagementConfigurationProperties.getKeyFactoryAlgorithm()));
 
         // アプリケーション名、署名の理由、場所を設定
-        pAdESSignatureParameters.setAppName(digitalSignatureConfigurationProperties.getApplicationName());
+        pAdESSignatureParameters.setAppName(
+            digitalSignatureConfigurationProperties.getApplicationName());
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
 
@@ -218,10 +226,14 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             fieldParameters.setPage(options.getVisibleSignPage());
             fieldParameters.setOriginX(options.getVisibleSignRect()[0]);
             fieldParameters.setOriginY(options.getVisibleSignRect()[1]);
-            fieldParameters.setWidth(options.getVisibleSignRect()[2] - options.getVisibleSignRect()[0]);
-            fieldParameters.setHeight(options.getVisibleSignRect()[3] - options.getVisibleSignRect()[1]);
-            SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-            textParameters.setText(options.getVisibleSignText());
+            fieldParameters.setWidth(
+                options.getVisibleSignRect()[2] - options.getVisibleSignRect()[0]);
+            fieldParameters.setHeight(
+                options.getVisibleSignRect()[3] - options.getVisibleSignRect()[1]);
+            // Image with Text visual signature is not supported for OpenPDF module
+            //SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+            //textParameters.setText(options.getVisibleSignText());
+            //imageParameters.setTextParameters(textParameters);
             pAdESSignatureParameters.setImageParameters(imageParameters);
         }
 
@@ -230,11 +242,13 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
 
     /**
      * 証明書ファイル内の証明書情報とKMSから取得した公開鍵との比較情報をログ出力する
-     * 
-     * @param certificateTokens
-     * @param publicKeyFromKMS
+     *
+     * @param certificateTokensFromFile 証明書ファイルから取得したCertificateTokenのリスト
+     * @param publicKeyFromKMS          KMSから取得した公開鍵
+     *
      */
-    private void logCertificateInfo(List<CertificateToken> certificateTokensFromFile, PublicKey publicKeyFromKMS) {
+    private void logCertificateInfo(List<CertificateToken> certificateTokensFromFile,
+        PublicKey publicKeyFromKMS) {
         // 証明書パスの総数
         int totalSize = certificateTokensFromFile.size();
 
@@ -247,41 +261,42 @@ public class AWSKmsPAdESReportSigner implements ReportSigner {
             X509Certificate cert = certificateToken.getCertificate();
             // 証明書のメタ情報をログ出力
             appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0002, //
-                    certificateIndex, // 0
-                    totalSize, // 1
-                    cert.getType(), // 2
-                    cert.getSubjectX500Principal().getName(), // 3
-                    cert.getIssuerX500Principal().getName(), // 4
-                    cert.getSerialNumber(), // 5
-                    cert.getNotBefore(), // 6
-                    cert.getNotAfter(), // 7
-                    cert.getSigAlgName(), // 8
-                    cert.getSigAlgOID(), // 9
-                    cert.getVersion()); // 10
+                certificateIndex, // 0
+                totalSize, // 1
+                cert.getType(), // 2
+                cert.getSubjectX500Principal().getName(), // 3
+                cert.getIssuerX500Principal().getName(), // 4
+                cert.getSerialNumber(), // 5
+                cert.getNotBefore(), // 6
+                cert.getNotAfter(), // 7
+                cert.getSigAlgName(), // 8
+                cert.getSigAlgOID(), // 9
+                cert.getVersion()); // 10
             // 証明書内の公開鍵取得
             PublicKey publicKeyInCertificate = cert.getPublicKey();
             byte[] certPublicKeyBytes = encodeBytesFromPublicKey(publicKeyInCertificate);
-            String certPublicKeyBase64String = Base64.getEncoder().encodeToString(publicKeyInCertificate.getEncoded());
+            String certPublicKeyBase64String = Base64.getEncoder()
+                .encodeToString(publicKeyInCertificate.getEncoded());
             // KMSから取得した公開鍵と証明書内の公開鍵を比較するログ出力
             appLogger.info(CommonFrameworkMessageIds.I_FW_PDFSGN_0003, //
-                    certificateIndex, // 0
-                    totalSize, // 1
-                    publicKeyFromKMS.getAlgorithm(), // 2
-                    publicKeyFromKMS.getFormat(), // 3
-                    publicKeyInCertificate.getAlgorithm(), // 4
-                    publicKeyInCertificate.getFormat(), // 5
-                    kmsPublicKeyBase64String, // 6
-                    certPublicKeyBase64String, // 7
-                    kmsPublicKeyBytes.length, // 8
-                    certPublicKeyBytes.length, // 9
-                    Arrays.equals(kmsPublicKeyBytes, certPublicKeyBytes));// 10
+                certificateIndex, // 0
+                totalSize, // 1
+                publicKeyFromKMS.getAlgorithm(), // 2
+                publicKeyFromKMS.getFormat(), // 3
+                publicKeyInCertificate.getAlgorithm(), // 4
+                publicKeyInCertificate.getFormat(), // 5
+                kmsPublicKeyBase64String, // 6
+                certPublicKeyBase64String, // 7
+                kmsPublicKeyBytes.length, // 8
+                certPublicKeyBytes.length, // 9
+                Arrays.equals(kmsPublicKeyBytes, certPublicKeyBytes));// 10
             certificateIndex++;
         }
     }
 
     /**
      * 公開鍵からエンコードされたバイト配列を取得する
-     * 
+     *
      * @param publicKey 公開鍵
      * @return エンコードされたバイト配列
      */

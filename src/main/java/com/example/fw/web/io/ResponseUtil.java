@@ -28,7 +28,7 @@ public class ResponseUtil {
      * 
      * @param inputStream ダウンロードするPDFファイルの入力ストリーム
      * @param fileName    ファイル名
-     * @fileSize ファイルサイズ
+     * @param fileSize ファイルサイズ
      * @return レスポンスデータ
      */
     public static ResponseEntity<Resource> createResponseForPDF(final InputStream inputStream, final String fileName,
@@ -75,7 +75,6 @@ public class ResponseUtil {
      * @param mediaType メディアタイプ
      * @param resource  ダウンロードするファイルのリソース
      * @param fileName  ファイル名
-     * @fileSize ファイルサイズ
      * @return レスポンスデータ
      */
     private static ResponseEntity<Resource> createResponse(final MediaType mediaType, final Resource resource,

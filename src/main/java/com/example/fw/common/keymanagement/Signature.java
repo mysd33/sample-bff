@@ -9,6 +9,7 @@ import lombok.Value;
 @Builder
 @Value
 public class Signature {
+
     // 署名データ
-    private final byte[] value;
+    byte[] value;
 }

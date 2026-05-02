@@ -1,14 +1,13 @@
 package com.example.fw.common.keymanagement;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-
+import lombok.Builder;
+import lombok.Value;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 
-import lombok.Builder;
-import lombok.Value;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * 証明書署名要求（CSR:Certificate Signing Request）データを表すクラス
@@ -17,7 +16,7 @@ import lombok.Value;
 @Builder
 public class CertificateSigningRequest {
     private static final String PEM_TYPE = "CERTIFICATE REQUEST";
-    private final byte[] der; // DER形式でエンコードされたCSRデータ
+    byte[] der; // DER形式でエンコードされたCSRデータ
 
     /**
      * PEM形式でCSRデータをファイルにエクスポートします。
