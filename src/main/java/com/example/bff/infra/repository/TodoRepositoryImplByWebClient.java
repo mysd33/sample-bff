@@ -58,122 +58,85 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     @Override
     public Optional<Todo> findById(String todoId) {
-        // @formatter:off 
-		Mono<Todo> todoMono = webClient.get()
-				.uri(urlTodoById, todoId)				
-				.retrieve()
-				.onStatus(HttpStatusCode::is4xxClientError,  
-				        responseErrorHandler::createClientErrorException
-				)
-				.onStatus(HttpStatusCode::is5xxServerError,
-				        responseErrorHandler::createServerErrorException
-				) 
-				.bodyToMono(Todo.class)
+
+        Mono<Todo> todoMono = webClient.get().uri(urlTodoById, todoId)//
+                .retrieve()//
+                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
-                    return !(th instanceof BusinessException);
-                }))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                        .filter(th -> !(th instanceof BusinessException)))//
                 // サーキットブレーカによる処理
-				.transform(it -> cbFactory.create("todo_findById")
-						.run(it, CircuitBreakerErrorFallback.returnMonoBusinessException()));
-		return todoMono.blockOptional();
-		// @formatter:on
+                .transform(it -> cbFactory.create("todo_findById").run(it,
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()));
+        return todoMono.blockOptional();
+
     }
 
     @Override
     public Collection<Todo> findAll() {
-        // @formatter:off 
-
-        Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)
-				.retrieve()
-				.onStatus(HttpStatusCode::is4xxClientError,
-				        responseErrorHandler::createClientErrorException
-				)
-				.onStatus(HttpStatusCode::is5xxServerError,
-				        responseErrorHandler::createServerErrorException
-				) 
-				.bodyToMono(TodoList.class)
-				// エクスポネンシャルバックオフによるリトライ
-				.retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
-                    return !(th instanceof BusinessException);
-                }))
-                // サーキットブレーカによる処理				
-				// Fallback時にエラーとせずに空のリストを例
-				.transform(it -> cbFactory.create("todo_findAll")
-						.run(it, _ -> Mono.just(new TodoList())));
-		// @formatter:on 
+        Mono<TodoList> todoListMono = webClient.get().uri(urlTodos)//
+                .retrieve()//
+                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .bodyToMono(TodoList.class)//
+                // エクスポネンシャルバックオフによるリトライ
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                        .filter(th -> !(th instanceof BusinessException)))
+                // サーキットブレーカによる処理
+                // Fallback時にエラーとせずに空のリストを例
+                .transform(it -> cbFactory.create("todo_findAll").run(it, _ -> Mono.just(new TodoList())));
         return todoListMono.block();
     }
 
     @Override
     public void create(Todo todo) {
-        // @formatter:off 
-		webClient.post().uri(urlTodos)
-				.contentType(MediaType.APPLICATION_JSON).bodyValue(todo)
-				.retrieve()
-				.onStatus(HttpStatusCode::is4xxClientError,
-				        responseErrorHandler::createClientErrorException
-				)
-				.onStatus(HttpStatusCode::is5xxServerError,
-				        responseErrorHandler::createServerErrorException
-				) 
-				.bodyToMono(Todo.class)
+        webClient.post().uri(urlTodos)//
+                .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
+                .retrieve()//
+                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
-                    return !(th instanceof BusinessException);
-                }))
-                // サーキットブレーカによる処理                
-				.transform(it -> cbFactory.create("todo_create").run(it,
-						CircuitBreakerErrorFallback.returnMonoBusinessException()))
-				.block();
-		// @formatter:on
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                        .filter(th -> !(th instanceof BusinessException)))
+                // サーキットブレーカによる処理
+                .transform(it -> cbFactory.create("todo_create").run(it,
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
+                .block();
     }
 
     @Override
     public boolean update(Todo todo) {
-        // @formatter:off 
-	    webClient.put().uri(urlTodoById, todo.getTodoId())
-				.retrieve()
-				.onStatus(HttpStatusCode::is4xxClientError, 
-				        responseErrorHandler::createClientErrorException
-				)
-				.onStatus(HttpStatusCode::is5xxServerError,
-				        responseErrorHandler::createServerErrorException
-				) 
-				.bodyToMono(Todo.class)
+        webClient.put().uri(urlTodoById, todo.getTodoId())//
+                .retrieve()//
+                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
-                    return !(th instanceof BusinessException);
-                }))
-                // サーキットブレーカによる処理                
-				.transform(it -> cbFactory.create("todo_update").run(it,
-						CircuitBreakerErrorFallback.returnMonoBusinessException()))
-				.block();
-	    // @formatter:on 
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                        .filter(th -> !(th instanceof BusinessException)))
+                // サーキットブレーカによる処理
+                .transform(it -> cbFactory.create("todo_update").run(it,
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
+                .block();
         return true;
     }
 
     @Override
     public void delete(Todo todo) {
-        // @formatter:off 	    
-		webClient.delete().uri(urlTodoById, todo.getTodoId())
-				.retrieve()
-				.onStatus(HttpStatusCode::is4xxClientError,
-				        responseErrorHandler::createClientErrorException
-				)
-				.onStatus(HttpStatusCode::is5xxServerError,
-				        responseErrorHandler::createServerErrorException
-				)  
-				.bodyToMono(Void.class)
+        webClient.delete().uri(urlTodoById, todo.getTodoId())//
+                .retrieve()//
+                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .bodyToMono(Void.class)//
                 // エクスポネンシャルバックオフによるリトライ
-                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff)).filter(th -> {
-                    return !(th instanceof BusinessException);
-                }))
+                .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
+                        .filter(th -> !(th instanceof BusinessException)))
                 // サーキットブレーカによる処理
-				.transform(it -> cbFactory.create("todo_delete").run(it,
-						CircuitBreakerErrorFallback.returnMonoBusinessException()))
-				.block();
-		// @formatter:on 		
+                .transform(it -> cbFactory.create("todo_delete").run(it,
+                        CircuitBreakerErrorFallback.returnMonoBusinessException()))
+                .block();
     }
-
 }

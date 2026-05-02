@@ -19,6 +19,7 @@ public class AuthenticationUtil {
 
     /**
      * ログイン済みかどうか取得する
+     * 
      * @return trueならログイン済
      */
     public static boolean isAuthenticated() {
@@ -28,11 +29,12 @@ public class AuthenticationUtil {
 
     /**
      * ログイン済みのユーザを取得する
+     * 
      * @return ログインユーザ
      */
     public static User getLoginUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof LoginUserDetails) {
+        if (authentication != null && authentication.getPrincipal() instanceof LoginUserDetails) {
             LoginUserDetails loginUserDetails = LoginUserDetails.class.cast(authentication.getPrincipal());
             return loginUserDetails.getUser();
         }

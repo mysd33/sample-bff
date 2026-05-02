@@ -56,7 +56,7 @@ public class SecurityConfig {
      * Spring Securityによる認証認可設定
      */
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) {
         // フォーム認証にによるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
@@ -94,7 +94,7 @@ public class SecurityConfig {
     @Profile("dev")
     @Order(1)
     @Bean
-    SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) {
         // H2 ConsoleのURLに対して
         http.securityMatcher(toH2Console())//
                 .authorizeHttpRequests(
@@ -126,7 +126,7 @@ public class SecurityConfig {
     @Bean
     ObservationRegistryCustomizer<ObservationRegistry> noSpringSecurityObservations() {
         ObservationPredicate predicate = (name, _) -> !name.startsWith("spring.security.");
-        return (registry) -> registry.observationConfig().observationPredicate(predicate);
+        return registry -> registry.observationConfig().observationPredicate(predicate);
     }
 
 }

@@ -51,7 +51,7 @@ public class SQSCommonLocalConfig {
     /**
      * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Ray SDK)<br>
      * 
-     * X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
+     * @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
      */
     @Deprecated(forRemoval = true)
     @Profile("xray")

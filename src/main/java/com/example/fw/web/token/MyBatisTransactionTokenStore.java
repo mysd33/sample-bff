@@ -17,18 +17,18 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * DB管理(MyBatis)によるTransactionT
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import org.springframework.beans.facokenStore実装クラス 
+ * 
+ * import jakarta.servlet.http.HttpServletRequest; import
+ * jakarta.servlet.http.HttpSession;
+ * 
+ * import org.springframework.beans.facokenStore実装クラス
  *
  */
 public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     private final int transactionTokenSizePerTokenName;
     private final TokenStringGenerator generator;
     private StoredTransactionTokenRepository tokenRepository;
-    
+
     @Autowired
     public void setTokenRepository(StoredTransactionTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
@@ -37,7 +37,7 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     public MyBatisTransactionTokenStore() {
         this(10, new TokenStringGenerator());
     }
-    
+
     public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName) {
         this(transactionTokenSizePerTokenName, new TokenStringGenerator());
     }
@@ -45,7 +45,7 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName, TokenStringGenerator generator) {
         this.transactionTokenSizePerTokenName = transactionTokenSizePerTokenName;
         this.generator = generator;
-    }    
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -63,6 +63,7 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
             tokenRepository.delete(name, key, sessionId);
             return token.getTokenValue();
         } catch (PessimisticLockingFailureException _) {
+            // 何もしない
         }
         return null;
     }

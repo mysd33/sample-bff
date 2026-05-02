@@ -12,13 +12,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import com.amazonaws.xray.sql.TracingDataSource;
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * 
  * X-Ray SDKでのJDBCのトレーシング用設定クラス<br>
  * 
- * X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
+ * @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
  *
  */
 @Deprecated(forRemoval = true)
@@ -49,16 +48,14 @@ public class XRayJDBCConfig {
         @Deprecated(forRemoval = true)
         @Bean
         DataSource dataSourceForXray(DataSourceProperties dataSourceProperties) {
-        // @formatter:off
-        return TracingDataSource.decorate(
-                DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .driverClassName(dataSourceProperties.getDriverClassName())
-                .url(dataSourceProperties.getUrl())
-                .username(dataSourceProperties.getUsername())
-                .password(dataSourceProperties.getPassword())               
-                .build());
-        // @formatter:on        
+
+            return TracingDataSource.decorate(DataSourceBuilder.create()//
+                    .type(dataSourceProperties.getType())//
+                    .driverClassName(dataSourceProperties.determineDriverClassName())//
+                    .url(dataSourceProperties.determineUrl())//
+                    .username(dataSourceProperties.getUsername())//
+                    .password(dataSourceProperties.getPassword())//
+                    .build());
         }
     }
 

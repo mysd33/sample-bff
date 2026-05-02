@@ -1,32 +1,38 @@
 <!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     th:fragment="layout (title,body,headerButton)">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no">        
-        <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"></link>
-        <link th:href="@{/css/common.css}" rel="stylesheet"></link>                
-        <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-        <title th:text="${title}">タイトル</title>
-    </head>
-    <body class="bg-light">
-        <!--/* ヘッダー部 */-->
-        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">        
-            <h3 class="me-md-auto fw-normal">                
-                <svg class="icon logo"><use th:xlink:href="@{/webjars/bootstrap-icons/bootstrap-icons.svg#check-circle-fill}"></use></svg>
-                <span th:replace="${title}" th:remove="tag">タイトル</span>
-            </h3>                        
-            <div sec:authorize="isAuthenticated()">
-                <p class="text-end">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    </link>
+    <link th:href="@{/css/common.css}" rel="stylesheet">
+    </link>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <title th:text="${title}">タイトル</title>
+</head>
+
+<body class="bg-light">
+    <!--/* ヘッダー部 */-->
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h3 class="me-md-auto fw-normal">
+            <svg class="icon logo">
+                <use th:xlink:href="@{/webjars/bootstrap-icons/bootstrap-icons.svg#check-circle-fill}"></use>
+            </svg>
+            <span th:replace="${title}" th:remove="tag">タイトル</span>
+        </h3>
+        <div sec:authorize="isAuthenticated()">
+            <p class="text-end">
                 ようこそ, <strong><span sec:authentication="principal.user.userName"></span></strong>さん!
-                <a th:replace="${headerButton}"></a>
-                </p>                
-            </div>                  
+                <a th:replace="${headerButton}">button</a>
+            </p>
         </div>
-        <!--/* ボディ部 */-->
-        <div class="container">
-        	<div th:replace="${body}"></div>
-        </div>
-    </body>
+    </div>
+    <!--/* ボディ部 */-->
+    <div class="container">
+        <div th:replace="${body}"></div>
+    </div>
+</body>
+
 </html>

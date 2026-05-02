@@ -59,7 +59,7 @@ public class WebClientConfig {
      * 
      * WebClientクラス（X-Rayトレーシング SDK）<br>
      * 
-     * X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
+     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
      */
     @Deprecated(forRemoval = true)
     @Profile("xray")
@@ -72,7 +72,7 @@ public class WebClientConfig {
     /**
      * WebClientでのAWS X-Ray SDKのHttpクライアントトレーシング設定<br>
      * 
-     * X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
+     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
      */
     @Deprecated(forRemoval = true)
     @Profile("xray")

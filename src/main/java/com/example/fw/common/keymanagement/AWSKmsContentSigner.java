@@ -71,11 +71,9 @@ public class AWSKmsContentSigner implements ContentSigner {
                 .message(SdkBytes.fromByteArray(hash)) // ハッシュ値をメッセージとして指定
                 .messageType(MessageType.DIGEST) // 署名のメッセージタイプをDIGESTに設定
                 .signingAlgorithm(keyManagementConfigurationProperties.getAwsKms().getKmsSigningAlgorithmSpec())) // 署名アルゴリズムを指定
-                .thenApply(response -> {
-                    // 署名の結果を取得
-                    return response.signature().asByteArray();
-                }).join(); // 非同期処理の完了を待つ
-
+                // 署名の結果を取得
+                .thenApply(response -> response.signature().asByteArray())//
+                .join(); // 非同期処理の完了を待つ
     }
 
 }

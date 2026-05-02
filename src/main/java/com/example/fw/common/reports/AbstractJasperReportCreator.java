@@ -336,9 +336,9 @@ public abstract class AbstractJasperReportCreator<T> {
     /**
      * PDF形式で帳票を出力する（オンメモリ）
      * 
+     * @deprecated 実装例として残しているが基本的には使用しない
      * @param jasperPrint JasperPrintオブジェクト
      * @param options     PDF出力時のオプション設定
-     * 
      * @return PDFファイルのInputStreamデータ
      * @throws JRException JasperReportsでPDFのエクスポートに失敗した場合
      */

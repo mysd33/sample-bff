@@ -262,7 +262,6 @@ public class AWSKmsKeyManager implements KeyManager {
             return Certificate.builder() //
                     .der(certificateHolder.getEncoded()) // 証明書のDERエンコードされたバイト配列を設定
                     .build();
-            // } catch (NoSuchAlgorithmException | IOException e) {
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9006);
         }
