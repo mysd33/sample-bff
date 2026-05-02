@@ -1,14 +1,5 @@
 package com.example.fw.common.digitalsignature.pades;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.KeyStore.PasswordProtection;
-import java.security.cert.X509Certificate;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.SignOptions;
 import com.example.fw.common.digitalsignature.config.DigitalSignatureConfigurationProperties;
@@ -18,7 +9,6 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 import com.example.fw.common.reports.DefaultReport;
 import com.example.fw.common.reports.Report;
 import com.example.fw.common.reports.ReportsConstants;
-
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -30,25 +20,32 @@ import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
-import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
 import eu.europa.esig.dss.token.Pkcs12SignatureToken;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.KeyStore.PasswordProtection;
+import java.security.cert.X509Certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * PKCS#12形式のキーストアを使用してPDFにPAdES形式の電子署名を付与するクラス
- * 
+ * <p>
  * このクラスは、PKCS#12形式のキーストアから秘密鍵と証明書を読み込み、PDFにPAdES形式の電子署名を付与します。
- * 
+ *
  * @see ReportSigner
  */
 @Slf4j
 @RequiredArgsConstructor
 public class PKCS12PAdESReportSiginer implements ReportSigner {
+
     private final TempFileCreator tempFileCreator;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
 
@@ -69,9 +66,9 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
 
         DSSPrivateKeyEntry privateKey = null;
         try (Pkcs12SignatureToken pkcs12SignatureToken = new Pkcs12SignatureToken(
-                digitalSignatureConfigurationProperties.getPkcs12().getKeystoreFilePath(), //
-                new PasswordProtection(
-                        digitalSignatureConfigurationProperties.getPkcs12().getPassword().toCharArray()))) {
+            digitalSignatureConfigurationProperties.getPkcs12().getKeystoreFilePath(), //
+            new PasswordProtection(
+                digitalSignatureConfigurationProperties.getPkcs12().getPassword().toCharArray()))) {
             privateKey = pkcs12SignatureToken.getKeys().getFirst();
 
             // 証明書の有効性を確認
@@ -79,7 +76,8 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             CertificateUtils.validateCertificate(certificate);
 
             // PAdESSignatureの署名パラメータを作成
-            PAdESSignatureParameters signatureParameters = createSignatureParameters(privateKey, options);
+            PAdESSignatureParameters signatureParameters = createSignatureParameters(privateKey,
+                options);
 
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
@@ -89,13 +87,14 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             ToBeSigned dataToSign = padesService.getDataToSign(toSignDocument, signatureParameters);
             // 計算されたハッシュ値を使用して署名を生成
             SignatureValue signatureValue = pkcs12SignatureToken.sign(dataToSign,
-                    signatureParameters.getDigestAlgorithm(), privateKey);
+                signatureParameters.getDigestAlgorithm(), privateKey);
             // 署名をPDFに適用
             DSSDocument signedDocument = padesService.signDocument(toSignDocument, //
-                    signatureParameters, signatureValue);
+                signatureParameters, signatureValue);
             File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
-                    ReportsConstants.PDF_FILE_EXTENSION);
-            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile))) {
+                ReportsConstants.PDF_FILE_EXTENSION);
+            try (BufferedOutputStream bos = new BufferedOutputStream(
+                new FileOutputStream(tempFile))) {
                 signedDocument.writeTo(bos);
             }
             return DefaultReport.builder().file(tempFile).build();
@@ -106,12 +105,12 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
 
     /**
      * PAdESSignatureParametersを作成する
-     * 
+     *
      * @param privateKey 署名に使用する秘密鍵
      * @return PAdESSignatureParameters
      */
     private PAdESSignatureParameters createSignatureParameters(final DSSPrivateKeyEntry privateKey,
-            final SignOptions options) {
+        final SignOptions options) {
         PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
@@ -125,10 +124,12 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         pAdESSignatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
         // 署名に使用するハッシュアルゴリズムの設定
         pAdESSignatureParameters.setDigestAlgorithm(
-                DigestAlgorithm.valueOf(digitalSignatureConfigurationProperties.getPkcs12().getHashAlgorithm()));
+            DigestAlgorithm.valueOf(
+                digitalSignatureConfigurationProperties.getPkcs12().getHashAlgorithm()));
 
         // アプリケーション名、署名の理由、場所を設定
-        pAdESSignatureParameters.setAppName(digitalSignatureConfigurationProperties.getApplicationName());
+        pAdESSignatureParameters.setAppName(
+            digitalSignatureConfigurationProperties.getApplicationName());
         pAdESSignatureParameters.setReason(options.getReason());
         pAdESSignatureParameters.setLocation(options.getLocation());
 
@@ -147,10 +148,14 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             fieldParameters.setPage(options.getVisibleSignPage());
             fieldParameters.setOriginX(options.getVisibleSignRect()[0]);
             fieldParameters.setOriginY(options.getVisibleSignRect()[1]);
-            fieldParameters.setWidth(options.getVisibleSignRect()[2] - options.getVisibleSignRect()[0]);
-            fieldParameters.setHeight(options.getVisibleSignRect()[3] - options.getVisibleSignRect()[1]);
-            SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
-            textParameters.setText(options.getVisibleSignText());
+            fieldParameters.setWidth(
+                options.getVisibleSignRect()[2] - options.getVisibleSignRect()[0]);
+            fieldParameters.setHeight(
+                options.getVisibleSignRect()[3] - options.getVisibleSignRect()[1]);
+            // Image with Text visual signature is not supported for OpenPDF module
+            //SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+            //textParameters.setText(options.getVisibleSignText());
+            //imageParameters.setTextParameters(textParameters);
             pAdESSignatureParameters.setImageParameters(imageParameters);
         }
         return pAdESSignatureParameters;
