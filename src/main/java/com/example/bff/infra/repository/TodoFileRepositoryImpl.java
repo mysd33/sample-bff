@@ -12,9 +12,7 @@ import com.example.fw.common.objectstorage.UploadObject;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Todoファイルを保存するリポジトリクラス
- */
+/// Todoファイルを保存するリポジトリクラス
 @XRayEnabled
 @Repository
 @RequiredArgsConstructor

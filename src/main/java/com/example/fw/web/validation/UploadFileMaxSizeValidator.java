@@ -5,10 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-/**
- * ファイルのサイズが許容サイズ内であることを検証するためのValidatorの実装 
- *
- */
+/// ファイルのサイズが許容サイズ内であることを検証するためのValidatorの実装
 public class UploadFileMaxSizeValidator implements ConstraintValidator<UploadFileMaxSize, MultipartFile> {
 
     private UploadFileMaxSize constraint;

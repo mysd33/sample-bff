@@ -14,32 +14,25 @@ import com.example.fw.web.page.PageInfoDialect;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * ページネーションの設定クラス
- *
- */
+/// ページネーションの設定クラス
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({PaginationConfigurationProperties.class})
 public class PaginationConfig implements WebMvcConfigurer {
     private final PaginationConfigurationProperties paginationConfigurationProperties;
     
-    /**
-     * ページネーションの設定
-     */
+    /// ページネーションの設定
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         // 参考
         // https://macchinetta.github.io/server-guideline-thymeleaf/1.8.1.SP1.RELEASE/ja/ArchitectureInDetail/WebApplicationDetail/Pagination.html#pageablehandlermethodargumentresolver
-        PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
+        var resolver = new PageableHandlerMethodArgumentResolver();
         resolver.setMaxPageSize(paginationConfigurationProperties.getMaxPageSize());
         resolver.setFallbackPageable(PageRequest.of(paginationConfigurationProperties.getDefaultPage(), paginationConfigurationProperties.getDefaultPageSize()));
         resolvers.add(resolver);
     }
 
-    /**
-     * ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
-     */
+    /// ページネーションのページリンクで使用するThymeleafのカスタムDialectの設定
     @Bean
     PageInfoDialect pageInfoDialect() {
         return new PageInfoDialect();

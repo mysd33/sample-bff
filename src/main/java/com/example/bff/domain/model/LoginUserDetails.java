@@ -2,18 +2,15 @@ package com.example.bff.domain.model;
 
 import java.io.Serial;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * JDBCによる認証処理用UserDetails実装クラス
- *
- */
+/// JDBCによる認証処理用UserDetails実装クラス
 public class LoginUserDetails implements UserDetails {
 
     @Serial
@@ -26,7 +23,7 @@ public class LoginUserDetails implements UserDetails {
     public LoginUserDetails(User user) {
         this.user = user;
         authorities = user != null ? List.of(new SimpleGrantedAuthority(user.getRole()))
-            : Collections.emptyList();
+            : List.of();
     }
 
     @Override
@@ -35,7 +32,7 @@ public class LoginUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return user != null ? user.getPassword() : null;
     }
 

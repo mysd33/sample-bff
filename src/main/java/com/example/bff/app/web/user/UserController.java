@@ -6,7 +6,6 @@ import com.example.bff.domain.model.User;
 import com.example.bff.domain.reports.ReportFile;
 import com.example.bff.domain.reports.UserListReportCreator;
 import com.example.bff.domain.reports.UserListReportData;
-import com.example.bff.domain.reports.UserListReportItem;
 import com.example.bff.domain.service.user.UserService;
 import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.logging.ApplicationLogger;
@@ -19,8 +18,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,10 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenCheck;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenType;
 
-/**
- * ユーザ管理機能のコントローラクラス
- *
- */
+/// ユーザ管理機能のコントローラクラス
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -60,18 +56,14 @@ public class UserController {
         binder.addValidators(passwordComparisonValidator);
     }
 
-    /**
-     * ユーザー登録画面のGETメソッド用処理.
-     */
+    /// ユーザー登録画面のGETメソッド用処理.
     @GetMapping("/user")
     @TransactionTokenCheck(type = TransactionTokenType.BEGIN)
     public String displayResistWindow(@ModelAttribute UserForm form, Model model) {
         return "user/regist";
     }
 
-    /**
-     * ユーザー登録画面のPOSTメソッド用処理.
-     */
+    /// ユーザー登録画面のPOSTメソッド用処理.
     @PostMapping("/user")
     @TransactionTokenCheck()
     public String postUserResist(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
@@ -83,7 +75,7 @@ public class UserController {
 
         // ユーザー登録処理
         try {
-            boolean result = userService.insert(user);
+            var result = userService.insert(user);
             if (result) {
                 appLogger.debug("insert成功");
                 attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
@@ -99,13 +91,11 @@ public class UserController {
         return "redirect:/userList";
     }
 
-    /**
-     * ユーザー一覧画面のGETメソッド用処理.
-     */
+    /// ユーザー一覧画面のGETメソッド用処理.
     @GetMapping("/userList")
     public String getUserList(Model model, Pageable pageable, HttpServletRequest request) {
         // ユーザー一覧の生成
-        Page<User> userPage = userService.findAllForPagination(pageable);
+        var userPage = userService.findAllForPagination(pageable);
 
         model.addAttribute("requestURI", request.getRequestURI());
 
@@ -114,12 +104,10 @@ public class UserController {
         return "user/userList";
     }
 
-    /**
-     * ユーザー詳細画面のGETメソッド用処理.
-     */
+    /// ユーザー詳細画面のGETメソッド用処理.
     @GetMapping("/userDetail/{id:.+}")
     public String getUserDetail(@ModelAttribute UserForm form, Model model,
-        @PathVariable("id") String userId) {
+            @Nullable @PathVariable("id") String userId) {
 
         appLogger.debug("userId = " + userId);
         // ユーザーIDのチェック
@@ -134,9 +122,7 @@ public class UserController {
         return "user/userDetail";
     }
 
-    /**
-     * ユーザー更新用処理.
-     */
+    /// ユーザー更新用処理.
     @PostMapping(value = "/userDetail", params = "update")
     public String postUserDetailUpdate(@ModelAttribute @Validated(GroupOrder.class) UserForm form,
         BindingResult bindingResult, Model model, RedirectAttributes attributes) {
@@ -162,9 +148,7 @@ public class UserController {
         return "redirect:/userList";
     }
 
-    /**
-     * ユーザー削除用処理.
-     */
+    /// ユーザー削除用処理.
     @PostMapping(value = "/userDetail", params = "delete")
     public String postUserDetailDelete(@ModelAttribute UserForm form, Model model,
         RedirectAttributes attributes) {
@@ -183,30 +167,26 @@ public class UserController {
         return "redirect:/userList";
     }
 
-    /**
-     * ユーザー一覧のCSV出力用処理.
-     */
+    /// ユーザー一覧のCSV出力用処理.
     @GetMapping("/userList/csv")
     public ModelAndView getUserListCsv(Model model) {
-        String filename = "userList.csv";
+        var filename = "userList.csv";
         List<User> users = userService.findAll();
 
-        List<UserCsv> csvList = userMapper.modelsToCsvs(users);
+        var csvList = userMapper.modelsToCsvs(users);
 
-        CsvDownloadView view = new CsvDownloadView(UserCsv.class, csvList, filename);
+        var view = new CsvDownloadView(UserCsv.class, csvList, filename);
         return new ModelAndView(view);
 
     }
 
-    /**
-     * ユーザー一覧のPDF出力用処理.
-     *
-     * @return PDFファイルのレスポンス
-     */
+    /// ユーザー一覧のPDF出力用処理.
+    ///
+    /// @return PDFファイルのレスポンス
     @GetMapping("/userList/pdf")
     public ResponseEntity<Resource> getUserListPdf() {
         List<User> users = userService.findAll();
-        List<UserListReportItem> reportItems = userMapper.modelsToReportItems(users);
+        var reportItems = userMapper.modelsToReportItems(users);
         ReportFile reportFile = userListReportCreator.createUserListReport(
             new UserListReportData(reportItems));
         return ResponseUtil.createResponseForPDF(reportFile.getInputStream(),

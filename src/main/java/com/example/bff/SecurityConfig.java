@@ -15,6 +15,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -26,11 +27,7 @@ import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
 
-/**
- * 
- * SpringSecurityの設定クラス
- *
- */
+/// SpringSecurityの設定クラス
 @Configuration
 @ComponentScan(basePackageClasses = { AuthConfigPackage.class })
 @EnableWebSecurity
@@ -43,18 +40,13 @@ public class SecurityConfig {
     @Value("${example.security.debug:false}")
     boolean webSecurityDebug;
 
-    /**
-     * Spring Securityのデバッグモードの設定
-     * 
-     */
+    /// Spring Securityのデバッグモードの設定
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.debug(webSecurityDebug);
     }
 
-    /**
-     * Spring Securityによる認証認可設定
-     */
+    /// Spring Securityによる認証認可設定
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
         // フォーム認証にによるログイン処理
@@ -88,9 +80,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * H2 Consoleのアクセス許可対応
-     */
+    /// H2 Consoleのアクセス許可対応
     @Profile("dev")
     @Order(1)
     @Bean
@@ -101,15 +91,13 @@ public class SecurityConfig {
                         // 認証不要でアクセス許可
                         authz -> authz.anyRequest().permitAll())
                 // CSRF保護不要
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 // H2 Consoleの表示ではframeタグを使用しているのでX-FrameOptionsを無効化
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable());
         return http.build();
     }
 
-    /**
-     * パスワードエンコーダ
-     */
+    /// パスワードエンコーダ
     @Bean
     PasswordEncoder passwordEncoder() {
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -118,10 +106,7 @@ public class SecurityConfig {
         return passwordEncoder;
     }
 
-    /**
-     * Spring Securityの可観測性無効化（ADOTにおける不具合回避対応）
-     * 
-     */
+    /// Spring Securityの可観測性無効化（ADOTにおける不具合回避対応）
     @Profile("adot")
     @Bean
     ObservationRegistryCustomizer<ObservationRegistry> noSpringSecurityObservations() {

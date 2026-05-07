@@ -5,11 +5,7 @@ import java.io.InputStream;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * 
- * オブジェクトストレージからダウンロードしたオブジェクトクラス
- *
- */
+/// オブジェクトストレージからダウンロードしたオブジェクトクラス
 @Data
 @Builder
 public class DownloadObject {

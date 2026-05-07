@@ -13,11 +13,7 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
-/**
- * 
- * バケットを初期作成するクラス
- *
- */
+/// バケットを初期作成するクラス
 @RequiredArgsConstructor
 @Slf4j
 public class BucketCreateInitializer {    
@@ -30,7 +26,7 @@ public class BucketCreateInitializer {
         //バケットの存在確認
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3Client.listBuckets(listBucketsRequest);        
-        boolean isExsits = false;
+        var isExsits = false;
         for (Bucket bucket : listBucketsResponse.buckets()) {
             if (bucketName.equals(bucket.name())) {
                 isExsits = true;

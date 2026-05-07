@@ -1,8 +1,6 @@
 package com.example.bff.domain.message;
-/**
- * Message Id
- * Auto-Generarted By MessageKeysGen Class
- */
+/// Message Id
+/// Auto-Generarted By MessageKeysGen Class
 public class MessageIds {
     private MessageIds() {}
     public static final String I_EX_0001 = "i.ex.0001";

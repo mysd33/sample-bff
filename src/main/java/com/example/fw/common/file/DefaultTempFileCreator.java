@@ -27,17 +27,13 @@ public class DefaultTempFileCreator implements TempFileCreator {
     // 一時ファイルのディレクトリ
     private final Path tempFilesDirPath;
 
-    /**
-     * コントラクタ
-     */
+    /// コントラクタ
     public DefaultTempFileCreator(final FileConfigurationProperties fileConfigurationProperties) {
         this.fileConfigurationProperties = fileConfigurationProperties;
         tempFilesDirPath = Path.of(TMP_DIR, fileConfigurationProperties.getBaseDir());
     }
 
-    /**
-     * 初期化処理
-     */
+    /// 初期化処理
     @PostConstruct
     public void init() {
         // 一時ファイル保存用のディレクトリを作成する
@@ -55,10 +51,7 @@ public class DefaultTempFileCreator implements TempFileCreator {
         }
     }
 
-    /**
-     * 一時ファイルを定期的に削除する処理
-     *
-     */
+    /// 一時ファイルを定期的に削除する処理
     @Scheduled(initialDelayString = FileConfigurationProperties.FILE_DELETE_TEMPFILES_INITIAL_DELAY_SECONDS_PROPERTY, //
         fixedRateString = FileConfigurationProperties.FILE_DELETE_TEMPFILES_FIXED_RATE_SECONDS_PROPERTY, timeUnit = TimeUnit.SECONDS)
     // @Scheduledで実行されるため、アクセス修飾子をprivateにできないのでprotected

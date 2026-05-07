@@ -10,9 +10,7 @@ import org.jboss.logging.MDC;
 import org.jspecify.annotations.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * ログにMDCでユーザIDを出力するためのFilter
- */
+/// ログにMDCでユーザIDを出力するためのFilter
 @RequiredArgsConstructor
 public class UserIdLogMDCFilter extends OncePerRequestFilter {
 

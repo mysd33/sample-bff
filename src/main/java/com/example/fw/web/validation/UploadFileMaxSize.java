@@ -20,10 +20,7 @@ import jakarta.validation.Payload;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 
-/**
- * ファイルのサイズが許容サイズ内であることを検証するためのValidatorのアノテーション
- *
- */
+/// ファイルのサイズが許容サイズ内であることを検証するためのValidatorのアノテーション
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = UploadFileMaxSizeValidator.class)

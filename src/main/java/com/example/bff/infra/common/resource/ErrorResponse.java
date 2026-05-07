@@ -10,10 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-/**
- * REST APIのエラーレスポンスクラス
- *
- */
+/// REST APIのエラーレスポンスクラス
 @Data
 @Builder
 @AllArgsConstructor

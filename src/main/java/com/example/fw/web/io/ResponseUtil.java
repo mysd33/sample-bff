@@ -16,21 +16,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
-/**
- * レスポンスデータを作成するためのユーティリティメソッドクラス
- */
+/// レスポンスデータを作成するためのユーティリティメソッドクラス
 public class ResponseUtil {
     private ResponseUtil() {
     }
 
-    /**
-     * PDFファイル用のレスポンスを生成する（InputStream版）
-     * 
-     * @param inputStream ダウンロードするPDFファイルの入力ストリーム
-     * @param fileName    ファイル名
-     * @param fileSize ファイルサイズ
-     * @return レスポンスデータ
-     */
+    /// PDFファイル用のレスポンスを生成する（InputStream版）
+    ///
+    /// @param inputStream ダウンロードするPDFファイルの入力ストリーム
+    /// @param fileName    ファイル名
+    /// @param fileSize ファイルサイズ
+    /// @return レスポンスデータ
     public static ResponseEntity<Resource> createResponseForPDF(final InputStream inputStream, final String fileName,
             final long fileSize) {
         Assert.notNull(inputStream, "inputStreamがnullです。");
@@ -41,12 +37,10 @@ public class ResponseUtil {
         return createResponse(MediaType.APPLICATION_PDF, reportResource, fileName);
     }
 
-    /**
-     * PDFファイル用のレスポンスを生成する（File版）
-     * 
-     * @param file ダウンロードするPDFファイル
-     * @return レスポンスデータ
-     */
+    /// PDFファイル用のレスポンスを生成する（File版）
+    ///
+    /// @param file ダウンロードするPDFファイル
+    /// @return レスポンスデータ
     public static ResponseEntity<Resource> createResponseForPDF(final File file) {
         Assert.notNull(file, "fileがnullです。");
         Assert.isTrue(file.exists(), "fileが存在しません。");
@@ -55,12 +49,10 @@ public class ResponseUtil {
         return createResponse(MediaType.APPLICATION_PDF, reportResource, file.getName());
     }
 
-    /**
-     * PDFファイル用のレスポンスを生成する（Path版）
-     * 
-     * @param filePath ダウンロードするPDFファイルのパス
-     * @return レスポンスデータ
-     */
+    /// PDFファイル用のレスポンスを生成する（Path版）
+    ///
+    /// @param filePath ダウンロードするPDFファイルのパス
+    /// @return レスポンスデータ
     public static ResponseEntity<Resource> createResponseForPDF(final Path filePath) {
         Assert.notNull(filePath, "filePathがnullです。");
         Assert.isTrue(Files.exists(filePath), "filePathが存在しません。");
@@ -69,14 +61,12 @@ public class ResponseUtil {
         return createResponse(MediaType.APPLICATION_PDF, reportResource, filePath.getFileName().toString());
     }
 
-    /**
-     * ダウンロードファイル用のレスポンスを生成する
-     * 
-     * @param mediaType メディアタイプ
-     * @param resource  ダウンロードするファイルのリソース
-     * @param fileName  ファイル名
-     * @return レスポンスデータ
-     */
+    /// ダウンロードファイル用のレスポンスを生成する
+    ///
+    /// @param mediaType メディアタイプ
+    /// @param resource  ダウンロードするファイルのリソース
+    /// @param fileName  ファイル名
+    /// @return レスポンスデータ
     private static ResponseEntity<Resource> createResponse(final MediaType mediaType, final Resource resource,
             final String fileName) {
         return ResponseEntity.ok()//
@@ -89,13 +79,10 @@ public class ResponseUtil {
                 .body(resource);
     }
 
-    /**
-     * ファイル名をUTF-8でエンコードする
-     * 
-     * 
-     * @param fileName ファイル名
-     * @return エンコードされたファイル名
-     */
+    /// ファイル名をUTF-8でエンコードする
+    ///
+    /// @param fileName ファイル名
+    /// @return エンコードされたファイル名
     private static String encodeUtf8(final String fileName) {
         return URLEncoder.encode(fileName, StandardCharsets.UTF_8);
     }

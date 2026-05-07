@@ -21,9 +21,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import tools.jackson.dataformat.csv.CsvMapper;
 import tools.jackson.dataformat.csv.CsvSchema;
 
-/**
- * CSVダウンロード用のビュークラス
- */
+/// CSVダウンロード用のビュークラス
 public class CsvDownloadView extends AbstractView {
 
     protected static final CsvMapper csvMapper = createCsvMapper();
@@ -38,23 +36,18 @@ public class CsvDownloadView extends AbstractView {
     @Setter
     protected List<String> columns;
 
-    /**
-     * CSVマッパーを生成する。
-     *
-     * @return
-     */
+    /// CSVマッパーを生成する。
+    ///
+    /// @return CSVマッパー
     static CsvMapper createCsvMapper() {
-        // TODO: Spring Boot4.x対応で修正したための動作確認要
         return CsvMapper.builder().configure(ALWAYS_QUOTE_STRINGS, true).build();
     }
 
-    /**
-     * コンストラクタ
-     *
-     * @param clazz    CSVにマッピングするデータクラス
-     * @param data     対象のデータ
-     * @param fileName ファイル名
-     */
+    /// コンストラクタ
+    ///
+    /// @param clazz    CSVにマッピングするデータクラス
+    /// @param data     対象のデータ
+    /// @param fileName ファイル名
     public CsvDownloadView(final Class<?> clazz, final Collection<?> data, final String fileName) {
         Assert.notNull(clazz, "clazzがNullです");
         Assert.notNull(data, "dataがNullです");

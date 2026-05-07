@@ -15,10 +15,7 @@ import com.example.fw.common.reports.ReportCreator;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
-/**
- * UserListReportCreatorの実装クラス<br>
- * 
- */
+/// UserListReportCreatorの実装クラス<br>
 // @ReportCreatorを付与し、Bean定義
 @ReportCreator(id = "R001", name = "ユーザ一覧")
 // AbstractJasperReportCreatorを継承

@@ -12,36 +12,28 @@ import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 
 import software.amazon.awssdk.services.sqs.SqsClient;
 
-/**
- * SQSの設定クラス
- */
+/// SQSの設定クラス
 @Configuration
 @EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
 public class SQSCommonConfig {
 
-    /**
-     * JMSのメッセージコンバータの定義
-     */
+    /// JMSのメッセージコンバータの定義
     @Bean
     MessageConverter jacksonJmsMessageConverter() {
-        JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter();
+        var converter = new JacksonJsonMessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         return converter;
     }
 
-    /**
-     * SQSConnectionFactoryのSQSのメッセージプリフェッチ数の設定
-     */
+    /// SQSConnectionFactoryのSQSのメッセージプリフェッチ数の設定
     @Bean
     ProviderConfiguration providerConfiguration(SQSCommonConfigurationProperties sqsCommonConfigurationProperties) {
         return new ProviderConfiguration()
                 .withNumberOfMessagesToPrefetch(sqsCommonConfigurationProperties.getNumberOfMessagesToPrefetch());
     }
 
-    /**
-     * SQSConnectionFactoryの定義
-     */
+    /// SQSConnectionFactoryの定義
     @Bean
     SQSConnectionFactory sqsConnectionFactory(ProviderConfiguration providerConfiguration, SqsClient sqsClient) {
         return new SQSConnectionFactory(providerConfiguration, sqsClient);

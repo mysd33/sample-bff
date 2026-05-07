@@ -5,9 +5,7 @@ import java.io.InputStream;
 import lombok.Builder;
 import lombok.Value;
 
-/**
- * 帳票ファイルクラス
- */
+/// 帳票ファイルクラス
 @Builder
 @Value
 public class ReportFile {

@@ -1,23 +1,17 @@
 package com.example.bff.domain.service.async;
 
-import org.springframework.stereotype.Service;
-
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.fw.common.async.model.JobRequest;
 import com.example.fw.common.async.repository.JobRequestRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-/**
- * 
- * 非同期実行処理依頼のService実装クラス
- * 
- *
- */
+/// 非同期実行処理依頼のService実装クラス
 @XRayEnabled
 @Service
 @RequiredArgsConstructor
-public class AsynsServiceImpl implements AsyncService {
+public class AsyncServiceImpl implements AsyncService {
+
     private final JobRequestRepository jobRequestRepository;
 
     @Override

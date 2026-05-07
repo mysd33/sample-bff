@@ -14,11 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-/**
- * 
- * ユーザ登録画面・更新画面データクラス
- *
- */
+/// ユーザ登録画面・更新画面データクラス
 @Data
 public class UserForm {
     // 入力チェック順序を制御するためのインタフェース

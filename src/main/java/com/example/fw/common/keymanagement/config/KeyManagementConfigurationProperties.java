@@ -9,9 +9,7 @@ import software.amazon.awssdk.services.kms.model.KeySpec;
 import software.amazon.awssdk.services.kms.model.KeyUsageType;
 import software.amazon.awssdk.services.kms.model.SigningAlgorithmSpec;
 
-/**
- * 鍵管理機能の設定を保持するプロパティクラス
- */
+/// 鍵管理機能の設定を保持するプロパティクラス
 @Data
 @ConfigurationProperties(prefix = KeyManagementConfigurationProperties.PROPERTY_PREFIX)
 public class KeyManagementConfigurationProperties {
@@ -43,9 +41,7 @@ public class KeyManagementConfigurationProperties {
     // AWS KMS固有の設定(keymanagement.aws-kms.*)
     private AWSKmsProperties awsKms = new AWSKmsProperties();
 
-    /**
-     * AWS KMS固有の設定を保持する内部クラス
-     */
+    /// AWS KMS固有の設定を保持する内部クラス
     @Data
     public static class AWSKmsProperties {
         // KMSのリージョン

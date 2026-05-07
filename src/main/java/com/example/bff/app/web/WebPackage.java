@@ -1,10 +1,5 @@
 package com.example.bff.app.web;
 
-/**
- * 
- * appパッケージ表すインタフェース
- * 
- *
- */
+/// appパッケージ表すインタフェース
 public interface WebPackage {
 }

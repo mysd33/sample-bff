@@ -11,11 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * 
- * ユーザクラス
- *
- */
+/// ユーザクラス
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

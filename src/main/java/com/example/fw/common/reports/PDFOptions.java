@@ -8,14 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.sf.jasperreports.pdf.type.PdfPermissionsEnum;
 
-/**
- * PDF出力時のオプション設定を行うクラス
- */
+/// PDF出力時のオプション設定を行うクラス
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PDFOptions {
+
     // 読み取りパスワード
     private String userPassword;
     // 権限パスワード
@@ -25,29 +24,24 @@ public class PDFOptions {
     // 暗号化設定されている場合の権限拒否設定
     private List<PdfPermissionsEnum> permissionsDenied;
 
-    /**
-     * PDFの暗号化設定が必要かどうかを返却します パスワード設定されている場合は暗号化設定が必要と判断します
-     * 
-     * @return trueの場合は暗号化設定が必要
-     */
+    /// PDFの暗号化設定が必要かどうかを返却します パスワード設定されている場合は暗号化設定が必要と判断します
+    ///
+    /// @return trueの場合は暗号化設定が必要
     public boolean isEncrypted() {
-        return (userPassword != null && !userPassword.isEmpty()) || (ownerPassword != null && !ownerPassword.isEmpty());
+        return (userPassword != null && !userPassword.isEmpty()) || (ownerPassword != null
+            && !ownerPassword.isEmpty());
     }
 
-    /**
-     * 128Bit暗号化設定が指定されているかどうかを返却します
-     * 
-     * @return
-     */
+    /// 128Bit暗号化設定が指定されているかどうかを返却します
+    ///
+    /// @return 128bit暗号化設定がされていればtrue
     public boolean has128bitKey() {
         return is128bitKey != null;
     }
 
-    /**
-     * 権限拒否設定が指定されているかどうかを返却します
-     * 
-     * @return
-     */
+    /// 権限拒否設定が指定されているかどうかを返却します
+    ///
+    /// @return 権限拒否設定が指定されていればtrue
     public boolean hasPermissionsDenied() {
         return permissionsDenied != null && !permissionsDenied.isEmpty();
     }

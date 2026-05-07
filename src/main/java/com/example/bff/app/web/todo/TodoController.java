@@ -26,11 +26,7 @@ import com.example.fw.common.message.ResultMessageType;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 
-/**
- * 
- * Todo機能のコントローラクラス
- * 
- */
+/// Todo機能のコントローラクラス
 @XRayEnabled
 @Controller
 @RequestMapping("todo")
@@ -44,9 +40,7 @@ public class TodoController {
         return new TodoForm();
     }
 
-    /**
-     * Todoリストの表示
-     */
+    /// Todoリストの表示
     @GetMapping("list")
     public String list(Model model) {
         Collection<Todo> todos = todoService.findAll();
@@ -54,9 +48,7 @@ public class TodoController {
         return "todo/todoList";
     }
 
-    /**
-     * Todoの登録
-     */
+    /// Todoの登録
     @PostMapping("create")
     public String create(@Validated({ Default.class, TodoCreate.class }) TodoForm todoForm, BindingResult bindingResult,
             Model model, RedirectAttributes attributes) {
@@ -75,9 +67,7 @@ public class TodoController {
         return "redirect:/todo/list";
     }
 
-    /**
-     * Todoの完了
-     */
+    /// Todoの完了
     @PostMapping("finish")
     public String finish(@Validated({ Default.class, TodoFinish.class }) TodoForm form, BindingResult bindingResult,
             Model model, RedirectAttributes attributes) {

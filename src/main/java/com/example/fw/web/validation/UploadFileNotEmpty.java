@@ -20,10 +20,7 @@ import jakarta.validation.Payload;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 
-/**
- * ファイルが空でないことを検証するためのValidatorのアノテーション
- *
- */
+/// ファイルが空でないことを検証するためのValidatorのアノテーション
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = UploadFileNotEmptyValidator.class)

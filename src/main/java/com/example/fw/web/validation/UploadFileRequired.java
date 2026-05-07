@@ -20,9 +20,7 @@ import jakarta.validation.Payload;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 
-/**
- * ファイルが選択されていることを検証するためのValidatorのアノテーション
- */
+/// ファイルが選択されていることを検証するためのValidatorのアノテーション
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = UploadFileRequiredValidator.class)

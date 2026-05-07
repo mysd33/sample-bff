@@ -9,9 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Todoクラス
- */
+/// Todoクラス
 @Data
 @Builder
 @NoArgsConstructor

@@ -1,9 +1,5 @@
 package com.example.bff.app.api;
 
-/**
- * 
- * apiパッケージを表すインタフェース
- *
- */
+/// apiパッケージを表すインタフェース
 public interface APIPackage {
 }

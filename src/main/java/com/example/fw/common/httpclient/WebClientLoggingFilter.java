@@ -30,26 +30,19 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-/**
- *
- * WebClient呼び出し時のログを出力する機能</br> TrackIDやREST API呼び出しの処理時間をログに出力するために使用する
- *
- */
+/// WebClient呼び出し時のログを出力する機能</br> TrackIDやREST API呼び出しの処理時間をログに出力するために使用する
 @Slf4j
 @RequiredArgsConstructor
 public class WebClientLoggingFilter {
 
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
-    /**
-     * WebClient呼び出し時のログを出力する
-     *
-     */
+    /// WebClient呼び出し時のログを出力する
     public ExchangeFilterFunction filter() {
         return (request, next) -> {
             final ClientRequest clientRequest;
             // 処理時間を計測しログ出力
-            long startTime = System.nanoTime();
+            var startTime = System.nanoTime();
             appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0001, request.method(),
                 URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8));
             // MDCの内容をコピーして取得
@@ -58,8 +51,8 @@ public class WebClientLoggingFilter {
             clientRequest = createClientRequestForDebugLog(request, mdcData);
             return next.exchange(clientRequest).flatMap(response -> {
                 // 呼び出し処理実行後、処理時間を計測しログ出力
-                long endTime = System.nanoTime();
-                double elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime,
+                var endTime = System.nanoTime();
+                var elapsedTime = SystemDateUtils.calcElapsedTimeByMilliSeconds(startTime,
                     endTime);
                 appLogger.info(CommonFrameworkMessageIds.I_FW_HTTP_0002, request.method(),
                     URLDecoder.decode(request.url().toASCIIString(), StandardCharsets.UTF_8),
@@ -69,14 +62,12 @@ public class WebClientLoggingFilter {
         };
     }
 
-    /**
-     * リクエストデータの電文ログをデバッグログ出力するためのClientRequest作成</br>
-     * <p>
-     * この時点で、MDCに設定したデータが引き継がれていないので、引き継ぐためにパラメータで渡す
-     *
-     * @param request リクエストデータ
-     * @return 電文ログ出力対応したリクエストデータ
-     */
+    /// リクエストデータの電文ログをデバッグログ出力するためのClientRequest作成</br>
+    ///
+    /// この時点で、MDCに設定したデータが引き継がれていないので、引き継ぐためにパラメータで渡す
+    ///
+    /// @param request リクエストデータ
+    /// @return 電文ログ出力対応したリクエストデータ
     private ClientRequest createClientRequestForDebugLog(final ClientRequest request,
         Map<String, String> mdcData) {
         final ClientRequest clientRequest;
@@ -94,11 +85,9 @@ public class WebClientLoggingFilter {
         return clientRequest;
     }
 
-    /**
-     * レスポンスデータの電文ログをデバッグログ出力するためのMono<ClientResponse>を作成する
-     *
-     * @param response レスポンスデータ
-     */
+    /// レスポンスデータの電文ログをデバッグログ出力するためのMono<ClientResponse>を作成する
+    ///
+    /// @param response レスポンスデータ
     private Mono<? extends ClientResponse> createResponseMonoForDebugLog(
         final ClientResponse response) {
         // レスポンスデータのログを出力する
@@ -113,9 +102,7 @@ public class WebClientLoggingFilter {
             : Mono.just(response);
     }
 
-    /**
-     * リクエストデータをデバッグログに出力するためのClientHttpRequest実装クラス
-     */
+    /// リクエストデータをデバッグログに出力するためのClientHttpRequest実装クラス
     @RequiredArgsConstructor
     static class LoggingClientHttpRequest implements ClientHttpRequest {
 
@@ -202,9 +189,7 @@ public class WebClientLoggingFilter {
 
     }
 
-    /**
-     * MDCの設定スコープを実現するクラス
-     */
+    /// MDCの設定スコープを実現するクラス
     @RequiredArgsConstructor
     static class MDCScope {
 

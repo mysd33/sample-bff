@@ -17,11 +17,7 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
-/**
- * 
- * SQS Local起動の設定クラス（開発時のみ）
- *
- */
+/// SQS Local起動の設定クラス（開発時のみ）
 @Profile("dev")
 @Configuration
 @RequiredArgsConstructor
@@ -31,9 +27,7 @@ public class SQSCommonLocalConfig {
 
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
 
-    /**
-     * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義
-     */
+    /// ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義
     @Profile("!xray")
     @Bean
     SqsClient sqsClient() {
@@ -41,18 +35,16 @@ public class SQSCommonLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
-                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .httpClientBuilder(ApacheHttpClient.builder())//
                 .region(region)//
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
                 .build();
     }
 
-    /**
-     * ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Ray SDK)<br>
-     * 
-     * @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
-     */
+    /// ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Ray SDK)<br>
+    ///
+    /// @deprecated X-Ray SDKは2027 年 2 月 25 日にサポート終了となるため削除予定
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
@@ -64,7 +56,7 @@ public class SQSCommonLocalConfig {
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .httpClientBuilder((ApacheHttpClient.builder()))//
+                .httpClientBuilder(ApacheHttpClient.builder())//
                 .region(region)//
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))

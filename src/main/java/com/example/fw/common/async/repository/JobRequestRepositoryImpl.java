@@ -12,11 +12,7 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 
- * JobRequestRepositoryの実装クラス キューにSQSを使用し、JobRequestを登録する
- *
- */
+/// JobRequestRepositoryの実装クラス キューにSQSを使用し、JobRequestを登録する
 @XRayEnabled
 @RequiredArgsConstructor
 @Slf4j

@@ -15,11 +15,7 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
-/**
- * 
- * S3の本番環境用設定クラス
- *
- */
+/// S3の本番環境用設定クラス
 @Profile("production")
 @EnableConfigurationProperties({ S3ConfigurationProperties.class })
 @Configuration
@@ -27,35 +23,29 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class S3ProdConfig {
     private final S3ConfigurationProperties s3ConfigurationProperties;
 
-    /**
-     * オブジェクトストレージアクセスクラス
-     */
+    /// オブジェクトストレージアクセスクラス
     @Bean
     ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
-    /**
-     * S3クライアント
-     */
+    /// S3クライアント
     @Profile("!xray")
     @Bean
     S3Client s3Client() {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
-        return S3Client.builder().httpClientBuilder((ApacheHttpClient.builder())).region(region).build();
+        return S3Client.builder().httpClientBuilder(ApacheHttpClient.builder()).region(region).build();
     }
 
-    /**
-     * S3クライアント（X-Ray SDK）<br>
-     * 
-     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定 *
-     */
+    /// S3クライアント（X-Ray SDK）<br>
+    ///
+    /// @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定 *
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
     S3Client s3ClientWithXRay() {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
-        return S3Client.builder().httpClientBuilder((ApacheHttpClient.builder())).region(region)
+        return S3Client.builder().httpClientBuilder(ApacheHttpClient.builder()).region(region)
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
                 .overrideConfiguration(
                         ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())

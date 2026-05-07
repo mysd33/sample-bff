@@ -6,10 +6,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 
 import lombok.Data;
 
-/**
- * オブジェクトストレージアクセス機能のプロパティクラス
- *
- */
+/// オブジェクトストレージアクセス機能のプロパティクラス
 @Data
 @ConfigurationProperties(prefix = S3ConfigurationProperties.PROPERTY_PREFIX)
 public class S3ConfigurationProperties {

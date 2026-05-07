@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.bff.app.web.common.authentication.AuthenticationUtil;
 
-/**
- * 
- * ログイン機能のコントローラクラス
- *
- */
+/// ログイン機能のコントローラクラス
 @Controller
 public class LoginController {
 
@@ -25,9 +21,7 @@ public class LoginController {
         return new LoginForm();        
     }
 
-    /**
-     * ログイン画面のGETメソッド用処理
-     */
+    /// ログイン画面のGETメソッド用処理
     @GetMapping("/login")
     public String getLogin(Model model, HttpSession session) {
         // ログイン済みの場合
@@ -39,9 +33,7 @@ public class LoginController {
         return "login/login";
     }
 
-    /**
-     * ログイン処理
-     */
+    /// ログイン処理
     @PostMapping("/login")
     public String postLogin(@Validated LoginForm form, BindingResult result, HttpSession session) {
         // 入力チェックエラー時
@@ -52,17 +44,13 @@ public class LoginController {
         return "forward:/authenticate";
     }
 
-    /**
-     * ログイン成功後のメニュー画面遷移処理
-     */
+    /// ログイン成功後のメニュー画面遷移処理
     @GetMapping("/menu")
     public String menu(Model model) {
         return "menu/menu";
     }
 
-    /**
-     * 管理者用ユーザ管理ページ遷移用処理
-     */
+    /// 管理者用ユーザ管理ページ遷移用処理
     @GetMapping("/admin")
     public String admin(Model model) {
         return "redirect:/userList";

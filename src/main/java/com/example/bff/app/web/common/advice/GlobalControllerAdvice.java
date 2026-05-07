@@ -6,11 +6,7 @@ import com.example.bff.app.web.WebPackage;
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.web.advice.AbstractControllerAdvice;
 
-/**
- * 
- * 集約例外ハンドリングのためのControllerAdviceクラス
- *
- */
+/// 集約例外ハンドリングのためのControllerAdviceクラス
 @ControllerAdvice(basePackageClasses = { WebPackage.class })
 public class GlobalControllerAdvice extends AbstractControllerAdvice {
     public GlobalControllerAdvice() {

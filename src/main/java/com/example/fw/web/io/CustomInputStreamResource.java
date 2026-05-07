@@ -6,21 +6,17 @@ import java.util.Objects;
 
 import org.springframework.core.io.InputStreamResource;
 
-/**
- * InputStreamResourceの拡張クラス<br>
- * <p>
- * Content-Lengthをあらかじめ指定しておくことで、Content-Lengthヘッダを正しく返すようにする
- */
+/// InputStreamResourceの拡張クラス<br>
+///
+/// Content-Lengthをあらかじめ指定しておくことで、Content-Lengthヘッダを正しく返すようにする
 public class CustomInputStreamResource extends InputStreamResource {
 
     private final long contentLength;
 
-    /**
-     * コンストラクタ
-     *
-     * @param inputStream   コンテンツの入力ストリーム
-     * @param contentLength コンテンツサイズ
-     */
+    /// コンストラクタ
+    ///
+    /// @param inputStream   コンテンツの入力ストリーム
+    /// @param contentLength コンテンツサイズ
     public CustomInputStreamResource(final InputStream inputStream, final long contentLength) {
         super(inputStream);
         this.contentLength = contentLength;
@@ -36,8 +32,8 @@ public class CustomInputStreamResource extends InputStreamResource {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
+        final var prime = 31;
+        var result = super.hashCode();
         result = prime * result + Objects.hash(contentLength);
         return result;
     }
@@ -53,7 +49,7 @@ public class CustomInputStreamResource extends InputStreamResource {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        CustomInputStreamResource other = (CustomInputStreamResource) obj;
+        var other = (CustomInputStreamResource) obj;
         return contentLength == other.contentLength;
     }
 

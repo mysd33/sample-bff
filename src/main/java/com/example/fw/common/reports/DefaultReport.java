@@ -8,10 +8,9 @@ import java.io.InputStream;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
-/**
- * Reportインタフェースのファイル保存での実装クラス
- */
+/// Reportインタフェースのファイル保存での実装クラス
 @Builder
 public class DefaultReport implements Report {
     // Fileデータ
@@ -19,7 +18,7 @@ public class DefaultReport implements Report {
     private final File file;
 
     @Override
-    public InputStream getInputStream() {
+    public @Nullable InputStream getInputStream() {
         try {
             return new BufferedInputStream(new FileInputStream(file));
         } catch (FileNotFoundException _) {

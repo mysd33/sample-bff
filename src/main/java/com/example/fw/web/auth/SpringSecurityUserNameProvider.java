@@ -1,17 +1,15 @@
 package com.example.fw.web.auth;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * Spring Securityを使ったユーザ認証を行う場合のUserNameProvider実装クラス。
- * 
- */
+/// Spring Securityを使ったユーザ認証を行う場合のUserNameProvider実装クラス。
 public class SpringSecurityUserNameProvider implements UserNameProvider {
 
     @Override
-    public String getUserName() {
+    public @Nullable String getUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
             return userDetails.getUsername();

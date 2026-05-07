@@ -22,11 +22,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 
-/**
- * 
- * S3が開発環境上でのローカルサーバFake（LocalStack）実行に置き換える設定クラス<br>
- *
- */
+/// S3が開発環境上でのローカルサーバFake（LocalStack）実行に置き換える設定クラス<br>
 @Profile("dev")
 @ConditionalOnProperty(prefix = S3ConfigurationProperties.LOCALFAKE_PROPERTY_PREFIX, name = "type", havingValue = "localstack")
 @EnableConfigurationProperties({ S3ConfigurationProperties.class })
@@ -35,17 +31,13 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 public class S3LocalLocalStackFakeConfig {
     private final S3ConfigurationProperties s3ConfigurationProperties;
 
-    /**
-     * オブジェクトストレージアクセスクラス
-     */
+    /// オブジェクトストレージアクセスクラス
     @Bean
     ObjectStorageFileAccessor objectStorageFileAccessor(S3Client s3Client) {
         return new S3ObjectStorageFileAccessor(s3Client, s3ConfigurationProperties.getBucket());
     }
 
-    /**
-     * S3クライアント
-     */
+    /// S3クライアント
     @Profile("!xray")
     @Bean
     S3Client s3Client() {
@@ -57,7 +49,7 @@ public class S3LocalLocalStackFakeConfig {
         Region region = Region.of(s3ConfigurationProperties.getRegion());
         // @formatter:off
         return S3Client.builder()
-                .httpClientBuilder((ApacheHttpClient.builder()))
+                .httpClientBuilder(ApacheHttpClient.builder())
                 .region(region)       
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
@@ -68,11 +60,9 @@ public class S3LocalLocalStackFakeConfig {
         // @formatter:on
     }
 
-    /**
-     * S3クライアント（X-Ray SDK）<br>
-     *
-     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
-     */
+    /// S3クライアント（X-Ray SDK）<br>
+    ///
+    /// @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
@@ -86,7 +76,7 @@ public class S3LocalLocalStackFakeConfig {
         // @formatter:off
         return S3Client.builder()                
                 .region(region)
-                .httpClientBuilder((ApacheHttpClient.builder()))
+                .httpClientBuilder(ApacheHttpClient.builder())
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .endpointOverride(URI.create("http://localhost:" + s3ConfigurationProperties.getLocalfake().getPort()))
                 // 個別にDynamoDBへのAWS SDKの呼び出しをトレーシングできるように設定
@@ -99,10 +89,7 @@ public class S3LocalLocalStackFakeConfig {
         // @formatter:on
     }
 
-    /**
-     * バケット初期作成クラス
-     * 
-     */
+    /// バケット初期作成クラス
     @Bean
     BucketCreateInitializer bucketCreateInitializer(S3Client s3Client) {
         return new BucketCreateInitializer(s3Client, s3ConfigurationProperties.getBucket());

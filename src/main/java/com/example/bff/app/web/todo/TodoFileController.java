@@ -45,14 +45,14 @@ public class TodoFileController {
             return "todo/upload";
         }
         // 本処理のサービス実行
-        TodoFile todoFile = new TodoFile();
+        var todoFile = new TodoFile();
         todoFile.setFileInputStream(form.getTodoFile().getInputStream());
         todoFile.setSize(form.getTodoFile().getSize());
         todoFileService.save(todoFile);
         redirectAttributes.addFlashAttribute(
                 ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0004).build());
         // 非同期実行依頼サービス実行
-        HashMap<String, String> params = new HashMap<>();
+        var params = new HashMap<String, String>();
         params.put("filePath", todoFile.getTargetFilePath());
         // @formatter:off 
         JobRequest jobRequest = JobRequest.builder()

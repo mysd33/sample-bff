@@ -13,11 +13,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
-/**
- *
- * RestTemplate呼び出し時のログを出力する機能 Spring Sleuthが出力するTrackID等をログに出力するために使用する
- *
- */
+/// RestTemplate呼び出し時のログを出力する機能 Spring Sleuthが出力するTrackID等をログに出力するために使用する
 @Slf4j
 public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
 

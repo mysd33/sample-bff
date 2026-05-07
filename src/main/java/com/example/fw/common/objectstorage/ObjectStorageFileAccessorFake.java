@@ -13,11 +13,7 @@ import com.example.fw.common.message.CommonFrameworkMessageIds;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * 
- * ローカルファイルシステムへアクセスするObjectFileAccessorのFake
- *
- */
+/// ローカルファイルシステムへアクセスするObjectFileAccessorのFake
 @RequiredArgsConstructor
 public class ObjectStorageFileAccessorFake implements ObjectStorageFileAccessor {
     private final String baseDir;

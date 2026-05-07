@@ -7,9 +7,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-/**
- * パスワード比較を行う相関項目チェックのValidatorクラス
- */
+/// パスワード比較を行う相関項目チェックのValidatorクラス
 @Component
 public class PasswordComparisonValidator implements Validator {
 
@@ -20,7 +18,7 @@ public class PasswordComparisonValidator implements Validator {
 
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
-        UserForm form = (UserForm) target;
+        var form = (UserForm) target;
         String password = form.getPassword();
         if (!StringUtils.hasLength(password)) {
             // パスワードが未入力の場合は、エラーとしない

@@ -18,9 +18,7 @@ public class DigitalSignatureConfigurationProperties {
     // AWS KMS固有の設定(digitalsignature.aws-kms.*)
     private AWSKmsProperties awsKms = new AWSKmsProperties();
 
-    /**
-     * PKCS#12キーストア固有の設定を保持する内部クラス
-     */
+    /// PKCS#12キーストア固有の設定を保持する内部クラス
     @Data
     public static class PKCS12Properties {
         // キーストアファイルのパス
@@ -31,9 +29,7 @@ public class DigitalSignatureConfigurationProperties {
         private String hashAlgorithm = "SHA256";
     }
 
-    /**
-     * AWS KMS固有の設定を保持する内部クラス
-     */
+    /// AWS KMS固有の設定を保持する内部クラス
     @Data
     public static class AWSKmsProperties {
         // 署名に使用するAWS KMSのキーID

@@ -8,9 +8,7 @@ import com.example.bff.app.web.common.authentication.AuthenticationUtil;
 @Controller
 public class HomeController {
 
-    /**
-     * トップページ遷移
-     */
+    /// トップページ遷移
     @GetMapping("/")
     public String home() {
         // ログイン済みの場合

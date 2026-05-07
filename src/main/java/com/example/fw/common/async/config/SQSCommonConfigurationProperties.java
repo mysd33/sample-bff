@@ -4,11 +4,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- *
- * SQSのプロパティクラス
- *
- */
+/// SQSのプロパティクラス
 @Data
 @ConfigurationProperties(prefix = SQSCommonConfigurationProperties.PROPERTY_PREFIX)
 public class SQSCommonConfigurationProperties {

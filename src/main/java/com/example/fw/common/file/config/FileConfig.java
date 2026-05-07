@@ -8,18 +8,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.example.fw.common.file.DefaultTempFileCreator;
 import com.example.fw.common.file.TempFileCreator;
 
-/**
- * 一時ファイル管理機能に関する設定を定義するクラス
- */
+/// 一時ファイル管理機能に関する設定を定義するクラス
 @Configuration
 @EnableConfigurationProperties(FileConfigurationProperties.class)
 @EnableScheduling
 public class FileConfig {
 
-    /**
-     * 一時ファイル作成クラスのBean定義
-     * 
-     */
+    /// 一時ファイル作成クラスのBean定義
     @Bean
     TempFileCreator tempFileCreator(FileConfigurationProperties fileConfigurationProperties) {
         return new DefaultTempFileCreator(fileConfigurationProperties);

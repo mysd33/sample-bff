@@ -15,9 +15,7 @@ import com.example.fw.common.logging.LoggerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * TodoServiceの実装クラス
- */
+/// TodoServiceの実装クラス
 @XRayEnabled
 @Service
 @Transactional

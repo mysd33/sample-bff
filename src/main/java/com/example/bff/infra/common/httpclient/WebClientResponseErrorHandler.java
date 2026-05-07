@@ -17,12 +17,10 @@ public class WebClientResponseErrorHandler {
 
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
-    /**
-     * クライアント起因のエラー（4xx）の場合に例外オブジェクトを作成する
-     *
-     * @param response
-     * @return
-     */
+    /// クライアント起因のエラー（4xx）の場合に例外オブジェクトを作成する
+    ///
+    /// @param response 　レスポンス
+    /// @return 例外
     public Mono<Exception> createClientErrorException(ClientResponse response) {
 
         try {
@@ -47,9 +45,10 @@ public class WebClientResponseErrorHandler {
         }
     }
 
-    /**
-     * サーバ起因エラー（5xx）の場合に例外オブジェクトを作成する
-     */
+    /// サーバ起因エラー（5xx）の場合に例外オブジェクトを作成する
+    ///
+    /// @param response 　レスポンス
+    /// @return 例外
     public Mono<Exception> createServerErrorException(ClientResponse response) {
         try {
             return response.bodyToMono(ErrorResponse.class).flatMap(body -> {

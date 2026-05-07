@@ -1,6 +1,5 @@
 package com.example.fw.web.token.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,11 +8,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 
 import lombok.Data;
 
-/**
- * 
- * トランザクショントークンチェックのプロパティクラス
- *
- */
+/// トランザクショントークンチェックのプロパティクラス
 @Data
 @ConfigurationProperties(TransactionTokenConfigurationProperties.PROPERTY_PREFIX)
 public class TransactionTokenConfigurationProperties {
@@ -26,9 +21,9 @@ public class TransactionTokenConfigurationProperties {
     private String storeType;
 
     // トランザクショントークンチェックを適用するパス
-    private List<String> pathPatterns = Collections.emptyList();
+    private List<String> pathPatterns = List.of();
 
     // トランザクショントークンチェックを適用除外するパス
-    private List<String> excludePathPatterns = Collections.emptyList();
+    private List<String> excludePathPatterns = List.of();
 
 }

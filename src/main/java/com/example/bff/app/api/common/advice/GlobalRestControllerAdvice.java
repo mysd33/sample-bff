@@ -6,11 +6,7 @@ import com.example.bff.app.api.APIPackage;
 import com.example.fw.web.advice.AbstractRestControllerAdvice;
 import com.example.fw.web.advice.ErrorResponseCreator;
 
-/**
- * 
- * 集約例外ハンドリングのためのRestControllerAdviceクラス
- *
- */
+/// 集約例外ハンドリングのためのRestControllerAdviceクラス
 @RestControllerAdvice(basePackageClasses = { APIPackage.class })
 public class GlobalRestControllerAdvice extends AbstractRestControllerAdvice {
 

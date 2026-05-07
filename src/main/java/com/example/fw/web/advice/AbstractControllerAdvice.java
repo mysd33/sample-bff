@@ -14,43 +14,29 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 
- * 集約例外ハンドリングのためのControllerAdviceの基底クラス
- *
- */
+/// 集約例外ハンドリングのためのControllerAdviceの基底クラス
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractControllerAdvice {
 
-    /**
-     * 予期せぬ例外発生時のデフォルトのメッセージID
-     */
+    /// 予期せぬ例外発生時のデフォルトのメッセージID
     private final String unexpectedErrorMessageId;
 
-    /**
-     * トランザクショントークンチェックエラー時のメッセージID
-     */
+    /// トランザクショントークンチェックエラー時のメッセージID
     private final String invalidTransactionTokenExceptionMessageId;
 
-    /**
-     * エラーページ表示用にModelに格納されるHTTPステータスの属性名
-     */
+    /// エラーページ表示用にModelに格納されるHTTPステータスの属性名
     @Setter
     private String statusModelAttributeName = "status";
-    /**
-     * エラーページ名
-     */
+    /// エラーページ名
     @Setter
     private String errorPageName = "error";
 
-    /**
-     * トランザクショントークンチェックエラー時の処理
-     * 
-     * @param e     例外
-     * @param model Model
-     * @return 遷移先エラーページ
-     */
+    /// トランザクショントークンチェックエラー時の処理
+    ///
+    /// @param e     例外
+    /// @param model Model
+    /// @return 遷移先エラーページ
     @ExceptionHandler(InvalidTransactionTokenException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public String exceptionHandler(final InvalidTransactionTokenException e, final Model model) {
@@ -62,13 +48,11 @@ public abstract class AbstractControllerAdvice {
         return errorPageName;
     }
 
-    /**
-     * システム例外時の処理
-     * 
-     * @param e     例外
-     * @param model Model
-     * @return 遷移先エラーページ
-     */
+    /// システム例外時の処理
+    ///
+    /// @param e     例外
+    /// @param model Model
+    /// @return 遷移先エラーページ
     @ExceptionHandler(SystemException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String systemExceptionHandler(final SystemException e, final Model model) {
@@ -80,13 +64,11 @@ public abstract class AbstractControllerAdvice {
         return errorPageName;
     }
 
-    /**
-     * 予期せぬ例外時の処理
-     * 
-     * @param e     例外
-     * @param model Model
-     * @return 遷移先エラーページ
-     */
+    /// 予期せぬ例外時の処理
+    ///
+    /// @param e     例外
+    /// @param model Model
+    /// @return 遷移先エラーページ
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String exceptionHandler(final Exception e, final Model model) {

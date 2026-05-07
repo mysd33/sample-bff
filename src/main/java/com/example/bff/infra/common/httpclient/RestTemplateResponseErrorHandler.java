@@ -28,10 +28,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * REST API呼び出し時のエラーハンドラクラス
- *
- */
+/// REST API呼び出し時のエラーハンドラクラス
 @Slf4j
 public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
@@ -41,8 +38,8 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
     @Override
     public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
-        return (httpResponse.getStatusCode().is4xxClientError() || httpResponse.getStatusCode()
-            .is5xxServerError());
+        return httpResponse.getStatusCode().is4xxClientError() || httpResponse.getStatusCode()
+            .is5xxServerError();
     }
 
     @Override
@@ -90,14 +87,12 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         }
     }
 
-    /**
-     * 不明なエラーの場合は、サービスから取得したエラー情報を警告ログ出力し、定型的なメッセージを画面表示する
-     *
-     * @param httpStatusCode
-     * @param statusText
-     * @param responseBody
-     * @param charset
-     */
+    /// 不明なエラーの場合は、サービスから取得したエラー情報を警告ログ出力し、定型的なメッセージを画面表示する
+    ///
+    /// @param httpStatusCode HTTPステータスコード
+    /// @param statusText     ステータス文字列
+    /// @param responseBody   レスポンスボディ
+    /// @param charset        Charset
     private void throwBusinessExceptionForUnknownErrorResponse(HttpStatusCode httpStatusCode,
         String statusText,
         byte[] responseBody, Charset charset) {
@@ -121,7 +116,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     protected Charset getCharset(ClientHttpResponse response) {
         HttpHeaders headers = response.getHeaders();
         MediaType contentType = headers.getContentType();
-        return (contentType != null ? contentType.getCharset() : null);
+        return contentType != null ? contentType.getCharset() : null;
     }
 
     private String getErrorMessage(int rawStatusCode, String statusText,
@@ -136,7 +131,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         if (charset == null) {
             charset = StandardCharsets.UTF_8;
         }
-        int maxChars = 200;
+        var maxChars = 200;
 
         if (responseBody.length < maxChars * 2) {
             return preface + "[" + new String(responseBody, charset) + "]";

@@ -1,9 +1,6 @@
 package com.example.bff.domain.repository;
 
-/**
- * MapperScan用のリポジトリのパッケージインタフェース
- *
- */
+/// MapperScan用のリポジトリのパッケージインタフェース
 public interface RepositoryPackage {
 
 }

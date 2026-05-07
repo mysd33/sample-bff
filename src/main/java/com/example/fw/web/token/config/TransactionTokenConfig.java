@@ -30,11 +30,7 @@ import org.terasoluna.gfw.web.token.transaction.TransactionTokenInterceptor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenRequestDataValueProcessor;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
-/**
- *
- * トランザクショントークンチェックの設定クラス
- *
- */
+/// トランザクショントークンチェックの設定クラス
 @Configuration
 @ConditionalOnProperty(prefix = TransactionTokenConfigurationProperties.PROPERTY_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
@@ -44,10 +40,8 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
     private final TransactionTokenStore transactionTokenStore;
     private final TransactionTokenConfigurationProperties transactionTokenProperties;
 
-    /**
-     * SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
-     * CompolistRequestDataValueProcessorによるBean定義に上書き
-     */
+    /// SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）定義を、
+    /// CompolistRequestDataValueProcessorによるBean定義に上書き
     @Bean
     static BeanDefinitionRegistryPostProcessor requestDataValueProcessorPostProcessor() {
         return new BeanDefinitionRegistryPostProcessor() {
@@ -62,14 +56,14 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
             public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry)
                 throws BeansException {
                 // SpringSecurityのCsrfRequestDataValueProcessorの同名のBean（requestDataValueProcessor）を上書き
-                ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+                var constructorArgumentValues = new ConstructorArgumentValues();
                 RequestDataValueProcessor[] requestDataValueProcessors = new RequestDataValueProcessor[]{
                     new CsrfRequestDataValueProcessor(),
                     new TransactionTokenRequestDataValueProcessor()
                     // new TraceableTransactionTokenRequestDataValueProcessor()
                 };
                 constructorArgumentValues.addIndexedArgumentValue(0, requestDataValueProcessors);
-                RootBeanDefinition rootBean = new RootBeanDefinition(
+                var rootBean = new RootBeanDefinition(
                     CompositeRequestDataValueProcessor.class,
                     constructorArgumentValues, null);
                 registry.removeBeanDefinition("requestDataValueProcessor");
@@ -78,11 +72,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
         };
     }
 
-    /**
-     *
-     * TransactionTokenInterceptorクラスの設定
-     *
-     */
+    /// TransactionTokenInterceptorクラスの設定
     @Bean
     TransactionTokenInterceptor transactionTokenInterceptor() {
         return new TransactionTokenInterceptor(new TokenStringGenerator(),
@@ -90,9 +80,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
             transactionTokenStore);
     }
 
-    /**
-     * セッションタイムアウト時にHttpSessionListener（TransactionTokenCleaningListener）を動作させるための設定
-     */
+    /// セッションタイムアウト時にHttpSessionListener（TransactionTokenCleaningListener）を動作させるための設定
     @Bean
     // Spring Session with Redisがある場合はBean定義不要
     @ConditionalOnMissingClass("org.springframework.session.data.redis.RedisIndexedSessionRepository")
@@ -101,10 +89,7 @@ public class TransactionTokenConfig implements WebMvcConfigurer {
         return new SessionEventHttpSessionListenerAdapter(listeners);
     }
 
-    /**
-     * セッションタイムアウト等のセッション破棄時にトークンを自動削除するHttpSessionListenerの設定
-     *
-     */
+    /// セッションタイムアウト等のセッション破棄時にトークンを自動削除するHttpSessionListenerの設定
     @Bean
     TransactionTokenCleaningListener transactionTokenCleaningListener(
         StoredTransactionTokenRepository tokenRepository) {

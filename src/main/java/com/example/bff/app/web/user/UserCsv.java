@@ -11,11 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
 
-/**
- * 
- * ユーザ情報のCSVファイルデータクラス
- *
- */
+/// ユーザ情報のCSVファイルデータクラス
 @JsonIgnoreProperties(ignoreUnknown = true) // 定義されていないプロパティを無視してマッピングする
 @JsonPropertyOrder({ "ユーザーID", "氏名", "誕生日", "ロール" }) // CSVのヘッダ順
 @Data

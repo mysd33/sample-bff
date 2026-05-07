@@ -10,11 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- *
- * ジョブの要求情報を管理するクラス
- *
- */
+/// ジョブの要求情報を管理するクラス
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,36 +30,28 @@ public class JobRequest implements Serializable {
     // 再実行かどうか（Taskletモデルはリラン、Chunkモデルはリスタート）
     private boolean restart;
 
-    /**
-     * ジョブパラメータ文字列を返却する
-     *
-     * @return ジョブパラメータの文字列
-     */
+    /// ジョブパラメータ文字列を返却する
+    ///
+    /// @return ジョブパラメータの文字列
     public String toParameterString() {
-        StringJoiner sj = new StringJoiner(",");
+        var sj = new StringJoiner(",");
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             sj.add("%s=%s".formatted(entry.getKey(), entry.getValue()));
         }
         return sj.toString();
     }
 
-    /**
-     * ジョブパラメータをProperties形式で返却する
-     *
-     * @return ジョブパラメータのProperties形式で返却する
-     */
+    /// ジョブパラメータをProperties形式で返却する
+    ///
+    /// @return ジョブパラメータのProperties形式で返却する
     public Properties toParameterProperties() {
-        Properties properties = new Properties();
+        var properties = new Properties();
         properties.putAll(parameters);
         return properties;
     }
 
 
-    /**
-     *
-     * JobRequestが有効な値かを返却する
-     *
-     */
+    /// JobRequestが有効な値かを返却する
     public boolean isValid() {
         if (restart) {
             // リスタートの場合はジョブ実行IDが指定されていること

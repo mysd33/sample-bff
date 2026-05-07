@@ -1,5 +1,13 @@
 package com.example.fw.common.keymanagement;
 
+import com.example.fw.common.exception.SystemException;
+import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import com.example.fw.common.message.CommonFrameworkMessageIds;
+import com.example.fw.common.objectstorage.DownloadObject;
+import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
+import com.example.fw.common.objectstorage.UploadObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +30,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -35,31 +44,18 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.Store;
-
-import com.example.fw.common.exception.SystemException;
-import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
-import com.example.fw.common.logging.ApplicationLogger;
-import com.example.fw.common.logging.LoggerFactory;
-import com.example.fw.common.message.CommonFrameworkMessageIds;
-import com.example.fw.common.objectstorage.DownloadObject;
-import com.example.fw.common.objectstorage.ObjectStorageFileAccessor;
-import com.example.fw.common.objectstorage.UploadObject;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsAsyncClient;
 import software.amazon.awssdk.services.kms.model.AliasListEntry;
 import software.amazon.awssdk.services.kms.model.MessageType;
 import software.amazon.awssdk.services.kms.model.SignRequest;
 
-/**
- * AWSのKMSを使ってキー管理を行うKeyManager実装クラス
- * 
- */
+/// AWSのKMSを使ってキー管理を行うKeyManager実装クラス
 @Slf4j
 @RequiredArgsConstructor
 public class AWSKmsKeyManager implements KeyManager {
+
     private static final String KEY_ALIAS_PREFIX = "alias/"; // キーエイリアスはalias/で始まる必要がある
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
     // PEM形式かどうかを判定する条件用のマーカー
@@ -88,12 +84,12 @@ public class AWSKmsKeyManager implements KeyManager {
     public KeyInfo createKey() {
         // KMSを使って暗号鍵を生成する
         return kmsAsyncClient.createKey(builder -> builder//
-                .keySpec(keyManagementConfigurationProperties.getAwsKms().getKeySpec())//
-                .keyUsage(keyManagementConfigurationProperties.getAwsKms().getKeyUsage())//
-                .description(keyManagementConfigurationProperties.getAwsKms().getKeyDescription())//
-                .multiRegion(keyManagementConfigurationProperties.getAwsKms().isMultiRegion()) //
+            .keySpec(keyManagementConfigurationProperties.getAwsKms().getKeySpec())//
+            .keyUsage(keyManagementConfigurationProperties.getAwsKms().getKeyUsage())//
+            .description(keyManagementConfigurationProperties.getAwsKms().getKeyDescription())//
+            .multiRegion(keyManagementConfigurationProperties.getAwsKms().isMultiRegion()) //
         ).thenApply(response -> //
-        KeyInfo.builder().//
+            KeyInfo.builder().//
                 keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
                 .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
                 .build()).join();
@@ -110,8 +106,8 @@ public class AWSKmsKeyManager implements KeyManager {
     public void addKeyAlias(final KeyInfo keyInfo, final String alias) {
         // キーのエイリアスを作成
         kmsAsyncClient.createAlias(builder -> builder//
-                .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
-                .targetKeyId(keyInfo.getKeyId()) // 作成したキーIDを指定
+            .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
+            .targetKeyId(keyInfo.getKeyId()) // 作成したキーIDを指定
         ).join();
     }
 
@@ -124,12 +120,12 @@ public class AWSKmsKeyManager implements KeyManager {
         }
         // エイリアスがあれば、キーのエイリアスを削除
         kmsAsyncClient.deleteAlias(builder -> builder//
-                .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
+            .aliasName(KEY_ALIAS_PREFIX + alias) // エイリアス名を指定
         ).join();
     }
 
     @Override
-    public KeyInfo findKeyByAlias(final String alias) {
+    public @Nullable KeyInfo findKeyByAlias(final String alias) {
         // キーエイリアスが存在するか確認
         if (!isKeyAliasExists(alias)) {
             appLogger.debug("キーエイリアス{}は存在しません", alias);
@@ -137,43 +133,42 @@ public class AWSKmsKeyManager implements KeyManager {
         }
         return kmsAsyncClient.describeKey(builder -> builder//
                 .keyId(KEY_ALIAS_PREFIX + alias))//
-                .thenApply(response -> KeyInfo.builder()//
-                        .keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
-                        .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
-                        .build())//
-                .join();
+            .thenApply(response -> KeyInfo.builder()//
+                .keyId(response.keyMetadata().keyId()) // レスポンスからキーIDを取得
+                .state(response.keyMetadata().keyStateAsString()) // レスポンスからキーの状態を取得
+                .build())//
+            .join();
     }
 
-    /**
-     * 指定されたキーエイリアスが存在するか確認するメソッド
-     * 
-     * @param alias キーエイリアス
-     * @return 存在する場合はtrue、存在しない場合はfalse
-     */
+    /// 指定されたキーエイリアスが存在するか確認するメソッド
+    ///
+    /// @param alias キーエイリアス
+    /// @return 存在する場合はtrue、存在しない場合はfalse
     private boolean isKeyAliasExists(final String alias) {
         // キーエイリアスが存在するか確認
         Optional<AliasListEntry> aliasListEntry = kmsAsyncClient.listAliases()//
-                .thenApply(response -> response.aliases().stream()//
-                        .filter(a -> a.aliasName().equals(KEY_ALIAS_PREFIX + alias)) // 指定されたエイリアス名をフィルタリング
-                        .findFirst())
-                .join();
+            .thenApply(response -> response.aliases().stream()//
+                .filter(a -> a.aliasName().equals(KEY_ALIAS_PREFIX + alias)) // 指定されたエイリアス名をフィルタリング
+                .findFirst())
+            .join();
         return aliasListEntry.isPresent();
     }
 
     @Override
     public KeyInfo deleteKey(final KeyInfo keyInfo) {
         final String keyId = keyInfo.getKeyId();
-        final int pendingWindowInDays = keyManagementConfigurationProperties.getAwsKms().getPendingDeleteWindowInDays();
+        final var pendingWindowInDays = keyManagementConfigurationProperties.getAwsKms()
+            .getPendingDeleteWindowInDays();
         // KMSを使って暗号鍵を削除する
         return kmsAsyncClient.scheduleKeyDeletion(builder -> builder//
                 .keyId(keyId).pendingWindowInDays(pendingWindowInDays))//
-                .thenApply(response -> {
-                    appLogger.debug("キー{}は{}後に削除します", keyId, pendingWindowInDays);
-                    return KeyInfo.builder()//
-                            .keyId(keyId) // レスポンスからキーIDを取得
-                            .state(response.keyStateAsString()) // レスポンスからキーの状態を取得
-                            .build();
-                }).join();
+            .thenApply(response -> {
+                appLogger.debug("キー{}は{}後に削除します", keyId, pendingWindowInDays);
+                return KeyInfo.builder()//
+                    .keyId(keyId) // レスポンスからキーIDを取得
+                    .state(response.keyStateAsString()) // レスポンスからキーの状態を取得
+                    .build();
+            }).join();
     }
 
     @Override
@@ -181,19 +176,20 @@ public class AWSKmsKeyManager implements KeyManager {
         // KMSから公開鍵を取得する
         return kmsAsyncClient.getPublicKey(builder -> builder//
                 .keyId(keyInfo.getKeyId()))//
-                .thenApply(response -> {
-                    byte[] publicKeyBytes = response.publicKey().asByteArray();
-                    String algorithm = keyManagementConfigurationProperties.getKeyFactoryAlgorithm();
-                    KeyFactory keyFactory;
-                    try {
-                        keyFactory = KeyFactory.getInstance(algorithm);
-                        return keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9001, algorithm);
-                    } catch (InvalidKeySpecException e) {
-                        throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9002);
-                    }
-                }).join();
+            .thenApply(response -> {
+                byte[] publicKeyBytes = response.publicKey().asByteArray();
+                String algorithm = keyManagementConfigurationProperties.getKeyFactoryAlgorithm();
+                KeyFactory keyFactory;
+                try {
+                    keyFactory = KeyFactory.getInstance(algorithm);
+                    return keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+                } catch (NoSuchAlgorithmException e) {
+                    throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9001,
+                        algorithm);
+                } catch (InvalidKeySpecException e) {
+                    throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9002);
+                }
+            }).join();
     }
 
     @Override
@@ -201,22 +197,25 @@ public class AWSKmsKeyManager implements KeyManager {
         // KMSから公開鍵を取得
         PublicKey publicKey = getPublicKey(keyInfo);
         // サブジェクト情報を設定してCSRを作成
-        X500Name subjectName = new X500Name(subject);
-        PKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(subjectName, publicKey);
+        var subjectName = new X500Name(subject);
+        PKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(
+            subjectName, publicKey);
         // KMSを使って電子署名したCSRを生成
         PKCS10CertificationRequest csr = csrBuilder
-                .build(new AWSKmsContentSigner(kmsAsyncClient, keyInfo, keyManagementConfigurationProperties));
+            .build(new AWSKmsContentSigner(kmsAsyncClient, keyInfo,
+                keyManagementConfigurationProperties));
         try {
             return CertificateSigningRequest.builder() //
-                    .der(csr.getEncoded()) // CSRのDERエンコードされたバイト配列を設定
-                    .build();
+                .der(csr.getEncoded()) // CSRのDERエンコードされたバイト配列を設定
+                .build();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9003);
         }
     }
 
     @Override
-    public Certificate createSelfSignedCertificate(final CertificateSigningRequest csr, final KeyInfo keyInfo) {
+    public Certificate createSelfSignedCertificate(final CertificateSigningRequest csr,
+        final KeyInfo keyInfo) {
         // CSRの読み込み
         PKCS10CertificationRequest pkcs10Csr;
         try {
@@ -231,7 +230,7 @@ public class AWSKmsKeyManager implements KeyManager {
         try {
             byte[] pubKeyBytes = pkcs10Csr.getSubjectPublicKeyInfo().getEncoded();
             publicKey = KeyFactory.getInstance(algorithm)//
-                    .generatePublic(new X509EncodedKeySpec(pubKeyBytes));
+                .generatePublic(new X509EncodedKeySpec(pubKeyBytes));
         } catch (IOException | InvalidKeySpecException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9005);
         } catch (NoSuchAlgorithmException e) {
@@ -239,15 +238,17 @@ public class AWSKmsKeyManager implements KeyManager {
         }
         // 自己署名の場合、IssuerはSubjectと同じ
         X500Name issuer = subject;
-        BigInteger serialNumber = new BigInteger(64, new SecureRandom());
+        var serialNumber = new BigInteger(64, new SecureRandom());
         Instant now = Instant.now();
         // 署名の有効期限を設定
         Date notBefore = Date.from(now);
         Date notAfter = Date
-                .from(now.plus(keyManagementConfigurationProperties.getSelfSignedCertValidityDays(), ChronoUnit.DAYS));
+            .from(now.plus(keyManagementConfigurationProperties.getSelfSignedCertValidityDays(),
+                ChronoUnit.DAYS));
         // 証明書を作成
-        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(issuer, serialNumber, notBefore,
-                notAfter, subject, publicKey);
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(issuer,
+            serialNumber, notBefore,
+            notAfter, subject, publicKey);
 
         try {
             // Subject Key Identifierを取得
@@ -258,22 +259,24 @@ public class AWSKmsKeyManager implements KeyManager {
              * ));
              */
             X509CertificateHolder certificateHolder = certificateBuilder
-                    .build(new AWSKmsContentSigner(kmsAsyncClient, keyInfo, keyManagementConfigurationProperties));
+                .build(new AWSKmsContentSigner(kmsAsyncClient, keyInfo,
+                    keyManagementConfigurationProperties));
             return Certificate.builder() //
-                    .der(certificateHolder.getEncoded()) // 証明書のDERエンコードされたバイト配列を設定
-                    .build();
+                .der(certificateHolder.getEncoded()) // 証明書のDERエンコードされたバイト配列を設定
+                .build();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9006);
         }
     }
 
     @Override
-    public void saveCsrToObjectStorage(final CertificateSigningRequest csr, final KeyInfo keyInfo) { //
+    public void saveCsrToObjectStorage(final CertificateSigningRequest csr,
+        final KeyInfo keyInfo) { //
         final String certsBassPrefix = keyManagementConfigurationProperties.getCertsBasePrefix();
         final String certsCsrFileName = keyManagementConfigurationProperties.getCsrPemFileName();
         final String csrPrefix = certsBassPrefix + keyInfo.getKeyId() + "/" + certsCsrFileName;
         // PEM形式でCSRをエクスポート
-        StringWriter csrWriter = new StringWriter();
+        var csrWriter = new StringWriter();
         try {
             csr.exportPemTo(csrWriter);
         } catch (IOException e) {
@@ -282,8 +285,9 @@ public class AWSKmsKeyManager implements KeyManager {
         appLogger.debug("CSR PEM: {}", csrWriter.toString());
         InputStream csrInputStream = new ByteArrayInputStream(csrWriter.toString().getBytes());
         // CSRのpemをS3にアップロード
-        UploadObject csrUploadObject = UploadObject.builder().inputStream(csrInputStream).prefix(csrPrefix)
-                .size(csrWriter.toString().getBytes().length).build();
+        UploadObject csrUploadObject = UploadObject.builder().inputStream(csrInputStream)
+            .prefix(csrPrefix)
+            .size(csrWriter.toString().getBytes().length).build();
         objectStorageFileAccessor.upload(csrUploadObject);
         appLogger.debug("CSRファイルをアップロード: {}", csrPrefix);
     }
@@ -297,20 +301,22 @@ public class AWSKmsKeyManager implements KeyManager {
         DownloadObject downloadObject = objectStorageFileAccessor.download(csrPrefix);
         try {
             return CertificateSigningRequest.builder()//
-                    .der(downloadObject.getInputStream().readAllBytes()).build();
+                .der(downloadObject.getInputStream().readAllBytes()).build();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9008);
         }
     }
 
     @Override
-    public void saveSelfSignedCertificateToObjectStorage(final Certificate certificate, final KeyInfo keyInfo) {
+    public void saveSelfSignedCertificateToObjectStorage(final Certificate certificate,
+        final KeyInfo keyInfo) {
         final String certsBassPrefix = keyManagementConfigurationProperties.getCertsBasePrefix();
         final String selfSignedCertificateFileName = keyManagementConfigurationProperties
-                .getSelfSignedCertPemFileName();
-        final String certifacatePrefix = certsBassPrefix + keyInfo.getKeyId() + "/" + selfSignedCertificateFileName;
+            .getSelfSignedCertPemFileName();
+        final String certifacatePrefix =
+            certsBassPrefix + keyInfo.getKeyId() + "/" + selfSignedCertificateFileName;
         // PEM形式で自己署名証明書をエクスポート
-        StringWriter certWriter = new StringWriter();
+        var certWriter = new StringWriter();
         try {
             certificate.exportPemTo(certWriter);
         } catch (IOException e) {
@@ -319,8 +325,9 @@ public class AWSKmsKeyManager implements KeyManager {
         appLogger.debug("自己署名証明書 PEM: {}", certWriter.toString());
         InputStream certInputStream = new ByteArrayInputStream(certWriter.toString().getBytes());
         // 自己署名証明書のpemをS3にアップロード
-        UploadObject certUploadObject = UploadObject.builder().inputStream(certInputStream).prefix(certifacatePrefix)
-                .size(certWriter.toString().getBytes().length).build();
+        UploadObject certUploadObject = UploadObject.builder().inputStream(certInputStream)
+            .prefix(certifacatePrefix)
+            .size(certWriter.toString().getBytes().length).build();
         objectStorageFileAccessor.upload(certUploadObject);
         appLogger.debug("自己署名証明書ファイルをアップロード: {}", certifacatePrefix);
     }
@@ -329,7 +336,8 @@ public class AWSKmsKeyManager implements KeyManager {
     public Certificate getSelfSignedCertificateFromObjectStorage(final KeyInfo keyInfo) {
         String selfSignedCertificateFileName = keyManagementConfigurationProperties.getSelfSignedCertPemFileName();
         try {
-            return getCertificatesFromObjectStorage(keyInfo, selfSignedCertificateFileName).getFirst();
+            return getCertificatesFromObjectStorage(keyInfo,
+                selfSignedCertificateFileName).getFirst();
         } catch (IOException e) {
             throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9010);
         }
@@ -348,44 +356,46 @@ public class AWSKmsKeyManager implements KeyManager {
     @Override
     public Signature createSignatureFromDigest(final byte[] digestData, final KeyInfo keyInfo) {
         SignRequest signRequest = SignRequest.builder()//
-                .keyId(keyInfo.getKeyId())//
-                .message(SdkBytes.fromByteArray(digestData)) // データをバイト配列として設定
-                .signingAlgorithm(keyManagementConfigurationProperties.getAwsKms().getKmsSigningAlgorithmSpec())//
-                .messageType(MessageType.DIGEST) // メッセージタイプをDIGESTに設定
-                .build();
+            .keyId(keyInfo.getKeyId())//
+            .message(SdkBytes.fromByteArray(digestData)) // データをバイト配列として設定
+            .signingAlgorithm(
+                keyManagementConfigurationProperties.getAwsKms().getKmsSigningAlgorithmSpec())//
+            .messageType(MessageType.DIGEST) // メッセージタイプをDIGESTに設定
+            .build();
         return kmsAsyncClient.sign(signRequest)//
-                .thenApply(response -> Signature.builder()//
-                        .value(response.signature().asByteArray()).build())//
-                .join();
+            .thenApply(response -> Signature.builder()//
+                .value(response.signature().asByteArray()).build())//
+            .join();
     }
 
     @Override
     public Signature createSignatureFromRawData(final byte[] rawData, final KeyInfo keyInfo) {
         SignRequest signRequest = SignRequest.builder()//
-                .keyId(keyInfo.getKeyId())//
-                .message(SdkBytes.fromByteArray(rawData)) // データをバイト配列として設定
-                .signingAlgorithm(keyManagementConfigurationProperties.getAwsKms().getKmsSigningAlgorithmSpec())//
-                .messageType(MessageType.RAW) // メッセージタイプをRAWに設定
-                .build();
+            .keyId(keyInfo.getKeyId())//
+            .message(SdkBytes.fromByteArray(rawData)) // データをバイト配列として設定
+            .signingAlgorithm(
+                keyManagementConfigurationProperties.getAwsKms().getKmsSigningAlgorithmSpec())//
+            .messageType(MessageType.RAW) // メッセージタイプをRAWに設定
+            .build();
         return kmsAsyncClient.sign(signRequest)//
-                .thenApply(response -> Signature.builder()//
-                        .value(response.signature().asByteArray()).build())//
-                .join();
+            .thenApply(response -> Signature.builder()//
+                .value(response.signature().asByteArray()).build())//
+            .join();
     }
 
-    /**
-     * オブジェクトストレージから証明書を取得するメソッド
-     * 
-     * @param keyInfo
-     * @param certificateFileName
-     * @return
-     * @throws IOException
-     */
-    private List<Certificate> getCertificatesFromObjectStorage(final KeyInfo keyInfo, final String certificateFileName)
-            throws IOException {
+    /// オブジェクトストレージから証明書を取得するメソッド
+    ///
+    /// @param keyInfo             キー情報
+    /// @param certificateFileName 証明書のファイル名
+    /// @return 証明書情報
+    /// @throws IOException 証明書ファイルの取得に失敗した場合
+    private List<Certificate> getCertificatesFromObjectStorage(final KeyInfo keyInfo,
+        final String certificateFileName)
+        throws IOException {
         final String certsBassPrefix = keyManagementConfigurationProperties.getCertsBasePrefix();
-        final String certifacatePrefix = certsBassPrefix + keyInfo.getKeyId() + "/" + certificateFileName;
-        final List<Certificate> certificates = new ArrayList<>();
+        final String certifacatePrefix =
+            certsBassPrefix + keyInfo.getKeyId() + "/" + certificateFileName;
+        final var certificates = new ArrayList<Certificate>();
         // オブジェクトストレージからファイルダウンロード
         DownloadObject downloadObject = objectStorageFileAccessor.download(certifacatePrefix);
         // PKCS#7形式の証明書チェーンのファイル（拡張子がp7b）の場合
@@ -393,13 +403,13 @@ public class AWSKmsKeyManager implements KeyManager {
             // PKCS#7形式の証明書チェーンとして処理
             byte[] pkcs7Bytes = downloadObject.getInputStream().readAllBytes();
             byte[] derBytes;
-            String content = new String(pkcs7Bytes, StandardCharsets.UTF_8);
+            var content = new String(pkcs7Bytes, StandardCharsets.UTF_8);
             if (content.contains(PEM_BEGIN_MARKER)) {
                 // PEM形式の場合は、DER形式に変換
                 // ヘッダー、フッター、空白文字を除去してBase64デコード
                 String base64Content = content.replaceAll(PEM_HEADER_REGEX, "")//
-                        .replaceAll(PEM_FOOTER_REGEX, "")//
-                        .replaceAll(WHITESPACE_REGEX, "");
+                    .replaceAll(PEM_FOOTER_REGEX, "")//
+                    .replaceAll(WHITESPACE_REGEX, "");
                 derBytes = Base64.getDecoder().decode(base64Content);
             } else {
                 derBytes = pkcs7Bytes;
@@ -414,8 +424,10 @@ public class AWSKmsKeyManager implements KeyManager {
             Store<X509CertificateHolder> certStore = cmsSignedData.getCertificates();
             for (X509CertificateHolder certHolder : certStore.getMatches(null)) {
                 try {
-                    X509Certificate x509Certificate = new JcaX509CertificateConverter().getCertificate(certHolder);
-                    certificates.add(Certificate.builder().der(x509Certificate.getEncoded()).build());
+                    X509Certificate x509Certificate = new JcaX509CertificateConverter().getCertificate(
+                        certHolder);
+                    certificates.add(
+                        Certificate.builder().der(x509Certificate.getEncoded()).build());
                 } catch (CertificateException e) {
                     throw new SystemException(e, CommonFrameworkMessageIds.E_FW_KYMG_9011);
                 }
@@ -424,7 +436,7 @@ public class AWSKmsKeyManager implements KeyManager {
         }
         // それ以外の場合は、pem形式の証明書として処理
         return List.of(Certificate.builder()//
-                .der(downloadObject.getInputStream().readAllBytes()).build());
+            .der(downloadObject.getInputStream().readAllBytes()).build());
     }
 
 }

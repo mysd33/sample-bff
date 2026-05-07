@@ -3,15 +3,13 @@ package com.example.fw.web.conversion;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.jspecify.annotations.Nullable;
 import com.example.fw.common.utils.JapaneseStringUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 
-/**
- * 特殊文字のコードポイント変換を行うリクエストラッパークラス
- */
+/// 特殊文字のコードポイント変換を行うリクエストラッパークラス
 public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper {
 
     private final Map<String, String[]> convertedParams;
@@ -25,13 +23,13 @@ public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper 
     }
 
     @Override
-    public String getParameter(String name) {
+    public @Nullable String getParameter(String name) {
         String[] values = convertedParams.get(name);
-        return (values != null && values.length > 0) ? values[0] : null;
+        return values != null && values.length > 0 ? values[0] : null;
     }
 
     @Override
-    public String[] getParameterValues(String name) {
+    public String @Nullable[] getParameterValues(String name) {
         return convertedParams.get(name);
     }
 

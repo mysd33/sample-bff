@@ -15,9 +15,7 @@ import software.amazon.awssdk.services.kms.KmsAsyncClient;
 @EnableConfigurationProperties(KeyManagementConfigurationProperties.class)
 public class KeyManagmentConfig {
 
-    /**
-     * KmsAsyncClientのBean定義
-     */
+    /// KmsAsyncClientのBean定義
     @Bean
     KmsAsyncClient kmsAsyncClient(KeyManagementConfigurationProperties keyManagmentConfigurationProperties) {
         // KMSクライアントのビルド

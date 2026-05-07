@@ -13,15 +13,10 @@ import io.micrometer.context.ContextRegistry;
 import jakarta.annotation.PostConstruct;
 import reactor.core.publisher.Hooks;
 
-/**
- * RESTクライアント関連の設定クラス
- *
- */
+/// RESTクライアント関連の設定クラス
 @Configuration
 public class WebClientConfig {
-    /**
-     * MDC を Reactor Context に伝搬させる設定
-     */
+    /// MDC を Reactor Context に伝搬させる設定
     @PostConstruct
     public void setup() {
         ContextRegistry.getInstance().registerThreadLocalAccessor("mdc", //
@@ -36,31 +31,22 @@ public class WebClientConfig {
         Hooks.enableAutomaticContextPropagation();
     }
 
-    /**
-     * WebClientでのログ出力クラス
-     */
+    /// WebClientでのログ出力クラス
     @Bean
     WebClientLoggingFilter webClientLoggingFilter() {
         return new WebClientLoggingFilter();
     }
 
-    /**
-     * 
-     * WebClientクラス
-     * 
-     */
+    /// WebClientクラス
     @Profile("!xray")
     @Bean
     WebClient webClient(WebClient.Builder builder, WebClientLoggingFilter loggingFilter) {
         return builder.filter(loggingFilter.filter()).build();
     }
 
-    /**
-     * 
-     * WebClientクラス（X-Rayトレーシング SDK）<br>
-     * 
-     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
-     */
+    /// WebClientクラス（X-Rayトレーシング SDK）<br>
+    ///
+    /// @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean
@@ -69,11 +55,9 @@ public class WebClientConfig {
         return builder.filter(loggingFilter.filter()).filter(xrayFilter.filter()).build();
     }
 
-    /**
-     * WebClientでのAWS X-Ray SDKのHttpクライアントトレーシング設定<br>
-     * 
-     * @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
-     */
+    /// WebClientでのAWS X-Ray SDKのHttpクライアントトレーシング設定<br>
+    ///
+    /// @deprecated X-Ray SDKは 2027 年 2 月 25 日にサポート終了となるため削除予定
     @Deprecated(forRemoval = true)
     @Profile("xray")
     @Bean

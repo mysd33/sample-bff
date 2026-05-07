@@ -17,11 +17,9 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsAsyncClient;
 import software.amazon.awssdk.services.kms.model.MessageType;
 
-/**
- * Bouncy CastleのContentSignerインターフェースを実装した AWS KMSを使用してコンテンツに署名するためのクラス<br>
- * 
- * CSR（証明書署名要求）や自己署名証明書を作成する際に、各コンテンツに署名するために使用される<br>
- */
+/// Bouncy CastleのContentSignerインターフェースを実装した AWS KMSを使用してコンテンツに署名するためのクラス<br>
+///
+/// CSR（証明書署名要求）や自己署名証明書を作成する際に、各コンテンツに署名するために使用される<br>
 public class AWSKmsContentSigner implements ContentSigner {
     private final KmsAsyncClient kmsAsyncClient;
     private final KeyInfo keyInfo;
@@ -29,13 +27,11 @@ public class AWSKmsContentSigner implements ContentSigner {
     private final AlgorithmIdentifier algorithmIdentifier;
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    /**
-     * コンストラクタ
-     * 
-     * @param kmsAsyncClient                       AWS KMSの非同期クライアント
-     * @param keyInfo                              署名に使用するキー情報
-     * @param keyManagementConfigurationProperties キー管理の設定プロパティ
-     */
+    /// コンストラクタ
+    ///
+    /// @param kmsAsyncClient                       AWS KMSの非同期クライアント
+    /// @param keyInfo                              署名に使用するキー情報
+    /// @param keyManagementConfigurationProperties キー管理の設定プロパティ
     public AWSKmsContentSigner(final KmsAsyncClient kmsAsyncClient, final KeyInfo keyInfo,
             KeyManagementConfigurationProperties keyManagementConfigurationProperties) {
         this.kmsAsyncClient = kmsAsyncClient;

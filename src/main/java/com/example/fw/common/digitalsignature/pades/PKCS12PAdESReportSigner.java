@@ -35,16 +35,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * PKCS#12形式のキーストアを使用してPDFにPAdES形式の電子署名を付与するクラス
- * <p>
- * このクラスは、PKCS#12形式のキーストアから秘密鍵と証明書を読み込み、PDFにPAdES形式の電子署名を付与します。
- *
- * @see ReportSigner
- */
+/// PKCS#12形式のキーストアを使用してPDFにPAdES形式の電子署名を付与するクラス
+///
+/// このクラスは、PKCS#12形式のキーストアから秘密鍵と証明書を読み込み、PDFにPAdES形式の電子署名を付与します。
+///
+/// @see ReportSigner
 @Slf4j
 @RequiredArgsConstructor
-public class PKCS12PAdESReportSiginer implements ReportSigner {
+public class PKCS12PAdESReportSigner implements ReportSigner {
 
     private final TempFileCreator tempFileCreator;
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
@@ -57,15 +55,15 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
     @Override
     public Report sign(final Report originalReport, final SignOptions options) {
         DSSDocument toSignDocument = null;
-        if (originalReport instanceof DefaultReport defultReport) {
+        if (originalReport instanceof DefaultReport defaultReport) {
             // Fileに対して電子署名付与を実装
-            toSignDocument = new FileDocument(defultReport.getFile());
+            toSignDocument = new FileDocument(defaultReport.getFile());
         } else {
             toSignDocument = new InMemoryDocument(originalReport.getInputStream());
         }
 
         DSSPrivateKeyEntry privateKey = null;
-        try (Pkcs12SignatureToken pkcs12SignatureToken = new Pkcs12SignatureToken(
+        try (var pkcs12SignatureToken = new Pkcs12SignatureToken(
             digitalSignatureConfigurationProperties.getPkcs12().getKeystoreFilePath(), //
             new PasswordProtection(
                 digitalSignatureConfigurationProperties.getPkcs12().getPassword().toCharArray()))) {
@@ -82,7 +80,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
             // 証明書検証機能を初期化
             CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
             // PAdES署名サービスを作成
-            PAdESService padesService = new PAdESService(certificateVerifier);
+            var padesService = new PAdESService(certificateVerifier);
             // 署名対象のハッシュ値を計算
             ToBeSigned dataToSign = padesService.getDataToSign(toSignDocument, signatureParameters);
             // 計算されたハッシュ値を使用して署名を生成
@@ -93,7 +91,7 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
                 signatureParameters, signatureValue);
             File tempFile = tempFileCreator.createTempFile(ReportsConstants.PDF_TEMP_FILE_PREFIX,
                 ReportsConstants.PDF_FILE_EXTENSION);
-            try (BufferedOutputStream bos = new BufferedOutputStream(
+            try (var bos = new BufferedOutputStream(
                 new FileOutputStream(tempFile))) {
                 signedDocument.writeTo(bos);
             }
@@ -103,15 +101,13 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         }
     }
 
-    /**
-     * PAdESSignatureParametersを作成する
-     *
-     * @param privateKey 署名に使用する秘密鍵
-     * @return PAdESSignatureParameters
-     */
+    /// PAdESSignatureParametersを作成する
+    ///
+    /// @param privateKey 署名に使用する秘密鍵
+    /// @return PAdESSignatureParameters
     private PAdESSignatureParameters createSignatureParameters(final DSSPrivateKeyEntry privateKey,
         final SignOptions options) {
-        PAdESSignatureParameters pAdESSignatureParameters = new PAdESSignatureParameters();
+        var pAdESSignatureParameters = new PAdESSignatureParameters();
         // 証明書の設定
         // 署名に使用する証明書を設定し、公開鍵情報から暗号化アルゴリズムを取得し設定
         pAdESSignatureParameters.setSigningCertificate(privateKey.getCertificate());
@@ -141,9 +137,9 @@ public class PKCS12PAdESReportSiginer implements ReportSigner {
         // 可視署名
         // https://github.com/esig/dss/blob/master/dss-cookbook/src/test/java/eu/europa/esig/dss/cookbook/example/sign/SignPdfPadesBVisibleTest.java
         if (options.isVisible()) {
-            SignatureImageParameters imageParameters = new SignatureImageParameters();
+            var imageParameters = new SignatureImageParameters();
             imageParameters.setImage(new FileDocument(options.getVisibleSignImagePath()));
-            SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
+            var fieldParameters = new SignatureFieldParameters();
             imageParameters.setFieldParameters(fieldParameters);
             fieldParameters.setPage(options.getVisibleSignPage());
             fieldParameters.setOriginX(options.getVisibleSignRect()[0]);

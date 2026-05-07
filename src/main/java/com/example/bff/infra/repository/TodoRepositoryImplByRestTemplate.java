@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * TodoRepositoryの実装 BackendサービスのREST APIを呼び出す
- */
+/// TodoRepositoryの実装 BackendサービスのREST APIを呼び出す
 //WebClient（WebFlux）版のTodoRepository実装を使用しているためコメントアウト
 //@Repository
 @RequiredArgsConstructor

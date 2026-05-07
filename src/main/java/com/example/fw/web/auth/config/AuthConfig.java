@@ -9,25 +9,19 @@ import com.example.fw.web.auth.SpringSecurityUserNameProvider;
 import com.example.fw.web.auth.UserIdLogMDCFilter;
 import com.example.fw.web.auth.UserNameProvider;
 
-/**
- * 認証関連の設定クラス
- */
+/// 認証関連の設定クラス
 @Configuration
 @ConditionalOnClass(name = "org.springframework.security.core.context.SecurityContextHolder")
 public class AuthConfig {
 
-    /**
-     * ログにユーザIDを出力するためのFilter登録
-     */
+    /// ログにユーザIDを出力するためのFilter登録
     @Bean
     @FilterRegistration
     UserIdLogMDCFilter userIdLogMDCFilter(UserNameProvider userNameProvider) {
         return new UserIdLogMDCFilter(userNameProvider);
     }
 
-    /**
-     * Spring Securityの認証情報からユーザ名を取得するUserNameProvider
-     */
+    /// Spring Securityの認証情報からユーザ名を取得するUserNameProvider
     @Bean
     UserNameProvider userNameProvider() {
         return new SpringSecurityUserNameProvider();

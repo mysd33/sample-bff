@@ -6,11 +6,7 @@ import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
-/**
- * 
- * ジョブ処理依頼の受理結果を返却するクラス
- *
- */
+/// ジョブ処理依頼の受理結果を返却するクラス
 public class AsyncResponse implements Serializable {
 
     @Schema(description = "受理結果")

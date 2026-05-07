@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 署名時のオプション設定を行うクラス
- */
+/// 署名時のオプション設定を行うクラス
 @Data
 @Builder
 @AllArgsConstructor

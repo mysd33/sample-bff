@@ -17,7 +17,7 @@ public class TraceableTransactionTokenRequestDataValueProcessor extends Transact
 
     @Override
     public Map<String, String> getExtraHiddenFields(HttpServletRequest request) {
-        Map<String, String> fields = super.getExtraHiddenFields(request);
+        var fields = super.getExtraHiddenFields(request);
         appLogger.debug("hiddenFields[{}]: {}", request.getRequestURI(),  fields);
         return fields;
     }

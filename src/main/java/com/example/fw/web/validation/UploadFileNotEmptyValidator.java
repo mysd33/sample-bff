@@ -6,10 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-/**
- * ファイルが空でないことを検証するためのValidatorの実装 
- *
- */
+/// ファイルが空でないことを検証するためのValidatorの実装
 public class UploadFileNotEmptyValidator implements ConstraintValidator<UploadFileNotEmpty, MultipartFile> {
 
     @Override

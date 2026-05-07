@@ -1,7 +1,9 @@
 package com.example.fw.web.token;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
-
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.transaction.annotation.Propagation;
@@ -12,19 +14,9 @@ import org.terasoluna.gfw.web.token.TokenStringGenerator;
 import org.terasoluna.gfw.web.token.transaction.TransactionToken;
 import org.terasoluna.gfw.web.token.transaction.TransactionTokenStore;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-/**
- * DB管理(MyBatis)によるTransactionT
- * 
- * import jakarta.servlet.http.HttpServletRequest; import
- * jakarta.servlet.http.HttpSession;
- * 
- * import org.springframework.beans.facokenStore実装クラス
- *
- */
+/// DB管理(MyBatis)によるTransactionTokenStore実装クラス
 public class MyBatisTransactionTokenStore implements TransactionTokenStore {
+
     private final int transactionTokenSizePerTokenName;
     private final TokenStringGenerator generator;
     private StoredTransactionTokenRepository tokenRepository;
@@ -42,14 +34,15 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
         this(transactionTokenSizePerTokenName, new TokenStringGenerator());
     }
 
-    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName, TokenStringGenerator generator) {
+    public MyBatisTransactionTokenStore(int transactionTokenSizePerTokenName,
+        TokenStringGenerator generator) {
         this.transactionTokenSizePerTokenName = transactionTokenSizePerTokenName;
         this.generator = generator;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String getAndClear(TransactionToken transactionToken) {
+    public @Nullable String getAndClear(TransactionToken transactionToken) {
         String name = transactionToken.getTokenName();
         String key = transactionToken.getTokenKey();
         String sessionId = getSession().getId();
@@ -81,14 +74,15 @@ public class MyBatisTransactionTokenStore implements TransactionTokenStore {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String createAndReserveTokenKey(String tokenName) {
         String sessionId = getSession().getId();
-        tokenRepository.deleteOlderThanLatest(tokenName, sessionId, transactionTokenSizePerTokenName - 1);
+        tokenRepository.deleteOlderThanLatest(tokenName, sessionId,
+            transactionTokenSizePerTokenName - 1);
         return generator.generate(UUID.randomUUID().toString());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void store(TransactionToken transactionToken) {
-        StoredTransactionToken token = new StoredTransactionToken();
+        var token = new StoredTransactionToken();
         token.setTokenName(transactionToken.getTokenName());
         token.setTokenKey(transactionToken.getTokenKey());
         token.setTokenValue(transactionToken.getTokenValue());

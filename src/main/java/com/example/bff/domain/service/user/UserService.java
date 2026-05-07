@@ -7,46 +7,28 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.bff.domain.model.User;
 
-/**
- * 
- * ユーザ管理機能のサービスインタフェース
- *
- */
+/// ユーザ管理機能のサービスインタフェース
 public interface UserService {
 
-    /**
-     * ユーザ登録
-     */
+    /// ユーザ登録
     boolean insert(User user);
 
-    /**
-     * ユーザ数取得
-     */
+    /// ユーザ数取得
     int count();
 
-    /**
-     * 全件取得
-     */
+    /// 全件取得
     List<User> findAll();
 
-    /**
-     * 全件取得（ページネーション）
-     */
+    /// 全件取得（ページネーション）
     Page<User> findAllForPagination(Pageable pageable);
 
-    /**
-     * １件取得
-     */
+    /// １件取得
     User findOne(String userId);
 
-    /**
-     * １件更新
-     */
+    /// １件更新
     void updateOne(User user);
 
-    /**
-     * １件削除
-     */
+    /// １件削除
     void deleteOne(String userId);
 
 }

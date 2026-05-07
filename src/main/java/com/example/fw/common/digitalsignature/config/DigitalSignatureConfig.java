@@ -3,7 +3,7 @@ package com.example.fw.common.digitalsignature.config;
 import com.example.fw.common.digitalsignature.ReportSigner;
 import com.example.fw.common.digitalsignature.basic.PKCS12BasicReportSigner;
 import com.example.fw.common.digitalsignature.pades.AWSKmsPAdESReportSigner;
-import com.example.fw.common.digitalsignature.pades.PKCS12PAdESReportSiginer;
+import com.example.fw.common.digitalsignature.pades.PKCS12PAdESReportSigner;
 import com.example.fw.common.file.TempFileCreator;
 import com.example.fw.common.keymanagement.KeyManager;
 import com.example.fw.common.keymanagement.config.KeyManagementConfigurationProperties;
@@ -13,9 +13,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * 電子署名に関する設定を定義するクラス
- */
+/// 電子署名に関する設定を定義するクラス
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties({DigitalSignatureConfigurationProperties.class,
@@ -28,9 +26,7 @@ public class DigitalSignatureConfig {
     private final DigitalSignatureConfigurationProperties digitalSignatureConfigurationProperties;
     private final KeyManagementConfigurationProperties keyManagementConfigurationProperties;
 
-    /**
-     * PKCS#12ファイルを使用し、通常のPDF署名を付与するReportSignerのBean定義
-     */
+    /// PKCS#12ファイルを使用し、通常のPDF署名を付与するReportSignerのBean定義
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "pkcs12-basic")
     ReportSigner reportSignerByPKCS12Basic() {
@@ -38,19 +34,15 @@ public class DigitalSignatureConfig {
             digitalSignatureConfigurationProperties);
     }
 
-    /**
-     * PKCS#12ファイルを使用し、PAdES形式でのPDF署名を付与するReportSignerのBean定義 （デフォルト）
-     */
+    /// PKCS#12ファイルを使用し、PAdES形式でのPDF署名を付与するReportSignerのBean定義 （デフォルト）
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "pkcs12-pades")
     ReportSigner reportSignerByPKCS12() {
-        return new PKCS12PAdESReportSiginer(tempFileCreator,
+        return new PKCS12PAdESReportSigner(tempFileCreator,
             digitalSignatureConfigurationProperties);
     }
 
-    /**
-     * AWS KMSによる署名鍵を使用し、PAdES形式でのPDF署名を付与するReportSignerのBean定義
-     */
+    /// AWS KMSによる署名鍵を使用し、PAdES形式でのPDF署名を付与するReportSignerのBean定義
     @Bean
     @ConditionalOnProperty(name = DIGITAL_SIGNATURE_TYPE, havingValue = "aws-kms-pades")
     ReportSigner reportSignerByKms(KeyManager keyManager) {

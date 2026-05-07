@@ -1,10 +1,8 @@
 package com.example.fw.common.reports;
 
-/**
- * 帳票関連の定数を定義するクラス<br>
- * <p>
- * このクラスは、帳票の一時保存ディレクトリやファイル名のプレフィックス、拡張子などの定数を定義します。
- */
+/// 帳票関連の定数を定義するクラス<br>
+///
+/// このクラスは、帳票の一時保存ディレクトリやファイル名のプレフィックス、拡張子などの定数を定義します。
 public final class ReportsConstants {
 
     private ReportsConstants() {
