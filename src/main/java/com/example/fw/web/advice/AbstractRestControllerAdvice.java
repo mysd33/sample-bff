@@ -87,7 +87,8 @@ public abstract class AbstractRestControllerAdvice extends ResponseEntityExcepti
             var fields = new ArrayList<InvalidFormatField>();
             InvalidFormatField.ErrorType errorType = getFieldErrorType(cause);
             cause.getPath().forEach(ref -> {
-                Class<?> fromClass = ref.from().getClass();
+                Object from = ref.from();
+                Class<?> fromClass = from instanceof Class<?> clazz ? clazz : from.getClass();
                 String jsonFieldName = ref.getPropertyName();
                 if (jsonFieldName == null) {
                     // フィールド名が取得できない場合はスキップ（例: refがjava.util.ArrayList[0]のような配列要素の場合）
