@@ -22,45 +22,48 @@
             #{role})
     </insert>
 
-    <!-- １件検索 -->
+    <!-- １件取得 -->
     <select id="findOne" resultType="User">
         SELECT
             user_id,
             password,
             user_name,
             birthday,
-            role
+            role,
+            version
         FROM
             m_user
         WHERE
             user_id = #{userId}
     </select>
 
-    <!-- 全件検索 -->
+    <!-- 全件取得 -->
     <select id="findAll" resultType="User">
         SELECT
             user_id,
             password,
             user_name,
             birthday,
-            role
+            role,
+            version
         FROM
             m_user
     </select>
-    
-    <!-- 全件検索（ページネーション用） -->
+
+    <!-- 全件取得（ページネーション用） -->
     <select id="findAllForPagination" resultType="User">
         SELECT
             user_id,
             password,
             user_name,
             birthday,
-            role
+            role,
+            version
         FROM
             m_user
         <choose>
             <when test="!sort.isEmpty()">
-                ORDER BY                
+                ORDER BY
                 <foreach item="order" collection="sort" separator=",">
                     ${order.property}
                     ${order.direction}
@@ -72,8 +75,8 @@
         OFFSET
             #{offset}
     </select>
-    
-    
+
+
     <!-- 件数取得 -->
     <select id="count" resultType="int">
         SELECT
@@ -82,19 +85,25 @@
             m_user
     </select>
 
-    <!-- １件更新 -->
+    <!-- １件更新（楽観的オフラインロック） -->
     <update id="updateOne" parameterType="User">
         UPDATE m_user
         SET
             password = #{password},
             user_name = #{userName},
             birthday = #{birthday},
-            role = #{role}
+            role = #{role},
+            version = version + 1
         WHERE user_id = #{userId}
+        AND
+            version = #{version}
     </update>
 
-    <!-- １件削除 -->
-    <delete id="deleteOne" parameterType="string">
-        DELETE FROM m_user WHERE user_id = #{userId}
+    <!-- １件削除（楽観的オフラインロック） -->
+    <delete id="deleteOne" parameterType="User">
+        DELETE FROM m_user
+        WHERE user_id = #{userId}
+        AND
+            version = #{version}
     </delete>
 </mapper>

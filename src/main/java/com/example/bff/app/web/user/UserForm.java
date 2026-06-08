@@ -1,34 +1,36 @@
 package com.example.bff.app.web.user;
 
-import java.util.Date;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.example.fw.common.validation.CharSet;
 import com.example.fw.common.validation.HalfWidthAlphabetNumberSymbol;
 import com.example.fw.common.validation.RangeLength;
-
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /// ユーザ登録画面・更新画面データクラス
 @Data
 public class UserForm {
+
     // 入力チェック順序を制御するためのインタフェース
-    @GroupSequence({ ValidGroup1.class, ValidGroup2.class, ValidGroup3.class })
-    public static interface GroupOrder {
+    @GroupSequence({ValidGroup1.class, ValidGroup2.class, ValidGroup3.class})
+    public interface GroupOrder {
+
     }
 
-    public static interface ValidGroup1 {
+    public interface ValidGroup1 {
+
     }
 
-    public static interface ValidGroup2 {
+    public interface ValidGroup2 {
+
     }
 
-    public static interface ValidGroup3 {
+    public interface ValidGroup3 {
+
     }
 
     @NotBlank(groups = ValidGroup1.class)
@@ -55,5 +57,7 @@ public class UserForm {
     private Date birthday; // 誕生日
 
     private boolean admin; // 管理者かどうか
+
+    private long version; // バージョン番号
 
 }

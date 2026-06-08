@@ -4,18 +4,20 @@ CREATE TABLE IF NOT EXISTS m_user (
     password VARCHAR(100),
     user_name VARCHAR(50),
     birthday DATE,
-    role VARCHAR(50)
+    role VARCHAR(50),
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 /* トランザクショントークン */
 CREATE TABLE IF NOT EXISTS transaction_token (
-    token_name varchar(256) not null,
-    token_key varchar(32) not null,
-    token_value varchar(32) not null,
-    session_id  varchar(256) not null,
+    token_name VARCHAR(256) not null,
+    token_key VARCHAR(32) not null,
+    token_value VARCHAR(32) not null,
+    session_id  VARCHAR(256) not null,
     sequence bigint,
-    constraint pk_transaction_token primary key (token_name, token_key, session_id)
-);
+    CONSTRAINT pk_transaction_token PRIMARY KEY(token_name, token_key, session_id)
+    );
+
 
 CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older on transaction_token(token_name, session_id);
 CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older_sequence on transaction_token(sequence);

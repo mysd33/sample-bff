@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -71,10 +72,9 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "user/regist";
         }
-        User user = userMapper.formToModel(form);
-
-        // ユーザー登録処理
+        var user = userMapper.formToModel(form);
         try {
+            // ユーザー登録処理
             var result = userService.insert(user);
             if (result) {
                 appLogger.debug("insert成功");
@@ -107,20 +107,18 @@ public class UserController {
     /// ユーザー詳細画面のGETメソッド用処理.
     @GetMapping("/userDetail/{id:.+}")
     public String getUserDetail(@ModelAttribute UserForm form, Model model,
-            @Nullable @PathVariable("id") String userId) {
+        @Nullable @PathVariable("id") String userId) {
 
         appLogger.debug("userId = " + userId);
         // ユーザーIDのチェック
         if (userId != null && !userId.isEmpty()) {
             // ユーザー情報を取得
-            User user = userService.findOne(userId);
-            UserForm newForm = userMapper.modelToForm(user);
-            newForm.setPassword("");
-            model.addAttribute("userForm", newForm);
+            getUserDetailAndPutIntoModel(userId, model);
         }
 
         return "user/userDetail";
     }
+
 
     /// ユーザー更新用処理.
     @PostMapping(value = "/userDetail", params = "update")
@@ -132,7 +130,7 @@ public class UserController {
             return "user/userDetail";
         }
 
-        User user = userMapper.formToModel(form);
+        var user = userMapper.formToModel(form);
         try {
             // 更新実行
             userService.updateOne(user);
@@ -140,7 +138,10 @@ public class UserController {
                 ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0006)
                     .args(new String[]{user.getUserId()}).build());
         } catch (BusinessException e) {
+            // エラーメッセージをモデルに格納
             model.addAttribute(e.getResultMessage());
+            // 再入力可能にするため、最新のバージョン番号のユーザー情報を取得しなおす
+            getUserDetailAndPutIntoModel(user.getUserId(), model);
             return "user/userDetail";
         }
 
@@ -153,14 +154,18 @@ public class UserController {
     public String postUserDetailDelete(@ModelAttribute UserForm form, Model model,
         RedirectAttributes attributes) {
         appLogger.debug("削除ボタンの処理");
-        // 削除実行
+        var user = userMapper.formToModel(form);
         try {
-            userService.deleteOne(form.getUserId());
+            // 削除実行
+            userService.deleteOne(user);
             attributes.addFlashAttribute(
                 ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0007)
                     .args(new String[]{form.getUserId()}).build());
         } catch (BusinessException e) {
+            // エラーメッセージをモデルに格納
             model.addAttribute(e.getResultMessage());
+            // 再入力可能にするため、最新のバージョン番号のユーザー情報を取得しなおす
+            getUserDetailAndPutIntoModel(user.getUserId(), model);
             return "user/userDetail";
         }
         // ユーザー一覧画面を表示
@@ -192,5 +197,13 @@ public class UserController {
         return ResponseUtil.createResponseForPDF(reportFile.getInputStream(),
             reportFile.getFileName(),
             reportFile.getFileSize());
+    }
+
+    /// ユーザー情報を取得し、Modelに格納する処理
+    private void getUserDetailAndPutIntoModel(@NonNull String userId, Model model) {
+        User user = userService.findOne(userId);
+        UserForm newForm = userMapper.modelToForm(user);
+        newForm.setPassword("");
+        model.addAttribute("userForm", newForm);
     }
 }

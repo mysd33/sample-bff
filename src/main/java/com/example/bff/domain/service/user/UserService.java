@@ -1,11 +1,9 @@
 package com.example.bff.domain.service.user;
 
+import com.example.bff.domain.model.User;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.example.bff.domain.model.User;
 
 /// ユーザ管理機能のサービスインタフェース
 public interface UserService {
@@ -29,6 +27,6 @@ public interface UserService {
     void updateOne(User user);
 
     /// １件削除
-    void deleteOne(String userId);
+    void deleteOne(User user);
 
 }
