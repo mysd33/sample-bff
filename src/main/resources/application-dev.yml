@@ -23,7 +23,10 @@ spring:
   h2:
     console:
       enabled: true
-# WebClient ログ詳細化
+  devtools:
+    livereload:
+      enabled: true
+  # WebClient ログ詳細化
   http:
     codecs:
       log-request-details: true
@@ -38,76 +41,76 @@ management:
       enabled: true
     java:
       enabled: true
-# Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
-#  cloudwatch:
-#    metrics:
-#      export:
-#        enabled: true
-      
-          
+        # Spring Cloud for AWS Micrometer CloudWatch Metrics Integration Enabled if local testing is required
+        #  cloudwatch:
+        #    metrics:
+        #      export:
+        #        enabled: true
+
+
 logging:
   level:
     org.springframework: INFO
     org.springframework.jdbc: INFO
-#    org.springframework.security: DEBUG
-#    org.thymeleaf: DEBUG
+    #    org.springframework.security: DEBUG
+    #    org.thymeleaf: DEBUG
     com.example: DEBUG
-# LogAspect 性能ログ出力
+    # LogAspect 性能ログ出力
     com.example.fw.web.aspect.LogAspect: TRACE
-# WebClient ログ詳細化    
+    # WebClient ログ詳細化
     org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 
 # 拡張フレームワークのプロパティ
 example:
-# Dynamic Routing DataSource
+  # Dynamic Routing DataSource
   datasource:
     read:
       url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      driver-class-name: org.h2.Driver 
+      driver-class-name: org.h2.Driver
       username: sa
       password:
     write:
       url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      driver-class-name: org.h2.Driver 
+      driver-class-name: org.h2.Driver
       username: sa
       password:
     dynamic-routing:
       enabled: true
   sqs:
-    sqslocal:    
+    sqslocal:
       port: 18001
   s3:
     localfake:
-#S3 Fake by local file system
+      #S3 Fake by local file system
       type: file
       base-dir: C:\tmp\objectstorage
-#S3 Fake by LocalStack
-#      type: localstack
-#      port: 4566
-#      access-key-id: dummy
-#      secret-access-key: dummy
-#    bucket: mysd33bucket123 
-#S3 Fake by s3rver
-#      type: s3rver
-#      port: 4568
-#    bucket: mysd33bucket123
-#S3 Fake by MinIO
-#      type: minio
-#      port: 9000
-#      access-key-id: minioadmin
-#      secret-access-key: minioadmin
-#    bucket: mysd33bucket123
+  #S3 Fake by LocalStack
+  #      type: localstack
+  #      port: 4566
+  #      access-key-id: dummy
+  #      secret-access-key: dummy
+  #    bucket: mysd33bucket123
+  #S3 Fake by s3rver
+  #      type: s3rver
+  #      port: 4568
+  #    bucket: mysd33bucket123
+  #S3 Fake by MinIO
+  #      type: minio
+  #      port: 9000
+  #      access-key-id: minioadmin
+  #      secret-access-key: minioadmin
+  #    bucket: mysd33bucket123
 
-# 業務APのプロパティ
-# Spring Security Debug Mode
-#  security:
-#    debug: true
+  # 業務APのプロパティ
+  # Spring Security Debug Mode
+  #  security:
+  #    debug: true
   api:
     backend:
       url: http://localhost:8000
     retry:
       max-attempts: 3
       min-backoff: 200
-    
+
   async:
     queue: SampleQueue
