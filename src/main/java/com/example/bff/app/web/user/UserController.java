@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -113,7 +112,10 @@ public class UserController {
         // ユーザーIDのチェック
         if (userId != null && !userId.isEmpty()) {
             // ユーザー情報を取得
-            getUserDetailAndPutIntoModel(userId, model);
+            User user = userService.findOne(userId);
+            UserForm newForm = userMapper.modelToForm(user);
+            newForm.setPassword("");
+            model.addAttribute("userForm", newForm);
         }
 
         return "user/userDetail";
@@ -138,11 +140,10 @@ public class UserController {
                 ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0006)
                     .args(new String[]{user.getUserId()}).build());
         } catch (BusinessException e) {
-            // エラーメッセージをモデルに格納
-            model.addAttribute(e.getResultMessage());
-            // 再入力可能にするため、最新のバージョン番号のユーザー情報を取得しなおす
-            getUserDetailAndPutIntoModel(user.getUserId(), model);
-            return "user/userDetail";
+            // エラーメッセージをフラッシュスコープに格納
+            attributes.addFlashAttribute(e.getResultMessage());
+            // 入力画面へリダイレクト
+            return "redirect:/userDetail/" + user.getUserId();
         }
 
         // ユーザー一覧画面を表示
@@ -162,11 +163,10 @@ public class UserController {
                 ResultMessage.builder().type(ResultMessageType.INFO).code(MessageIds.I_EX_0007)
                     .args(new String[]{form.getUserId()}).build());
         } catch (BusinessException e) {
-            // エラーメッセージをモデルに格納
-            model.addAttribute(e.getResultMessage());
-            // 再入力可能にするため、最新のバージョン番号のユーザー情報を取得しなおす
-            getUserDetailAndPutIntoModel(user.getUserId(), model);
-            return "user/userDetail";
+            // エラーメッセージをフラッシュスコープに格納
+            attributes.addFlashAttribute(e.getResultMessage());
+            // 入力画面へリダイレクト
+            return "redirect:/userDetail/" + user.getUserId();
         }
         // ユーザー一覧画面を表示
         return "redirect:/userList";
@@ -197,13 +197,5 @@ public class UserController {
         return ResponseUtil.createResponseForPDF(reportFile.getInputStream(),
             reportFile.getFileName(),
             reportFile.getFileSize());
-    }
-
-    /// ユーザー情報を取得し、Modelに格納する処理
-    private void getUserDetailAndPutIntoModel(@NonNull String userId, Model model) {
-        User user = userService.findOne(userId);
-        UserForm newForm = userMapper.modelToForm(user);
-        newForm.setPassword("");
-        model.addAttribute("userForm", newForm);
     }
 }
