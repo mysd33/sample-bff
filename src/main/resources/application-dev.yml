@@ -30,6 +30,12 @@ spring:
   http:
     codecs:
       log-request-details: true
+# Spring docs enabled  for local development
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
 # Spring Boot Actuator
 management:
   endpoints:
