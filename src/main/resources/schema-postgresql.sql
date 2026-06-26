@@ -1,30 +1,28 @@
 /* ユーザーマスタ */
 CREATE TABLE IF NOT EXISTS m_user (
     user_id VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(100),
-    user_name VARCHAR(50),
-    birthday DATE,
-    role VARCHAR(50),
+    password VARCHAR(100) NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
+    birthday DATE NOT NULL,
+    role VARCHAR(50) NOT NULL,
     version BIGINT NOT NULL DEFAULT 0
 );
 
 /* トランザクショントークン */
 CREATE TABLE IF NOT EXISTS transaction_token (
-    token_name VARCHAR(256) not null,
-    token_key VARCHAR(32) not null,
-    token_value VARCHAR(32) not null,
-    session_id  VARCHAR(256) not null,
-    sequence bigint,
+    token_name VARCHAR(256) NOT NULL,
+    token_key VARCHAR(32) NOT NULL,
+    token_value VARCHAR(32) NOT NULL,
+    session_id  VARCHAR(256) NOT NULL,
+    sequence BIGINT,
     CONSTRAINT pk_transaction_token PRIMARY KEY(token_name, token_key, session_id)
-    );
+);
 
-
-CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older on transaction_token(token_name, session_id);
-CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older_sequence on transaction_token(sequence);
-CREATE INDEX IF NOT EXISTS transaction_token_index_clean on transaction_token(session_id);
+CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older ON transaction_token(token_name, session_id);
+CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older_sequence ON transaction_token(sequence);
+CREATE INDEX IF NOT EXISTS transaction_token_index_clean ON transaction_token(session_id);
 
 CREATE SEQUENCE IF NOT EXISTS transaction_token_sequence;
-
 
 /* ユーザーの一時テーブル */
 CREATE TABLE IF NOT EXISTS m_user_temp (

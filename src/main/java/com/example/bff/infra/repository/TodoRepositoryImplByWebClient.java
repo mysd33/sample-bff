@@ -3,14 +3,13 @@ package com.example.bff.infra.repository;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
-
+import org.springframework.web.util.UriComponentsBuilder;
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.model.TodoList;
@@ -18,7 +17,6 @@ import com.example.bff.domain.repository.TodoRepository;
 import com.example.bff.infra.common.httpclient.CircuitBreakerErrorFallback;
 import com.example.bff.infra.common.httpclient.WebClientResponseErrorHandler;
 import com.example.fw.common.exception.BusinessException;
-
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -59,8 +57,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
         var todoMono = webClient.get().uri(urlTodoById, todoId)//
                 .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        responseErrorHandler::createServerErrorException) //
                 .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
                 .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
@@ -73,18 +73,23 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     }
 
     @Override
-    public Collection<Todo> findAll() {
-        var todoListMono = webClient.get().uri(urlTodos)//
+    public Collection<Todo> findAllByUserId(String userId) {
+        var uri =
+                UriComponentsBuilder.fromUriString(urlTodos).queryParam("user_id", userId).build();
+        var todoListMono = webClient.get().uri(uri.toUri())//
                 .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        responseErrorHandler::createServerErrorException) //
                 .bodyToMono(TodoList.class)//
                 // エクスポネンシャルバックオフによるリトライ
                 .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
                         .filter(th -> !(th instanceof BusinessException)))
                 // サーキットブレーカによる処理
                 // Fallback時にエラーとせずに空のリストを例
-                .transform(it -> cbFactory.create("todo_findAll").run(it, _ -> Mono.just(new TodoList())));
+                .transform(it -> cbFactory.create("todo_findAll").run(it,
+                        _ -> Mono.just(new TodoList())));
         return todoListMono.block();
     }
 
@@ -93,8 +98,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
         webClient.post().uri(urlTodos)//
                 .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
                 .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        responseErrorHandler::createServerErrorException) //
                 .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
                 .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
@@ -109,8 +116,10 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     public boolean update(Todo todo) {
         webClient.put().uri(urlTodoById, todo.getTodoId())//
                 .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        responseErrorHandler::createServerErrorException) //
                 .bodyToMono(Todo.class)//
                 // エクスポネンシャルバックオフによるリトライ
                 .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
@@ -123,11 +132,13 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     }
 
     @Override
-    public void delete(Todo todo) {
+    public boolean delete(Todo todo) {
         webClient.delete().uri(urlTodoById, todo.getTodoId())//
                 .retrieve()//
-                .onStatus(HttpStatusCode::is4xxClientError, responseErrorHandler::createClientErrorException)//
-                .onStatus(HttpStatusCode::is5xxServerError, responseErrorHandler::createServerErrorException) //
+                .onStatus(HttpStatusCode::is4xxClientError,
+                        responseErrorHandler::createClientErrorException)//
+                .onStatus(HttpStatusCode::is5xxServerError,
+                        responseErrorHandler::createServerErrorException) //
                 .bodyToMono(Void.class)//
                 // エクスポネンシャルバックオフによるリトライ
                 .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
@@ -136,5 +147,6 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
                 .transform(it -> cbFactory.create("todo_delete").run(it,
                         CircuitBreakerErrorFallback.returnMonoBusinessException()))
                 .block();
+        return true;
     }
 }
