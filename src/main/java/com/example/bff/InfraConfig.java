@@ -24,7 +24,7 @@ import org.springframework.jms.core.JmsTemplate;
 /// インフラストラクチャ層の設定クラス
 @Configuration
 // RESTクライアント機能、オブジェクトストレージアクセス機能、非同期処理依頼機能の設定、
-// 帳票出力機能の設定、ロギング拡張機能の設定、RDBアクセスの動的ルーティングデータソース設定、ファイルアクセス機能
+// 帳票出力機能の設定、ロギング拡張機能の設定、RDBアクセスの動的データソースルーティング設定、ファイルアクセス機能
 // メトリックス転送機能の設定を追加
 @ComponentScan(basePackageClasses = {WebClientConfigPackage.class, S3ConfigPackage.class,
     SQSCommonConfigPackage.class, ReportsConfigPackage.class, LoggingConfigPackage.class,
