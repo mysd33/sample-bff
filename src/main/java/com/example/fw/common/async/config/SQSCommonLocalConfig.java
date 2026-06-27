@@ -1,18 +1,16 @@
 package com.example.fw.common.async.config;
 
+import com.amazonaws.xray.interceptors.TracingInterceptor;
 import java.net.URI;
-
+import java.time.Duration;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import com.amazonaws.xray.interceptors.TracingInterceptor;
-
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.core.retry.RetryMode;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -21,8 +19,9 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @Profile("dev")
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties({ SQSCommonConfigurationProperties.class })
+@EnableConfigurationProperties({SQSCommonConfigurationProperties.class})
 public class SQSCommonLocalConfig {
+
     private static final String HTTP_LOCALHOST = "http://localhost:";
 
     private final SQSCommonConfigurationProperties sqsCommonConfigurationProperties;
@@ -35,11 +34,18 @@ public class SQSCommonLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()//
-                .httpClientBuilder(ApacheHttpClient.builder())//
-                .region(region)//
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
-                .build();
+            //　標準リトライ戦略
+            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD))
+            .httpClientBuilder(ApacheHttpClient.builder()
+                .maxConnections(sqsCommonConfigurationProperties.getMaxConnections())
+                .connectionTimeout(
+                    Duration.ofMillis(sqsCommonConfigurationProperties.getConnectionTimeout()))
+            )//
+            .region(region)//
+            .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+            .endpointOverride(URI.create(
+                HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
+            .build();
     }
 
     /// ElastiqMQ(SQSLocal)起動する場合のSQSClientの定義(X-Ray SDK)<br>
@@ -53,14 +59,21 @@ public class SQSCommonLocalConfig {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create("dummy", "dummy");
         Region region = Region.of(sqsCommonConfigurationProperties.getRegion());
         return SqsClient.builder()
+            //　標準リトライ戦略
+            .overrideConfiguration(o -> o.retryStrategy(RetryMode.STANDARD)
                 // 個別にSQSへのAWS SDKの呼び出しをトレーシングできるように設定
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder().addExecutionInterceptor(new TracingInterceptor()).build())
-                .httpClientBuilder(ApacheHttpClient.builder())//
-                .region(region)//
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
-                .build();
+                .addExecutionInterceptor(new TracingInterceptor())
+            )
+            .httpClientBuilder(ApacheHttpClient.builder()
+                .maxConnections(sqsCommonConfigurationProperties.getMaxConnections())
+                .connectionTimeout(
+                    Duration.ofMillis(sqsCommonConfigurationProperties.getConnectionTimeout()))
+            )//
+            .region(region)//
+            .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+            .endpointOverride(URI.create(
+                HTTP_LOCALHOST + sqsCommonConfigurationProperties.getSqslocal().getPort()))
+            .build();
     }
 
 }

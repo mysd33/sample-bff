@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS m_user (
     version BIGINT NOT NULL DEFAULT 0
 );
 
+/* ユーザーの一時テーブル */
+CREATE TABLE IF NOT EXISTS m_user_temp (
+    user_id VARCHAR(50) PRIMARY KEY,
+    user_name VARCHAR(100),
+    age INT
+    );
+
 /* トランザクショントークン */
 CREATE TABLE IF NOT EXISTS transaction_token (
     token_name VARCHAR(256) NOT NULL,
@@ -23,10 +30,3 @@ CREATE INDEX IF NOT EXISTS transaction_token_index_delete_older_sequence ON tran
 CREATE INDEX IF NOT EXISTS transaction_token_index_clean ON transaction_token(session_id);
 
 CREATE SEQUENCE IF NOT EXISTS transaction_token_sequence;
-
-/* ユーザーの一時テーブル */
-CREATE TABLE IF NOT EXISTS m_user_temp (
-    user_id VARCHAR(50) PRIMARY KEY,
-    user_name VARCHAR(100),
-    age INT
-);

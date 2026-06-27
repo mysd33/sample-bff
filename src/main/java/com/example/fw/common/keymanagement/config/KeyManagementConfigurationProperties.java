@@ -1,10 +1,8 @@
 package com.example.fw.common.keymanagement.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import com.example.fw.common.constants.FrameworkConstants;
-
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import software.amazon.awssdk.services.kms.model.KeySpec;
 import software.amazon.awssdk.services.kms.model.KeyUsageType;
 import software.amazon.awssdk.services.kms.model.SigningAlgorithmSpec;
@@ -13,6 +11,7 @@ import software.amazon.awssdk.services.kms.model.SigningAlgorithmSpec;
 @Data
 @ConfigurationProperties(prefix = KeyManagementConfigurationProperties.PROPERTY_PREFIX)
 public class KeyManagementConfigurationProperties {
+
     // 鍵管理機能のプロパティのプレフィックス
     static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "keymanagement";
     // 暗号化アルゴリズム。java.securityのKeyFactoryで指定するアルゴリズム（デフォルト: EC = 楕円曲線暗号）
@@ -44,6 +43,7 @@ public class KeyManagementConfigurationProperties {
     /// AWS KMS固有の設定を保持する内部クラス
     @Data
     public static class AWSKmsProperties {
+
         // KMSのリージョン
         private String region = "ap-northeast-1";
         // APでKMSのキーを新規作成する場合のキー仕様（デフォルト：ECC_NIST_P256）
@@ -61,6 +61,12 @@ public class KeyManagementConfigurationProperties {
         private int pendingDeleteWindowInDays = 7;
         // マルチリージョンキーにするかどうかのフラグ
         private boolean multiRegion = true;
+        // HTTPコネクションプールの最大接続数（AWS SDKのデフォルト値50）
+        // https://github.com/aws/aws-sdk-java-v2/blob/master/http-client-spi/src/main/java/software/amazon/awssdk/http/SdkHttpConfigurationOption.java#L151
+        private int maxConnections = 50;
+        // HTTPコネクション確立時のタイムアウト（ミリ秒。AWS SDKのデフォルト値2秒 = 2000ミリ秒）
+        // https://github.com/aws/aws-sdk-java-v2/blob/master/http-client-spi/src/main/java/software/amazon/awssdk/http/SdkHttpConfigurationOption.java#L142
+        private int connectionTimeout = 2000;
     }
 
 }

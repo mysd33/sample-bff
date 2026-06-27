@@ -267,7 +267,7 @@
             <artifactId>amazon-sqs-java-messaging-lib</artifactId>
             <version>${amazon-sqs-java-messaging-lib.version}</version>
         </dependency>
-        <!-- AWS SDK Http Client -->
+        <!-- AWS SDK Http Client (for Sync) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>apache-client</artifactId>
@@ -277,6 +277,11 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- AWS SDK Http Client (for Async) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
         </dependency>
         <!-- AWS SDK SQS -->
         <dependency>
@@ -317,7 +322,7 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
         </dependency>
-        <!-- Jaspter Reports -->
+        <!-- Jasper Reports -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
