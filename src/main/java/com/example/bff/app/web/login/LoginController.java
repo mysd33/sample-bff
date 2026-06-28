@@ -1,7 +1,7 @@
 package com.example.bff.app.web.login;
 
+import com.example.bff.app.web.common.authentication.AuthenticationUtil;
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,15 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.bff.app.web.common.authentication.AuthenticationUtil;
-
 /// ログイン機能のコントローラクラス
 @Controller
 public class LoginController {
 
     @ModelAttribute
     public LoginForm setUpForm() {
-        return new LoginForm();        
+        return new LoginForm();
     }
 
     /// ログイン画面のGETメソッド用処理
@@ -31,6 +29,14 @@ public class LoginController {
         }
         // ログイン画面へ遷移
         return "login/login";
+    }
+
+
+    /// 外部IDプロバイダのログイン画面のページ遷移処理
+
+    @GetMapping("/login/oidc")
+    public String getOIDCHome() {
+        return "login/oidc-login";
     }
 
     /// ログイン処理

@@ -3,6 +3,9 @@ package com.example.bff;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
+import com.example.fw.web.auth.config.AuthConfigPackage;
+import io.micrometer.observation.ObservationPredicate;
+import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationRegistryCustomizer;
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
@@ -22,14 +25,9 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.fw.web.auth.config.AuthConfigPackage;
-
-import io.micrometer.observation.ObservationPredicate;
-import io.micrometer.observation.ObservationRegistry;
-
 /// SpringSecurityの設定クラス
 @Configuration
-@ComponentScan(basePackageClasses = { AuthConfigPackage.class })
+@ComponentScan(basePackageClasses = {AuthConfigPackage.class})
 @EnableWebSecurity
 public class SecurityConfig {
     // Spring Security5.7より大幅に設定方法が変更された
@@ -57,26 +55,36 @@ public class SecurityConfig {
                 .passwordParameter("password") // ログインページのパスワード
                 .defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
                 .permitAll())
-                // ログアウト処理
-                .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
-                        .logoutSuccessUrl("/")) // ログアウト成功後のURL
-                // 認可設定
-                .authorizeHttpRequests(
-                        authz -> authz.requestMatchers(toStaticResources().atCommonLocations()).permitAll() // 静的リソースへアクセス許可
-                                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll() // Spring Boot
-                                                                                              // Actuatorのエンドポイントへアクセス許可
-                                .requestMatchers("/login").permitAll() // ログインページへ認証なしでアクセス許可
-                                .requestMatchers("/v3/api-docs/**").permitAll() // Springdoc-openapiのドキュメント認証なしでアクセス許可
-                                .requestMatchers("/v3/api-docs*").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                                .requestMatchers("/swagger-ui/**").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                                .requestMatchers("/swagger-ui.html").permitAll() // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                                .requestMatchers("/api/**").permitAll()// REST APIへアクセス許可
-                                .requestMatchers("/admin").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
-                                .requestMatchers("/user*").hasAuthority("ROLE_ADMIN") // ユーザ管理画面は管理者ユーザのみ許可
-                                .anyRequest().authenticated() // それ以外は認証が必要
-                )
-                // REST APIはCSRF保護不要
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+            // ログアウト処理
+            .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
+                .logoutSuccessUrl("/")) // ログアウト成功後のURL
+            // 認可設定
+            .authorizeHttpRequests(
+                authz -> authz //
+                    // 静的リソースへアクセス許可
+                    .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
+                    // Spring Boot Actuatorのエンドポイントへアクセス許可
+                    .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
+                    // ログインページへ認証なしでアクセス許可
+                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/login/**").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .requestMatchers("/v3/api-docs*").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/swagger-ui.html").permitAll()
+                    // ユーザ管理画面は管理者ユーザのみ許可
+                    .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                    // ユーザ管理画面は管理者ユーザのみ許可
+                    .requestMatchers("/user*").hasAuthority("ROLE_ADMIN")
+                    // REST APIへ認証なしでアクセス許可（サンプルAPでの暫定）
+                    .requestMatchers("/api/**").permitAll()
+                    .anyRequest().authenticated() // それ以外は認証が必要
+            )
+            // REST APIはCSRF保護不要（サンプルAPでの暫定）
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
 
@@ -87,13 +95,13 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChainForH2Console(HttpSecurity http) {
         // H2 ConsoleのURLに対して
         http.securityMatcher(toH2Console())//
-                .authorizeHttpRequests(
-                        // 認証不要でアクセス許可
-                        authz -> authz.anyRequest().permitAll())
-                // CSRF保護不要
-                .csrf(AbstractHttpConfigurer::disable)
-                // H2 Consoleの表示ではframeタグを使用しているのでX-FrameOptionsを無効化
-                .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable());
+            .authorizeHttpRequests(
+                // 認証不要でアクセス許可
+                authz -> authz.anyRequest().permitAll())
+            // CSRF保護不要
+            .csrf(AbstractHttpConfigurer::disable)
+            // H2 Consoleの表示ではframeタグを使用しているのでX-FrameOptionsを無効化
+            .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable());
         return http.build();
     }
 
@@ -102,7 +110,8 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         // この例では、以前のサンプルAPのパスワードデータの互換性のため、接頭辞に{id}が付与されてない場合はBCryptを使用するよう設定
-        ((DelegatingPasswordEncoder) passwordEncoder).setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
+        ((DelegatingPasswordEncoder) passwordEncoder).setDefaultPasswordEncoderForMatches(
+            new BCryptPasswordEncoder());
         return passwordEncoder;
     }
 
