@@ -1,9 +1,7 @@
 package com.example.bff.app.web.login;
 
 import com.example.bff.app.web.common.authentication.AuthenticationUtil;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +19,7 @@ public class LoginController {
 
     /// ログイン画面のGETメソッド用処理
     @GetMapping("/login")
-    public String getLogin(Model model, HttpSession session) {
+    public String getLogin() {
         // ログイン済みの場合
         if (AuthenticationUtil.isAuthenticated()) {
             // メニュー画面へ遷移
@@ -41,7 +39,7 @@ public class LoginController {
 
     /// ログイン処理
     @PostMapping("/login")
-    public String postLogin(@Validated LoginForm form, BindingResult result, HttpSession session) {
+    public String postLogin(@Validated LoginForm form, BindingResult result) {
         // 入力チェックエラー時
         if (result.hasErrors()) {
             return "login/login";
@@ -52,13 +50,13 @@ public class LoginController {
 
     /// ログイン成功後のメニュー画面遷移処理
     @GetMapping("/menu")
-    public String menu(Model model) {
+    public String menu() {
         return "menu/menu";
     }
 
     /// 管理者用ユーザ管理ページ遷移用処理
     @GetMapping("/admin")
-    public String admin(Model model) {
+    public String admin() {
         return "redirect:/userList";
     }
 
