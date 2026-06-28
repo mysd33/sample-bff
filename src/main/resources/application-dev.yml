@@ -30,6 +30,18 @@ spring:
   http:
     codecs:
       log-request-details: true
+
+# Spring Security OAuth2 Client
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
 # Spring docs enabled  for local development
 springdoc:
   swagger-ui:
@@ -52,13 +64,17 @@ management:
         #    metrics:
         #      export:
         #        enabled: true
-
+#  endpoint:
+#    env:
+#      show-values: always
 
 logging:
   level:
     org.springframework: INFO
     org.springframework.jdbc: INFO
-    #    org.springframework.security: DEBUG
+#    org.springframework.security: TRACE
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.web.client: TRACE
     #    org.thymeleaf: DEBUG
     com.example: DEBUG
     # LogAspect 性能ログ出力
@@ -120,3 +136,7 @@ example:
 
   async:
     queue: SampleQueue
+
+  # OIDC認証の有効化
+  oidc:
+    enabled: true

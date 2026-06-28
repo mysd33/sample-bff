@@ -37,6 +37,7 @@
 | 画面名 | 説明 | 画面イメージ |
 | ---- | ---- | ---- |
 | ログイン画面 | トップページの画面で、ユーザがログインするための画面。 | [画面](img/screen/screen1.png) |
+| ログイン画面(ODIC) | 外部のIDプロバイダを使用しユーザがログインするための画面。 | [画面](img/screen/screen8.png) |
 | メニュー画面 | メニュー画面。ログインユーザのロールによって管理者メニューの表示有無が切り替わる。 |  [画面](img/screen/screen2.png) |
 | Todo管理画面 | Todoリストの一覧表示、登録、完了、削除といった操作を実施できる画面。 | [画面](img/screen/screen3.png) |
 | Todo一括登録画面 | Todoリストを記載したCSVファイルをアップロードし、非同期でTodoリストを登録できる画面。 | [画面](img/screen/screen4.png) |
@@ -67,12 +68,14 @@
         ``` 
 * ローカル実行の場合、8080ポートで起動するので、ブラウザで、以下にアクセスするとログイン画面に遷移する。
     * http://localhost:8080/
-* ログイン画面が表示されたら、例えば以下のユーザ情報を入力する。
+* ログイン画面が表示されたら、Form認証の場合は、例えば、以下のユーザ情報を入力する。
+    * OIDCによるログインの場合は、[OIDC認証・認可](#oidc認証認可)を参照のこと。
 
     | ユーザID | パスワード | ロール |
     | ---- | ---- | ---- |
     | yamada@xxx.co.jp | password | 管理者 |
     | tamura@xxx.co.jp | password | 一般ユーザ |
+
 * ログイン後、メニューが表示される。
     * 「Todo管理」ボタンを押下するとTodo管理、Todo一括登録の画面を表示する。
     * 「管理者」ロールでログインしている場合のみ「ユーザ管理」ボタンが表示され、ボタンを押下すると、ユーザ管理画面を表示する。
@@ -145,6 +148,55 @@
     * http://localhost:8000/swagger-ui.html
         * html形式（Swagger-UI）のドキュメント  
 
+## OIDC認証・認可
+> [!WARNING]
+> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring Bootに対応しつつ、ただいま実装中。  
+> 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
+
+* Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
+
+![OIDC認証・認可の画面](img/screen/screen8.png)
+
+### Keycloak
+* 対応中
+* KeyCloakの起動
+    * TODO
+* クライアントIDとクライアントシークレットを環境変数に設定する
+    * TODO
+
+### Github
+* [参考: Spring Security OAuth 2.0 Login Sample - Login with Github](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#github-login)
+
+* GitHubアカウントを作成
+* GitHubのOAuth Appを作成
+    * GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)で、「New OAuth App」をクリックして、アプリを追加する。
+        * Application name:任意の文字列 
+            * 例: `demo`
+        * Home Page URL: `http://localhost:8080/`
+        * Authorization callback URL: `http://localhost:8080/login/oauth2/code/github`
+
+* クライアントシークレットを生成
+    * Client secretsの「Generate a new client secret」をクリックして、クライアントシークレットを生成する。
+
+* クライアントIDとクライアントシークレットを環境変数に設定する
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+        * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
+        * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
+
+### Google
+* [参考: Spring Security OAuth 2.0 Login Sample - Login with Google](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#google-login)
+
+* Googleアカウントを作成
+* [Google API Console](https://console.developers.google.com/)で、「OAuth同意画面」を作成。
+* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
+    * アプリケーションの種類: ウェブアプリケーション
+    * 名前:任意の文字列
+    * 承認済みのリダイレクトURI: http://localhost:8080/login/oauth2/code/google
+
+* クライアントIDとクライアントシークレットを環境変数に設定する
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+        * 環境変数`GOOGLE_CLIENT_ID`client-idに生成されたクライアントIDを設定
+        * 環境変数`GOOGLE_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
 ## （メモ）logback-access対応によるTomcatアクセスログ
 * Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
@@ -195,6 +247,9 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
         }
         ```
+
+> [!NOTE]
+> 以降の手順が、最新化できていないので、今後見直し予定。
 
 ## Redisのローカル起動
 * MavenのデフォルトのProfile設定では、Spring Session Data Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。

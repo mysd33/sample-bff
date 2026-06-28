@@ -7,6 +7,7 @@ import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationRegistryCustomizer;
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +45,62 @@ public class SecurityConfig {
         return web -> web.debug(webSecurityDebug);
     }
 
-    /// Spring Securityによる認証認可設定
+    /// Spring SecurityによるOIDC併用の認証認可設定
     @Bean
+    @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "true")
+    SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http) {
+        http
+            // フォーム認証にによるログイン処理
+            .formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
+                .loginPage("/login") // ログインページの指定
+                .failureUrl("/login?error") // ログイン失敗時の遷移先
+                .usernameParameter("userId") // ログインページのユーザーID
+                .passwordParameter("password") // ログインページのパスワード
+                .defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
+                .permitAll())
+            // ログアウト処理
+            .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
+                .logoutSuccessUrl("/")) // ログアウト成功後のURL
+            // OIDC/OAuth2認証にによるログイン処理
+            .oauth2Login(login -> login.loginPage("/oidc-login")
+                // ログインのページ
+                .defaultSuccessUrl("/oidc-menu", true)
+            )
+            // TODO: 設定の追加
+            // 認可設定
+            .authorizeHttpRequests(
+                authz -> authz //
+                    // 静的リソースへアクセス許可
+                    .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
+                    // Spring Boot Actuatorのエンドポイントへアクセス許可
+                    .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
+                    // ログインページへ認証なしでアクセス許可
+                    .requestMatchers("/login").permitAll()
+                    .requestMatchers("/login/**").permitAll()
+                    .requestMatchers("/oidc-login").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .requestMatchers("/v3/api-docs*").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                    .requestMatchers("/swagger-ui.html").permitAll()
+                    // ユーザ管理画面は管理者ユーザのみ許可
+                    .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                    // ユーザ管理画面は管理者ユーザのみ許可
+                    .requestMatchers("/user*").hasAuthority("ROLE_ADMIN")
+                    // REST APIへ認証なしでアクセス許可（サンプルAPでの暫定）
+                    .requestMatchers("/api/**").permitAll()
+                    .anyRequest().authenticated() // それ以外は認証が必要
+            )
+            // REST APIはCSRF保護不要（サンプルAPでの暫定）
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+        return http.build();
+    }
+
+    /// Spring SecurityによるForm認証のみの認証認可設定
+    @Bean
+    @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
         // フォーム認証にによるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
@@ -67,7 +122,6 @@ public class SecurityConfig {
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                     // ログインページへ認証なしでアクセス許可
                     .requestMatchers("/login").permitAll()
-                    .requestMatchers("/login/**").permitAll()
                     // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
                     .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers("/v3/api-docs*").permitAll()

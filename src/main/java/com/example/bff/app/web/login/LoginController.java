@@ -1,6 +1,13 @@
 package com.example.bff.app.web.login;
 
 import com.example.bff.app.web.common.authentication.AuthenticationUtil;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 /// ログイン機能のコントローラクラス
 @Controller
+@Slf4j
 public class LoginController {
+
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     @ModelAttribute
     public LoginForm setUpForm() {
@@ -27,14 +37,6 @@ public class LoginController {
         }
         // ログイン画面へ遷移
         return "login/login";
-    }
-
-
-    /// 外部IDプロバイダのログイン画面のページ遷移処理
-
-    @GetMapping("/login/oidc")
-    public String getOIDCHome() {
-        return "login/oidc-login";
     }
 
     /// ログイン処理
@@ -58,6 +60,24 @@ public class LoginController {
     @GetMapping("/admin")
     public String admin() {
         return "redirect:/userList";
+    }
+
+
+    /// 外部IDプロバイダのログイン画面のページ遷移処理
+    @GetMapping("/oidc-login")
+    public String getOIDCLogin() {
+        return "login/oidc-login";
+    }
+
+    /// OIDCでのログイン成功後の外部IDプロバイダのメニュー画面のページ遷移処理
+    @GetMapping("/oidc-menu")
+    public String getOIDCMenu(
+        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
+        @AuthenticationPrincipal OAuth2User oidcUser) {
+        appLogger.debug("username: {}", oidcUser.getName());
+        appLogger.debug("userAttributes: {}", oidcUser.getAttributes());
+        appLogger.debug("clientName: {}", authorizedClient.getClientRegistration().getClientName());
+        return "menu/dummy-menu";
     }
 
 }
