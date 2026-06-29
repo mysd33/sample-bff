@@ -77,7 +77,7 @@ public class LoginController {
         appLogger.debug("username: {}", oidcUser.getName());
         appLogger.debug("userAttributes: {}", oidcUser.getAttributes());
         appLogger.debug("clientName: {}", authorizedClient.getClientRegistration().getClientName());
-        return "menu/dummy-menu";
+        return "menu/menu";
     }
 
 }

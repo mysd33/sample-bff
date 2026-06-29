@@ -3,9 +3,11 @@ package com.example.bff;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
+import com.example.bff.domain.service.login.OidcLoginUserService;
 import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationRegistryCustomizer;
@@ -30,6 +32,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @ComponentScan(basePackageClasses = {AuthConfigPackage.class})
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     // Spring Security5.7より大幅に設定方法が変更された
     // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
@@ -38,6 +41,8 @@ public class SecurityConfig {
     // Spring Securityのデバッグモード
     @Value("${example.security.debug:false}")
     boolean webSecurityDebug;
+
+    private final OidcLoginUserService oidcLoginUserService;
 
     /// Spring Securityのデバッグモードの設定
     @Bean
@@ -64,9 +69,9 @@ public class SecurityConfig {
             // OIDC/OAuth2認証にによるログイン処理
             .oauth2Login(login -> login.loginPage("/oidc-login")
                 // ログインのページ
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcLoginUserService))
                 .defaultSuccessUrl("/oidc-menu", true)
             )
-            // TODO: 設定の追加
             // 認可設定
             .authorizeHttpRequests(
                 authz -> authz //
