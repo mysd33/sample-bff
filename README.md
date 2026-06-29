@@ -158,11 +158,72 @@
 ![OIDC認証・認可の画面](img/screen/screen8.png)
 
 ### Keycloak
-* 対応中
-* KeyCloakの起動
-    * TODO
+
+> [!WARNING]
+> 設定ファイルのインポートする手順に修正
+
+* Keycloakのインストール
+    * Zipファイルでの実行（[参考](https://www.keycloak.org/getting-started/getting-started-zip)）
+        * [Keycloakのダウンロードサイト](https://www.keycloak.org/downloads)よりzipをダウンロードし、解凍する。        
+        
+            ```sh
+            # Windowsの場合: C:\Java\keycloak-26.6.4に解凍した場合
+            cd C:\Java\keycloak-26.6.4\bin
+            kc.bat start-dev --http-port 8180
+            ```
+
+            ```sh
+            # Linuxの場合
+            cd /path/to/keycloak-26.6.4/bin
+            kc.sh start-dev --http-port 8180
+            ```
+        * Keycloakの管理コンソールにアクセスする。
+            * http://localhost:8180/
+            * 管理者のユーザ名、パスワードを設定する。
+                * ユーザ名: admin
+                * パスワード: admin
+
+    * Dockerでの実行（[参考](https://www.keycloak.org/getting-started/getting-started-docker)）
+        * 上記の参考サイトに従い、KeycloakをDockerで起動する。
+
+            ```sh
+            docker run -p 127.0.0.1:8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.6.4 start-dev
+            ```
+    * レルムを作成
+        * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
+        * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
+            * Realm name: `demo`
+    * ユーザを作成
+        * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
+            * Username: `yamadatr`
+            * Email: `yamada@xxx.co.jp`
+            * First Name: `太郎`
+            * Last Name: `山田`
+        * Credentialsタブをクリックし、パスワードを設定する。
+            * Password: `password`
+            * Password Confirmation: `password`
+            * Temporary: OFF
+    * クライアントを作成
+        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+            * Client Type: `OpenID Connect`
+            * Client ID: `sample-bff-oidc`　※任意の文字列でよい
+            * Name: `sample-bff`　※任意の文字列でよい
+            * Client authentication: `ON`
+            * Authentication flow: `Standard flow`にチェック
+            * Require PKCE: `ON`
+            * Root URL: `http://localhost:8080/`
+            * Home URL: `http://localhost:8080/`
+            * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak` 
+        * 作成したクライアントの設定画面で、Credentialsタブをクリックし、クライアントシークレットを確認する。            
+
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * TODO
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+        * 環境変数`KEYCLOAK_CLIENT_ID`client-idに生成されたクライアントIDを設定
+        * 環境変数`KEYCLOAK_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
+
+* Keycloakの認証画面
+
+![Keycloak認証画面](img/screen/keycloak.png)
 
 ### Github
 * [参考: Spring Security OAuth 2.0 Login Sample - Login with Github](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#github-login)
@@ -183,6 +244,10 @@
         * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
+* GitHubの認証画面
+
+![GitHub認証画面](img/screen/github.png)
+
 ### Google
 * [参考: Spring Security OAuth 2.0 Login Sample - Login with Google](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#google-login)
 
@@ -197,6 +262,10 @@
     * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GOOGLE_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GOOGLE_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
+
+* Googleの認証画面
+
+![Google認証画面](img/screen/google.png)
 
 ## （メモ）logback-access対応によるTomcatアクセスログ
 * Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
