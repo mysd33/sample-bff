@@ -3,6 +3,7 @@ package com.example.bff;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
+import com.example.bff.domain.service.login.OAuth2LoginUserService;
 import com.example.bff.domain.service.login.OidcLoginUserService;
 import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
@@ -43,6 +44,7 @@ public class SecurityConfig {
     boolean webSecurityDebug;
 
     private final OidcLoginUserService oidcLoginUserService;
+    private final OAuth2LoginUserService oauth2LoginUserService;
 
     /// Spring Securityのデバッグモードの設定
     @Bean
@@ -69,7 +71,11 @@ public class SecurityConfig {
             // OIDC/OAuth2認証にによるログイン処理
             .oauth2Login(login -> login.loginPage("/oidc-login")
                 // ログインのページ
-                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcLoginUserService))
+                .userInfoEndpoint(userInfo -> userInfo
+                    // OIDC準拠プロバイダ（Google等）用
+                    .oidcUserService(oidcLoginUserService)
+                    // OAuth2のみのプロバイダ（GitHub等）用
+                    .userService(oauth2LoginUserService))
                 .defaultSuccessUrl("/oidc-menu", true)
             )
             // 認可設定
