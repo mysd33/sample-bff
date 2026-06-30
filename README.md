@@ -214,12 +214,12 @@
             * Root URL: `http://localhost:8080/`
             * Home URL: `http://localhost:8080/`
             * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak` 
-        * 作成したクライアントの設定画面で、Credentialsタブをクリックし、クライアントシークレットを確認する。            
+        * 作成したクライアントの設定画面で、Credentialsタブをクリックし、クライアントシークレットを確認する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
     * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
-        * 環境変数`KEYCLOAK_CLIENT_ID`client-idに生成されたクライアントIDを設定
-        * 環境変数`KEYCLOAK_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
+        * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-bff-oidc`）を設定
+        * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
 
 * Keycloakの認証画面
 
