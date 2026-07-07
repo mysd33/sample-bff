@@ -203,18 +203,63 @@
             * Password: `password`
             * Password Confirmation: `password`
             * Temporary: OFF
+        * もう一度、「Create new user」をクリックして新しいユーザを作成する。
+            * Username: `tamuraichr`
+            * Email: `tamura@xxx.co.jp`
+            * First Name: `一郎`
+            * Last Name: `田村`
+        * Credentialsタブをクリックし、パスワードを設定する。
+            * Password: `password`
+            * Password Confirmation: `password`
+            * Temporary: OFF
+    * グループの設定  
+        * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
+            * Group Name: `admin`
+        * もう一度、「Create group」をクリックして新しいグループを作成する。
+            * Group Name: `general`
+        * Membersタブをクリックし、「Add menber」をクリックし、作成したユーザをグループに割り当てる。
+            * adminグループに、ユーザ`yamadatr`を割り当てる。
+            * generalグループに、ユーザ`tamuraichr`を割り当てる。
+    * ロールの設定
+        * 左のメニューの「Roles」をクリックし、「Add Role」をクリックして新しいロールを作成する。
+            * Role Name: `ADMIN`
+        * もう一度、「Add Role」をクリックして新しいロールを作成する。
+            * Role Name: `GENERAL`
+        * グループにロールを割り当てる            
+            * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
+            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
+            * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
     * クライアントを作成
         * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
             * Client Type: `OpenID Connect`
             * Client ID: `sample-bff-oidc`　※任意の文字列でよい
             * Name: `sample-bff`　※任意の文字列でよい
-            * Client authentication: `ON`
+            * Client authentication: `On`
             * Authentication flow: `Standard flow`にチェック
-            * Require PKCE: `ON`
+            * Require PKCE: `On`
             * Root URL: `http://localhost:8080/`
             * Home URL: `http://localhost:8080/`
             * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak` 
-        * 作成したクライアントの設定画面で、Credentialsタブをクリックし、クライアントシークレットを確認する。
+        * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
+    * ログイン成功後の同意画面の表示を有効化
+        * 「Settings」タブの「Login Settings」セクションで以下の設定
+            * Consent Required: `On`
+    * バックチャネルログアウトの設定
+        * 「Settings」タブの「Logout Settings」セクションで以下の設定
+            * Front channel logout: `Off`
+            * Backchannel Logout URL: `http://localhost:8080/logout/back-channel/keycloak`
+    * IDトークンのクレームにロールを追加する設定
+        * 「Client scopes」で、「sample-bff-oidc-dedicated」で、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
+        * Name: `realm roles`
+        * Token Claim Name: `realm_access.roles`
+        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。
+
+    * TODO: 今後設定する
+        * スコープの追加
+            * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
+                * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
+                    * Name: `todo`
+                * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を追加する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
     * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
@@ -647,7 +692,9 @@ public class SampleBffApplication {
 | | ファイルダウンロード | SpringMVCのViewや、Resourceを利用し、ファイルをダウンロードする機能を提供する。 | ○ | com.example.fw.web.view<br>com.example.fw.web.io |
 | | 共通画面レイアウト| Thymeleafの機能を利用し、ヘッダ、フッタ等の全画面共通のHTMLのレイアウトを一元管理する。 | - | - |
 | | ページネーション | Thymeleafの機能を利用し、一覧表示する際のページネーションの画面部品を提供する。 | ○ | com.example.fw.web.page |
-|  | 認証・認可| Spring Securityを利用し、DBで管理するユーザ情報をもとに認証、認可を行う。 | - | - |
+| | ユーザ認証・認可（フォーム認証） | Spring Securityを利用し、DBで管理するユーザ情報をもとにフォーム認証、認可を行う。 | - | - |
+| | ユーザ認証・認可（OIDC/OAuth2.0） | Spring Security OAuth2 Clientの機能でOIDCによるユーザ認証、認可を行う。 | - | - |
+| | API認可（OAuth2.0） | Spring Security OAuth2 Resource Serverの機能でバックエンドのAPIの認可を行う。 | - | - |
 | | セッション管理 | 通常、SpringMVCのセッション管理機能で管理するが、オートスケーリング等の対応のため、APサーバ上で保持していたセッション情報をRedisサーバ（AWSの場合、ElastiCache for Redis）に外部化するためにSpring Session Data Redisを利用する。 | - | - |
 | | 集約例外ハンドリング | SpringMVCのControllerAdviceやAOPを利用し、エラー（例外）発生時、エラーログの出力、DBのロールバック、エラー画面やエラー電文の返却といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.web.advice、com.example.fw.web.aspect |
 | | トランザクション管理 | Spring Frameworkのトランザクション管理機能を利用して、@Transactionalアノテーションによる宣言的トランザクションを実現する機能を提供する。 | - | - |
@@ -682,5 +729,4 @@ public class SampleBffApplication {
 
 | 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
 | ---- | ---- | ---- | ---- | ---- |
-| オンライン | OIDC認証 | Spring Securityの機能でOIDCの認証を行う。 | - | - |
 | オン・バッチ共通 | テストコード作成支援 | JUnit、Mockito、Springのテスト機能を利用して、単体テストコードや結合テストコードの実装を支援する機能を提供する。 | - | - |

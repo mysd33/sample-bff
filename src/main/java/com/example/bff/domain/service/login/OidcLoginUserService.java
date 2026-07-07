@@ -2,6 +2,8 @@ package com.example.bff.domain.service.login;
 
 import com.example.bff.domain.model.OidcLoginUserDetails;
 import com.example.bff.domain.model.User;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -17,6 +19,12 @@ import org.springframework.stereotype.Service;
 public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
     private final OidcUserService delegate = new OidcUserService();
+
+    @Value("${example.security.realm-claim:realm_access}")
+    private String realmClaimName;
+
+    @Value("${example.security.role-claim:roles}")
+    private String roleClaimName;
 
     /// OIDC準拠プロバイダのクレームからアプリ内ユーザIDを取得する属性名
     /// Keycloak: "preferred_username"（デフォルト）
@@ -40,10 +48,23 @@ public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, 
         user.setUserId(userId);
         user.setUserName(oidcUser.getFamilyName() + " " + oidcUser.getGivenName());
 
-        // 権限は一般ユーザ権限で固定化しておく
-        user.setAdmin(false);
-        user.setRole("ROLE_GENERAL");
+        // IDトークンに設定されたrealm_access.rolesをGrantedAuthorityにマッピング
+        Map<String, Object> realmAccess = oidcUser.getClaimAsMap(realmClaimName);
+        if (realmAccess != null) {
+            var roles = (List<?>) realmAccess.get(roleClaimName);
 
+            roles.forEach(role -> {
+                var roleName = (String) role;
+                if ("ADMIN".equals(roleName)) {
+                    user.setAdmin(true);
+                    user.setRole("ROLE_ADMIN");
+                }
+            });
+        }
+        if (!user.isAdmin()) {
+            // それ以外は一般ユーザ
+            user.setRole("ROLE_GENERAL");
+        }
         // LoginUserDetailsにマッピング
         return new OidcLoginUserDetails(user, oidcUser);
     }

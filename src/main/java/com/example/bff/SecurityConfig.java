@@ -27,7 +27,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /// SpringSecurityの設定クラス
 @Configuration
@@ -35,16 +38,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    // Spring Security5.7より大幅に設定方法が変更された
-    // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
-    // https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
 
-    // Spring Securityのデバッグモード
-    @Value("${example.security.debug:false}")
-    boolean webSecurityDebug;
-
+    private final ClientRegistrationRepository clientRegistrationRepository;
     private final OidcLoginUserService oidcLoginUserService;
     private final OAuth2LoginUserService oauth2LoginUserService;
+    // Spring Securityのデバッグモード
+    @Value("${example.security.debug:false}")
+    private boolean webSecurityDebug;
+
+    //@Value("${example.security.realm-claim:realm_access}")
+    //private String realmClaimName;
+
+    //@Value("${example.security.role-claim:roles}")
+    //private String roleClaimName;
 
     /// Spring Securityのデバッグモードの設定
     @Bean
@@ -57,7 +63,7 @@ public class SecurityConfig {
     @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "true")
     SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http) {
         http
-            // フォーム認証にによるログイン処理
+            // フォーム認証によるログイン処理
             .formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
                 .failureUrl("/login?error") // ログイン失敗時の遷移先
@@ -65,18 +71,24 @@ public class SecurityConfig {
                 .passwordParameter("password") // ログインページのパスワード
                 .defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
                 .permitAll())
-            // ログアウト処理
-            .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
-                .logoutSuccessUrl("/")) // ログアウト成功後のURL
-            // OIDC/OAuth2認証にによるログイン処理
+            // OIDC/OAuth2認証によるログイン処理
             .oauth2Login(login -> login.loginPage("/oidc-login")
                 // ログインのページ
                 .userInfoEndpoint(userInfo -> userInfo
-                    // OIDC準拠プロバイダ（Google等）用
-                    .oidcUserService(oidcLoginUserService)
-                    // OAuth2のみのプロバイダ（GitHub等）用
-                    .userService(oauth2LoginUserService))
+                        // OIDC準拠プロバイダ（Google等）用
+                        .oidcUserService(oidcLoginUserService)
+                        // OAuth2のみのプロバイダ（GitHub等）用
+                        .userService(oauth2LoginUserService)
+                    // OIDCのIDトークンに含まれるクレームからロールをGrantedAuthorityにマッピング
+                    //.userAuthoritiesMapper(userAuthoritiesMapper())
+                )
                 .defaultSuccessUrl("/oidc-menu", true)
+            )
+            // OIDCのバックチャネルログアウト処理の設定
+            .oidcLogout(logout -> logout.backChannel(Customizer.withDefaults()))
+            // ログアウト処理（フォーム認証、OIDCのRP起点のログアウト処理共通）
+            .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
+                .logoutSuccessHandler(oidcLogoutSuccessHandler())
             )
             // 認可設定
             .authorizeHttpRequests(
@@ -108,6 +120,48 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
+
+    /*
+    private GrantedAuthoritiesMapper userAuthoritiesMapper() {
+        return authorities -> {
+            var mappedAuthorities = new HashSet<GrantedAuthority>();
+            authorities.forEach(authority -> {
+                if (authority instanceof OidcUserAuthority oidcUserAuthority) {
+                    OidcIdToken idToken = oidcUserAuthority.getIdToken();
+
+                    // IDトークンに設定されたrealm_access.rolesをGrantedAuthorityにマッピング
+                    Map<String, Object> realmAccess = idToken.getClaimAsMap(realmClaimName);
+                    if (realmAccess != null) {
+                        var roles = (List<?>) realmAccess.get(roleClaimName);
+
+                        roles.forEach(role -> {
+                            var roleName = (String) role;
+                            // ROLE_という接頭辞を付与
+                            mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
+                        });
+                    }
+                }
+            });
+
+            return mappedAuthorities;
+        };
+    }*/
+
+    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+        OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =
+            new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);
+
+        // ログアウト成功後の遷移先URLの指定
+        // OIDCプロバイダはpost_logout_redirect_uriに絶対URLが必要なため{baseUrl}を使用する。
+        // フォーム認証ユーザー（OidcUserでない場合）もこのURLへフォールバックされる。
+        oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/");
+
+        return oidcLogoutSuccessHandler;
+    }
+
+    // Spring Security5.7より大幅に設定方法が変更された
+    // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
+    // https://www.docswell.com/s/MasatoshiTada/KGVY9K-spring-security-intro
 
     /// Spring SecurityによるForm認証のみの認証認可設定
     @Bean

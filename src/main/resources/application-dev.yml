@@ -50,6 +50,8 @@ spring:
         provider:
           keycloak:
             issuer-uri: http://localhost:8180/realms/demo
+            #TODO: user-name-attributeの設定が必要か確認する
+            #user-name-attribute: preferred_username
 # Spring docs enabled  for local development
 springdoc:
   swagger-ui:
