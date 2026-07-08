@@ -155,6 +155,10 @@
 
 * Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
 
+* [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。  
+    * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
+
+
 ![OIDC認証・認可の画面](img/screen/screen8.png)
 
 ### Keycloak
@@ -239,7 +243,8 @@
             * Require PKCE: `On`
             * Root URL: `http://localhost:8080/`
             * Home URL: `http://localhost:8080/`
-            * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak` 
+            * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
+                * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
         * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
     * ログイン成功後の同意画面の表示を有効化
         * 「Settings」タブの「Login Settings」セクションで以下の設定
@@ -247,7 +252,8 @@
     * バックチャネルログアウトの設定
         * 「Settings」タブの「Logout Settings」セクションで以下の設定
             * Front channel logout: `Off`
-            * Backchannel Logout URL: `http://localhost:8080/logout/back-channel/keycloak`
+            * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
+                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
     * IDトークンのクレームにロールを追加する設定
         * 「Client scopes」で、「sample-bff-oidc-dedicated」で、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
         * Name: `realm roles`
@@ -269,6 +275,14 @@
 * Keycloakの認証画面
 
 ![Keycloak認証画面](img/screen/keycloak.png)
+
+* バックチャネルログアウト
+    * アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、KeyCloackの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
+        * アプリケーション側の画面で、更新ボタン、画面遷移すると、ログイン画面に遷移することを確認できる。
+    * [http://localhost:8180/realms/demo/account](http://localhost:8180/realms/demo/account)
+
+        ![Keycloakログアウト画面](img/screen/keycloak-backchannel-logout.png)
+
 
 ### Github
 * [参考: Spring Security OAuth 2.0 Login Sample - Login with Github](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#github-login)

@@ -89,9 +89,9 @@ public class SecurityConfig {
                     .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
                     // Spring Boot Actuatorのエンドポイントへアクセス許可
                     .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                    // ログインページへ認証なしでアクセス許可
+                    // Form認証用のログイン画面へ認証なしでアクセス許可
                     .requestMatchers("/login").permitAll()
-                    .requestMatchers("/login/**").permitAll()
+                    // 外部IdP用のログイン画面へ認証なしでアクセス許可
                     .requestMatchers("/oidc-login").permitAll()
                     // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
                     .requestMatchers("/v3/api-docs/**").permitAll()
