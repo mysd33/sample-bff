@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/// JDBCによる認証処理用UserDetailService実装クラス
+/// JDBCによるForm認証処理用UserDetailService実装クラス
 @Transactional
 @Service
 @RequiredArgsConstructor

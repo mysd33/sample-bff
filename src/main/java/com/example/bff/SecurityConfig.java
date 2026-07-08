@@ -3,8 +3,6 @@ package com.example.bff;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
-import com.example.bff.domain.service.login.OAuth2LoginUserService;
-import com.example.bff.domain.service.login.OidcLoginUserService;
 import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -40,17 +38,11 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 public class SecurityConfig {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
-    private final OidcLoginUserService oidcLoginUserService;
-    private final OAuth2LoginUserService oauth2LoginUserService;
+    //private final OidcLoginUserService oidcLoginUserService;
+    //private final OAuth2LoginUserService oauth2LoginUserService;
     // Spring Securityのデバッグモード
     @Value("${example.security.debug:false}")
     private boolean webSecurityDebug;
-
-    //@Value("${example.security.realm-claim:realm_access}")
-    //private String realmClaimName;
-
-    //@Value("${example.security.role-claim:roles}")
-    //private String roleClaimName;
 
     /// Spring Securityのデバッグモードの設定
     @Bean
@@ -72,17 +64,17 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/menu", true) // ログイン成功後の遷移先
                 .permitAll())
             // OIDC/OAuth2認証によるログイン処理
-            .oauth2Login(login -> login.loginPage("/oidc-login")
+            .oauth2Login(login ->
                 // ログインのページ
-                .userInfoEndpoint(userInfo -> userInfo
-                        // OIDC準拠プロバイダ（Google等）用
-                        .oidcUserService(oidcLoginUserService)
-                        // OAuth2のみのプロバイダ（GitHub等）用
-                        .userService(oauth2LoginUserService)
-                    // OIDCのIDトークンに含まれるクレームからロールをGrantedAuthorityにマッピング
-                    //.userAuthoritiesMapper(userAuthoritiesMapper())
-                )
-                .defaultSuccessUrl("/oidc-menu", true)
+                login.loginPage("/oidc-login")
+                    // Bean定義されていれば、明示的な指定不要
+                    //.userInfoEndpoint(userInfo -> userInfo
+                    // OIDC準拠プロバイダ（Google等）用
+                    //.oidcUserService(oidcLoginUserService)
+                    // OAuth2のみのプロバイダ（GitHub等）用
+                    //.userService(oauth2LoginUserService)
+                    //)
+                    .defaultSuccessUrl("/oidc-menu", true)
             )
             // OIDCのバックチャネルログアウト処理の設定
             .oidcLogout(logout -> logout.backChannel(Customizer.withDefaults()))
@@ -120,32 +112,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
-
-    /*
-    private GrantedAuthoritiesMapper userAuthoritiesMapper() {
-        return authorities -> {
-            var mappedAuthorities = new HashSet<GrantedAuthority>();
-            authorities.forEach(authority -> {
-                if (authority instanceof OidcUserAuthority oidcUserAuthority) {
-                    OidcIdToken idToken = oidcUserAuthority.getIdToken();
-
-                    // IDトークンに設定されたrealm_access.rolesをGrantedAuthorityにマッピング
-                    Map<String, Object> realmAccess = idToken.getClaimAsMap(realmClaimName);
-                    if (realmAccess != null) {
-                        var roles = (List<?>) realmAccess.get(roleClaimName);
-
-                        roles.forEach(role -> {
-                            var roleName = (String) role;
-                            // ROLE_という接頭辞を付与
-                            mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
-                        });
-                    }
-                }
-            });
-
-            return mappedAuthorities;
-        };
-    }*/
 
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =

@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
-/// Keycloak/Google等のOIDC準拠プロバイダのユーザ情報をアプリ内のLoginUserDetailsへマッピングするサービス
+/// Keycloak/Google等のOIDC準拠プロバイダのユーザ情報をアプリ内のLoginUserDetailsへマッピングするOAuth2UserService
 @Service
 @RequiredArgsConstructor
 public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {

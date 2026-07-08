@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-/// GitHub等のOAuth2（非OIDC）のユーザ情報をアプリ内のLoginUserDetailsへマッピングするサービス
+/// GitHub等のOAuth2（非OIDC）のユーザ情報をアプリ内のLoginUserDetailsへマッピングするOAuth2UserService
 @Service
 @RequiredArgsConstructor
 public class OAuth2LoginUserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
