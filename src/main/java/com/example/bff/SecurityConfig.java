@@ -133,7 +133,7 @@ public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "false", matchIfMissing = true)
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        // フォーム認証にによるログイン処理
+        // フォーム認証によるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
                 .failureUrl("/login?error") // ログイン失敗時の遷移先

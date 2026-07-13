@@ -140,6 +140,9 @@ example:
   api:
     backend:
       url: http://localhost:8000
+      basic-auth:
+        username: ${BACKEND_BASIC_AUTH_USERNAME:user}
+        password: ${BACKEND_BASIC_AUTH_PASSWORD:password}
     retry:
       max-attempts: 3
       min-backoff: 200

@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.StringUtils;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -40,6 +42,14 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Value("${example.api.retry.min-backoff:200}")
     long minBackoff;
 
+    // Basic認証のユーザー名
+    @Value("${example.api.backend.basic-auth.username:}")
+    private String basicAuthUsername;
+
+    // Basic認証のパスワード
+    @Value("${example.api.backend.basic-auth.password:}")
+    private String basicAuthPassword;
+
     @Value("${example.api.backend.url}/api/v1/todos")
     private String urlTodos;
 
@@ -52,10 +62,18 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     // https://spring.pleiades.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
     // https://medium.com/a-developers-odyssey/spring-web-client-exception-handling-cd93cf05b76
 
+    /// Basic認証のユーザー名・パスワードが設定されている場合のみ、Basic認証ヘッダーをセットする
+    private void setBasicAuthIfPresent(HttpHeaders headers) {
+        if (StringUtils.hasText(basicAuthUsername) && StringUtils.hasText(basicAuthPassword)) {
+            headers.setBasicAuth(basicAuthUsername, basicAuthPassword);
+        }
+    }
+
     @Override
     public Optional<Todo> findById(String todoId) {
 
         var todoMono = webClient.get().uri(urlTodoById, todoId)//
+                .headers(this::setBasicAuthIfPresent)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException)//
@@ -77,6 +95,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
         var uri =
                 UriComponentsBuilder.fromUriString(urlTodos).queryParam("user_id", userId).build();
         var todoListMono = webClient.get().uri(uri.toUri())//
+                .headers(this::setBasicAuthIfPresent)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException)//
@@ -96,6 +115,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Override
     public void create(Todo todo) {
         webClient.post().uri(urlTodos)//
+                .headers(this::setBasicAuthIfPresent)//
                 .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError,
@@ -115,6 +135,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Override
     public boolean update(Todo todo) {
         webClient.put().uri(urlTodoById, todo.getTodoId())//
+                .headers(this::setBasicAuthIfPresent)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException)//
@@ -134,6 +155,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Override
     public boolean delete(Todo todo) {
         webClient.delete().uri(urlTodoById, todo.getTodoId())//
+                .headers(this::setBasicAuthIfPresent)//
                 .retrieve()//
                 .onStatus(HttpStatusCode::is4xxClientError,
                         responseErrorHandler::createClientErrorException)//
