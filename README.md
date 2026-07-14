@@ -156,6 +156,10 @@
 
 * Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
 
+* BFFアプリケーションでは、Spring Security OAuth2.0 Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
+
+* Backendアプリケーションについては、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照。
+
 * [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。  
     * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
 
@@ -234,7 +238,7 @@
             * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
             * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
             * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
-    * クライアントを作成
+    * BFFアプリケーションのクライアントを作成
         * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
             * Client Type: `OpenID Connect`
             * Client ID: `sample-bff-oidc`　※任意の文字列でよい
@@ -261,12 +265,12 @@
         * Token Claim Name: `realm_access.roles`
         * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。
 
-    * TODO: 今後設定する
-        * スコープの追加
-            * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
-                * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
-                    * Name: `todo`
-                * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を追加する。
+    * スコープの追加
+        * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
+            * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
+                * Name: `todo`
+                * Include in token scope: `On`
+            * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
     * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。

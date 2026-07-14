@@ -40,7 +40,7 @@ spring:
             client-id: ${KEYCLOAK_CLIENT_ID}
             client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            scope: openid, profile, email
+            scope: openid, todo
           github:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}

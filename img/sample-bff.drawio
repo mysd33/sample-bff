@@ -1,13 +1,13 @@
 <mxfile host="Electron" agent="5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/20.7.4 Chrome/106.0.5249.199 Electron/21.3.3 Safari/537.36">
   <diagram id="UCERD7Z1GJiwis_1Q3Cq" name="ページ1">
-    <mxGraphModel dx="1511" dy="971" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1300" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="Xl9kmHEGcJ8c6Kd0P96K-10" parent="1" style="fillColor=none;strokeColor=#FF0000;dashed=1;verticalAlign=top;fontStyle=0;fontColor=#FF0000;" value="実装範囲" vertex="1">
           <mxGeometry height="578" width="410" x="250" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="lLozL-JGH5_748c3Xfp--1" parent="1" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;gradientColor=#4D72F3;gradientDirection=north;fillColor=#3334B9;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.elasticache;" value="ElastiCache for Redis&lt;br&gt;※ローカル実行では&lt;br&gt;Redis on Docker" vertex="1">
+        <mxCell id="lLozL-JGH5_748c3Xfp--1" parent="1" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;gradientColor=#4D72F3;gradientDirection=north;fillColor=#3334B9;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.elasticache;" value="ElastiCache for Valkey(RedisOSS)&lt;br&gt;※ローカル実行では&lt;br&gt;Redis on Docker" vertex="1">
           <mxGeometry height="47" width="47" x="511" y="150" as="geometry" />
         </mxCell>
         <mxCell id="Xl9kmHEGcJ8c6Kd0P96K-2" edge="1" parent="1" source="3Vih0fTtovifVBZzi2yU-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="Xl9kmHEGcJ8c6Kd0P96K-1" value="DBアクセス">
@@ -33,7 +33,8 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="0iDiZkT87j239Alk-og1-4" edge="1" parent="1" source="3Vih0fTtovifVBZzi2yU-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="0iDiZkT87j239Alk-og1-1" value="OIDC/OAuth2.0&lt;div&gt;による認証&lt;/div&gt;">
-          <mxGeometry relative="1" as="geometry">
+          <mxGeometry relative="1" x="-0.0042" as="geometry">
+            <mxPoint as="offset" />
             <Array as="points">
               <mxPoint x="320" y="80" />
             </Array>
@@ -44,6 +45,14 @@
             <mxPoint as="offset" />
             <Array as="points">
               <mxPoint x="864" y="432.77" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-G7s775gqxQjMB1RLSFG-1" edge="1" parent="1" source="3Vih0fTtovifVBZzi2yU-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="0iDiZkT87j239Alk-og1-11" value="アクセストークン検証&lt;div&gt;のための公開鍵取得&lt;/div&gt;">
+          <mxGeometry relative="1" x="-0.5805" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="864" y="83" />
             </Array>
           </mxGeometry>
         </mxCell>
