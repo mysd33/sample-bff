@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,8 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     private final WebClient webClient;
     private final WebClientResponseErrorHandler responseErrorHandler;
+
+    @Nullable
     private final OAuth2AuthorizedClientService authorizedClientService;
 
     // サーキットブレーカ
@@ -70,6 +73,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     /// Spring Securityで管理されているアクセストークンを取得する。存在しない場合はnullを返す
     private OAuth2AccessToken resolveAccessToken() {
+        if (authorizedClientService == null) {
+            return null;
+        }
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof OAuth2AuthenticationToken oauth2Authentication)) {
             return null;

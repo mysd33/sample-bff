@@ -37,9 +37,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ClientRegistrationRepository clientRegistrationRepository;
-    //private final OidcLoginUserService oidcLoginUserService;
-    //private final OAuth2LoginUserService oauth2LoginUserService;
     // Spring Securityのデバッグモード
     @Value("${example.security.debug:false}")
     private boolean webSecurityDebug;
@@ -53,7 +50,11 @@ public class SecurityConfig {
     /// Spring SecurityによるOIDC併用の認証認可設定
     @Bean
     @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "true")
-    SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http) {
+    SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http,
+        ClientRegistrationRepository clientRegistrationRepository//,
+        //OidcLoginUserService oidcLoginUserService,
+        //OAuth2LoginUserService oauth2LoginUserService
+    ) {
         http
             // フォーム認証によるログイン処理
             .formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
@@ -80,7 +81,7 @@ public class SecurityConfig {
             .oidcLogout(logout -> logout.backChannel(Customizer.withDefaults()))
             // ログアウト処理（フォーム認証、OIDCのRP起点のログアウト処理共通）
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
-                .logoutSuccessHandler(oidcLogoutSuccessHandler())
+                .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
             )
             // 認可設定
             .authorizeHttpRequests(
@@ -113,9 +114,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+    private LogoutSuccessHandler oidcLogoutSuccessHandler(
+        ClientRegistrationRepository clientRegistrationRepository) {
         OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =
-            new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);
+            new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
 
         // ログアウト成功後の遷移先URLの指定
         // OIDCプロバイダはpost_logout_redirect_uriに絶対URLが必要なため{baseUrl}を使用する。

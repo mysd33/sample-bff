@@ -1,7 +1,7 @@
 package com.example.fw.common.rdb.config;
 
+import com.amazonaws.xray.sql.TracingDataSource;
 import javax.sql.DataSource;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-
-import com.amazonaws.xray.sql.TracingDataSource;
 
 /// X-Ray SDKでのJDBCのトレーシング用設定クラス<br>
 ///
@@ -23,9 +21,11 @@ public class XRayJDBCConfig {
 
     /// 単一データソースの場合
     @Deprecated(forRemoval = true)
+    @Profile("xray")
     @Configuration
     @ConditionalOnProperty(prefix = DynamicRoutingDataSourceConfig.DYNAMIC_ROUTING_PREFIX, name = "enabled", havingValue = "false", matchIfMissing = true)
     static class SingleDataSource {
+
         /// DataSourceプロパティの取得
         @Deprecated(forRemoval = true)
         @Bean
@@ -40,17 +40,18 @@ public class XRayJDBCConfig {
         DataSource dataSourceForXray(DataSourceProperties dataSourceProperties) {
 
             return TracingDataSource.decorate(DataSourceBuilder.create()//
-                    .type(dataSourceProperties.getType())//
-                    .driverClassName(dataSourceProperties.determineDriverClassName())//
-                    .url(dataSourceProperties.determineUrl())//
-                    .username(dataSourceProperties.getUsername())//
-                    .password(dataSourceProperties.getPassword())//
-                    .build());
+                .type(dataSourceProperties.getType())//
+                .driverClassName(dataSourceProperties.determineDriverClassName())//
+                .url(dataSourceProperties.determineUrl())//
+                .username(dataSourceProperties.getUsername())//
+                .password(dataSourceProperties.getPassword())//
+                .build());
         }
     }
 
     /// 動的データソースルーティングの場合
     @Deprecated(forRemoval = true)
+    @Profile("xray")
     @Configuration
     @ConditionalOnProperty(prefix = DynamicRoutingDataSourceConfig.DYNAMIC_ROUTING_PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
     static class DynamicDataSource {
@@ -58,7 +59,8 @@ public class XRayJDBCConfig {
         /// DataSourceでのAWS X-RayのJDBCトレーシング設定
         @Deprecated(forRemoval = true)
         @Bean
-        @Primary // トレーシング用のDataSourceを優先
+        @Primary
+        // トレーシング用のDataSourceを優先
         DataSource dataSourceForXray(DataSource dataSource) {
             // DynamicRoutingDataSourceConfigでBean定義されたDataSourceをラップする
             return TracingDataSource.decorate(dataSource);
