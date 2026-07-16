@@ -82,35 +82,8 @@ public class SecurityConfig {
             // ログアウト処理（フォーム認証、OIDCのRP起点のログアウト処理共通）
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
                 .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
-            )
-            // 認可設定
-            .authorizeHttpRequests(
-                authz -> authz //
-                    // 静的リソースへアクセス許可
-                    .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
-                    // Spring Boot Actuatorのエンドポイントへアクセス許可
-                    .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                    // Form認証用のログイン画面へ認証なしでアクセス許可
-                    .requestMatchers("/login").permitAll()
-                    // 外部IdP用のログイン画面へ認証なしでアクセス許可
-                    .requestMatchers("/oidc-login").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/v3/api-docs/**").permitAll()
-                    .requestMatchers("/v3/api-docs*").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/swagger-ui/**").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/swagger-ui.html").permitAll()
-                    // ユーザ管理画面は管理者ユーザのみ許可
-                    .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                    // ユーザ管理画面は管理者ユーザのみ許可
-                    .requestMatchers("/user*").hasAuthority("ROLE_ADMIN")
-                    // REST APIへ認証なしでアクセス許可（サンプルAPでの暫定）
-                    .requestMatchers("/api/**").permitAll()
-                    .anyRequest().authenticated() // それ以外は認証が必要
-            )
-            // REST APIはCSRF保護不要（サンプルAPでの暫定）
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+            );
+        configureAuthorization(http, true);
         return http.build();
     }
 
@@ -134,7 +107,7 @@ public class SecurityConfig {
     /// Spring SecurityによるForm認証のみの認証認可設定
     @Bean
     @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "false", matchIfMissing = true)
-    SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // フォーム認証によるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定
@@ -145,34 +118,44 @@ public class SecurityConfig {
                 .permitAll())
             // ログアウト処理
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
-                .logoutSuccessUrl("/")) // ログアウト成功後のURL
-            // 認可設定
-            .authorizeHttpRequests(
-                authz -> authz //
-                    // 静的リソースへアクセス許可
-                    .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
-                    // Spring Boot Actuatorのエンドポイントへアクセス許可
-                    .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                    // ログインページへ認証なしでアクセス許可
-                    .requestMatchers("/login").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/v3/api-docs/**").permitAll()
-                    .requestMatchers("/v3/api-docs*").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/swagger-ui/**").permitAll()
-                    // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
-                    .requestMatchers("/swagger-ui.html").permitAll()
-                    // ユーザ管理画面は管理者ユーザのみ許可
-                    .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                    // ユーザ管理画面は管理者ユーザのみ許可
-                    .requestMatchers("/user*").hasAuthority("ROLE_ADMIN")
-                    // REST APIへ認証なしでアクセス許可（サンプルAPでの暫定）
-                    .requestMatchers("/api/**").permitAll()
-                    .anyRequest().authenticated() // それ以外は認証が必要
-            )
+                .logoutSuccessUrl("/")); // ログアウト成功後のURL
+        configureAuthorization(http, false);
+        return http.build();
+    }
+
+    /// 認可設定の共通処理
+    private void configureAuthorization(HttpSecurity http, boolean includeOidcLogin) {
+        http.authorizeHttpRequests(
+                authz -> {
+                    authz
+                        // 静的リソースへアクセス許可
+                        .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
+                        // Spring Boot Actuatorのエンドポイントへアクセス許可
+                        .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
+                        // ログインページへ認証なしでアクセス許可
+                        .requestMatchers("/login").permitAll();
+                    if (includeOidcLogin) {
+                        // 外部IdP用のログイン画面へ認証なしでアクセス許可
+                        authz.requestMatchers("/oidc-login").permitAll();
+                    }
+                    authz
+                        // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/v3/api-docs*").permitAll()
+                        // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        // Springdoc-openapiのドキュメントへ認証なしでアクセス許可
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        // ユーザ管理画面は管理者ユーザのみ許可
+                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                        // ユーザ管理画面は管理者ユーザのみ許可
+                        .requestMatchers("/user*").hasAuthority("ROLE_ADMIN")
+                        // REST APIへ認証なしでアクセス許可（サンプルAPでの暫定）
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated(); // それ以外は認証が必要
+                })
             // REST APIはCSRF保護不要（サンプルAPでの暫定）
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
-        return http.build();
     }
 
     /// H2 Consoleのアクセス許可対応
