@@ -37,6 +37,8 @@ import reactor.util.retry.Retry;
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClient implements TodoRepository {
 
+    private static final String KEYCLOAK_REGISTRATION_ID = "keycloak";
+
     private final WebClient webClient;
     private final WebClientResponseErrorHandler responseErrorHandler;
 
@@ -80,13 +82,23 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
         if (!(authentication instanceof OAuth2AuthenticationToken oauth2Authentication)) {
             return null;
         }
+        // サンプルAPではKeyCloakの場合のみアクセストークンを送信するようにする
+        // (それ以外のIdPでは対応が難しいのでBasic認証にする)
+        if (!KEYCLOAK_REGISTRATION_ID.equals(
+            oauth2Authentication.getAuthorizedClientRegistrationId())) {
+            return null;
+        }
         OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
             oauth2Authentication.getAuthorizedClientRegistrationId(),
             oauth2Authentication.getName());
         if (authorizedClient == null) {
             return null;
         }
-        return authorizedClient.getAccessToken();
+        OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
+        if (accessToken == null || !StringUtils.hasText(accessToken.getTokenValue())) {
+            return null;
+        }
+        return accessToken;
     }
 
     /// アクセストークンが存在すればBearerヘッダーを、なければBasic認証ヘッダーを設定する
