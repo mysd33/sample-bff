@@ -4,7 +4,7 @@ spring:
     oauth2:
       client:
         registration:
-# Keycloakを動作しないときには設定はコメントアウト
+# Keycloakを動作しないときには設定をコメントアウト
           keycloak:
             client-id: ${KEYCLOAK_CLIENT_ID}
             client-secret: ${KEYCLOAK_CLIENT_SECRET}
@@ -16,12 +16,10 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-# Keycloakを動作しないときには設定はコメントアウト
+# Keycloakを動作しないときには設定をコメントアウト
         provider:
           keycloak:
             issuer-uri: http://localhost:8180/realms/demo
-            #TODO: user-name-attributeの設定が必要か確認する
-            #user-name-attribute: preferred_username
 
 #logging:
 #  level:
