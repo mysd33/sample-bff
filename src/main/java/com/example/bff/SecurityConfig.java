@@ -82,7 +82,10 @@ public class SecurityConfig {
             // ログアウト処理（フォーム認証、OIDCのRP起点のログアウト処理共通）
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
                 .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
-            );
+            )
+            // OAuthClientの設定
+            .oauth2Client(Customizer.withDefaults());
+        // 認可設定
         configureAuthorization(http, true);
         return http.build();
     }
@@ -119,6 +122,7 @@ public class SecurityConfig {
             // ログアウト処理
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
                 .logoutSuccessUrl("/")); // ログアウト成功後のURL
+        // 認可設定
         configureAuthorization(http, false);
         return http.build();
     }

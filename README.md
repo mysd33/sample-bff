@@ -1,55 +1,74 @@
 # SpringBootのBackend For Frontend(BFF)アプリケーションサンプル
 
 ## 概要
+
 * ユーザに画面を提供するSpringBootのサンプルアプリケーションである。
 * ログイン後、TODOの取得、TODOの登録、TODOの完了、TODOの削除を行える画面を提供する。
 * TODOの操作は別途作成されたTODOを管理するBackendアプリケーションのREST APIを利用している。
 * 非同期処理/バッチアプリケーションを利用して、TodoリストファイルからTodoを一括登録を行える画面も提供する。
 * ユーザはDBで管理されており、ユーザの登録、変更、削除の管理する画面も提供する。
-![実装イメージ](img/sample-bff.png)
+  ![実装イメージ](img/sample-bff.png)
 
 * 本サンプルAPのソフトウェアアーキテクチャの図は以下の通り。
 
 ![ソフトウェアアーキテクチャ](img/architecture.png)
 
 ## プロジェクト構成
+
 * sample-bff
-    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
+    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend
+      for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
+        *
+        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(
+          AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache
+          for Redis)、SQS接続はSQSへ送信するようになっている。
         * DB管理したユーザ情報に基づくForm認証によるログインと、外部のIdP（Keycloak、GitHub、Google）によるOIDC認証・認可によるログインの両方に対応している。
 * sample-backend（またはsample-backend-dynamodb)
-    * 別のプロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
+    * 別のプロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST
+      APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等)になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
+        *
+        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB
+        Localを組み込みで起動し、接続するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL(AWS上はAurora等)
+          になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * sample-batch
-    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
-        * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring
+      Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
+        *
+        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
+        *
+        プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL(
+        AWS上はAurora等）になっている。
 * sample-schedulelaunch
-    * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
-        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+    *
+    別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
+        *
+        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
 
 ## 画面一覧
+
 * 作成している画面は以下の通り。
 
-| 画面名 | 説明 | 画面イメージ |
-| ---- | ---- | ---- |
-| ログイン画面 | トップページの画面で、ユーザがログインするための画面。 | [画面](img/screen/screen1.png) |
-| ログイン画面(ODIC) | 外部のIDプロバイダを使用しユーザがログインするための画面。 | [画面](img/screen/screen8.png) |
-| メニュー画面 | メニュー画面。ログインユーザのロールによって管理者メニューの表示有無が切り替わる。 |  [画面](img/screen/screen2.png) |
-| Todo管理画面 | Todoリストの一覧表示、登録、完了、削除といった操作を実施できる画面。 | [画面](img/screen/screen3.png) |
-| Todo一括登録画面 | Todoリストを記載したCSVファイルをアップロードし、非同期でTodoリストを登録できる画面。 | [画面](img/screen/screen4.png) |
-| ユーザ一覧画面 | 登録されているユーザを一覧表示&CSVファイルダウンロードできる画面。 | [画面](img/screen/screen5.png) |
-| ユーザ登録画面 | ユーザを新規登録するための画面。 | [画面](img/screen/screen6.png) |
-| ユーザ詳細画面 | ユーザの詳細情報の表示と情報更新するための画面。 | [画面](img/screen/screen7.png) |
+| 画面名          | 説明                                               | 画面イメージ                       |
+|--------------|--------------------------------------------------|------------------------------|
+| ログイン画面       | トップページの画面で、ユーザがログインするための画面。                      | [画面](img/screen/screen1.png) |
+| ログイン画面(ODIC) | 外部のIDプロバイダを使用しユーザがログインするための画面。                   | [画面](img/screen/screen8.png) |
+| メニュー画面       | メニュー画面。ログインユーザのロールによって管理者メニューの表示有無が切り替わる。        | [画面](img/screen/screen2.png) |
+| Todo管理画面     | Todoリストの一覧表示、登録、完了、削除といった操作を実施できる画面。             | [画面](img/screen/screen3.png) |
+| Todo一括登録画面   | Todoリストを記載したCSVファイルをアップロードし、非同期でTodoリストを登録できる画面。 | [画面](img/screen/screen4.png) |
+| ユーザ一覧画面      | 登録されているユーザを一覧表示&CSVファイルダウンロードできる画面。              | [画面](img/screen/screen5.png) |
+| ユーザ登録画面      | ユーザを新規登録するための画面。                                 | [画面](img/screen/screen6.png) |
+| ユーザ詳細画面      | ユーザの詳細情報の表示と情報更新するための画面。                         | [画面](img/screen/screen7.png) |
 
 ## 画面遷移図
+
 ![画面遷移図](img/screen-flow.png)
 
 # 事前準備
+
 * 以下のライブラリを用いているので、EclipseのようなIDEを利用する場合には、プラグインのインストールが必要
     * [Lombok](https://projectlombok.org/)
         * [Eclipseへのプラグインインストール](https://projectlombok.org/setup/eclipse)
@@ -58,6 +77,7 @@
         * [EclipseやIntelliJへのプラグインインストール](https://mapstruct.org/documentation/ide-support/)
 
 ## EclipseやIntelliJ等での動作確認
+
 * MainクラスをSampleBffApplicationとして、Spring Bootアプリケーションを起動します。
 * ブラウザまたは、REST APIクライアントツールを使って、ヘルスチェックポイントエンドポイントをAPIを呼び出す。ローカル実行の場合8080でポートで起動する。
     * GET http://localhost:8080/actuator/health
@@ -72,19 +92,21 @@
 * ログイン画面が表示されたら、Form認証の場合は、例えば、以下のユーザ情報を入力する。
     * OIDCによるログインの場合は、[OIDC認証・認可](#oidc認証認可)を参照のこと。
 
-    | ユーザID | パスワード | ロール |
-    | ---- | ---- | ---- |
-    | yamada@xxx.co.jp | password | 管理者 |
-    | tamura@xxx.co.jp | password | 一般ユーザ |
+  | ユーザID | パスワード | ロール |
+      | ---- | ---- | ---- |
+  | yamada@xxx.co.jp | password | 管理者 |
+  | tamura@xxx.co.jp | password | 一般ユーザ |
 
 * ログイン後、メニューが表示される。
     * 「Todo管理」ボタンを押下するとTodo管理、Todo一括登録の画面を表示する。
     * 「管理者」ロールでログインしている場合のみ「ユーザ管理」ボタンが表示され、ボタンを押下すると、ユーザ管理画面を表示する。
 
 ## 非同期処理実行の操作手順について
-  * 本アプリから非同期処理/バッチアプリ（sample-batch）への非同期処理実行依頼が可能である。動作手順は、sample-batchのREADME.mdを参照すること。
+
+* 本アプリから非同期処理/バッチアプリ（sample-batch）への非同期処理実行依頼が可能である。動作手順は、sample-batchのREADME.mdを参照すること。
 
 ## Spring Bootの実行可能jarでの実行
+
 * Mavenビルドを行い、以下のコマンドで実行可能jarを作成します。
 
     ```sh
@@ -122,9 +144,12 @@
     場所: クラス userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf    
     ```
 
-* 原因は、本サンプルAPが、Jasper Reportsを使ったPDF帳票出力機能を実装しているのですが、Jasper Reportsのライブラリ（JasperReportsのJRJdk13Compilerクラス）がjrxmlの様式コンパイルする際、JasperReportsのライブラリが実行可能jarにしてしまうと、クラスパスからJasperReportsのライブラリを見つけられず、上記のようなエラーになるためです。
+* 原因は、本サンプルAPが、Jasper Reportsを使ったPDF帳票出力機能を実装しているのですが、Jasper
+  Reportsのライブラリ（JasperReportsのJRJdk13Compilerクラス）がjrxmlの様式コンパイルする際、JasperReportsのライブラリが実行可能jarにしてしまうと、クラスパスからJasperReportsのライブラリを見つけられず、上記のようなエラーになるためです。
 
-* 回避策として、Spring Bootのマニュアルの手順にある[実行可能jarを解凍して実行する](https://spring.pleiades.io/spring-boot/reference/packaging/efficient.html)方法を利用して、実行します。
+* 回避策として、Spring
+  Bootのマニュアルの手順にある[実行可能jarを解凍して実行する](https://spring.pleiades.io/spring-boot/reference/packaging/efficient.html)
+  方法を利用して、実行します。
     * これで、JasperReportsのライブラリをクラスパスから見つけられるようになり、正常に起動します。
 
     ```sh
@@ -140,29 +165,37 @@
         * [Dockerfile(ADOT用)](DockerfileForADOT)
 
 ## OpenAPI
+
 * Springdoc-openapiにより、RestControllerの実装からAPIドキュメントをリバースエンジニアリングできる
     * アプリケーションを起動し、以下のURLへアクセスするとそれぞれjson、yaml、html形式のドキュメントを表示する。
     * http://localhost:8000/v3/api-docs
         * json形式のドキュメント
-    * http://localhost:8000/v3/api-docs.yaml    
+    * http://localhost:8000/v3/api-docs.yaml
         * yaml形式のドキュメント
     * http://localhost:8000/swagger-ui.html
-        * html形式（Swagger-UI）のドキュメント  
+        * html形式（Swagger-UI）のドキュメント
 
 ## OIDC認証・認可
+
 > [!WARNING]
-> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring Bootに対応しつつ、ただいま実装中。  
+> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring
+> Bootに対応しつつ、ただいま実装中。  
 > 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
 
 * Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
 
-* BFFアプリケーションでは、Spring Security OAuth2.0 Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
+* BFFアプリケーションでは、Spring Security OAuth2.0
+  Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
 
-* Backendアプリケーションについては、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照。
+*
+Backendアプリケーションについては、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
+または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
+を参照。
 
-* [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。  
-    * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
-
+* [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)
+  の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。
+    * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
+      `/login/oauth2/code/{registrationId}`
 
 ![OIDC認証・認可の画面](img/screen/screen8.png)
 
@@ -173,8 +206,8 @@
 
 * Keycloakのインストール
     * Zipファイルでの実行（[参考](https://www.keycloak.org/getting-started/getting-started-zip)）
-        * [Keycloakのダウンロードサイト](https://www.keycloak.org/downloads)よりzipをダウンロードし、解凍する。        
-        
+        * [Keycloakのダウンロードサイト](https://www.keycloak.org/downloads)よりzipをダウンロードし、解凍する。
+
             ```sh
             # Windowsの場合: C:\Java\keycloak-26.6.4に解凍した場合
             cd C:\Java\keycloak-26.6.4\bin
@@ -221,7 +254,7 @@
             * Password: `password`
             * Password Confirmation: `password`
             * Temporary: OFF
-    * グループの設定  
+    * グループの設定
         * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
             * Group Name: `admin`
         * もう一度、「Create group」をクリックして新しいグループを作成する。
@@ -234,22 +267,24 @@
             * Role Name: `ADMIN`
         * もう一度、「Add Role」をクリックして新しいロールを作成する。
             * Role Name: `GENERAL`
-        * グループにロールを割り当てる            
+        * グループにロールを割り当てる
             * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
-            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
+            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに
+              `ADMIN`ロールを割り当てる。
             * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
     * BFFアプリケーションのクライアントを作成
         * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
             * Client Type: `OpenID Connect`
-            * Client ID: `sample-bff-oidc`　※任意の文字列でよい
-            * Name: `sample-bff`　※任意の文字列でよい
+            * Client ID: `sample-bff-oidc`※任意の文字列でよい
+            * Name: `sample-bff`※任意の文字列でよい
             * Client authentication: `On`
             * Authentication flow: `Standard flow`にチェック
             * Require PKCE: `On`
             * Root URL: `http://localhost:8080/`
             * Home URL: `http://localhost:8080/`
             * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
-                * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
+                * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
+                  `/login/oauth2/code/{registrationId}`
         * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
     * ログイン成功後の同意画面の表示を有効化
         * 「Settings」タブの「Login Settings」セクションで以下の設定
@@ -258,22 +293,28 @@
         * 「Settings」タブの「Logout Settings」セクションで以下の設定
             * Front channel logout: `Off`
             * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
-                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
+                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、
+                  `/logout/connect/back-channel/{registrationId}`
     * IDトークンのクレームにロールを追加する設定
-        * 「Client scopes」で、「sample-bff-oidc-dedicated」で、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
+        * 「Client scopes」で、「sample-bff-oidc-dedicated」で、「Configure a new mapper」で、「User Realm
+          Role」を選択し、ロールをマッピングする。
         * Name: `realm roles`
         * Token Claim Name: `realm_access.roles`
-        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。
+        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token
+          introspection: `On`にチェックする。
 
     * スコープの追加
         * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
-            * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
+            * 左のメニューの「Client scopes」をクリックし、「Create client
+              scope」をクリックして新しいクライアントスコープを作成する。
                 * Name: `todo`
                 * Include in token scope: `On`
-            * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
+            * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client
+              scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)
+      に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-bff-oidc`）を設定
         * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
 
@@ -282,20 +323,23 @@
 ![Keycloak認証画面](img/screen/keycloak.png)
 
 * バックチャネルログアウト
-    * アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
+    *
+    アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
         * アプリケーション側の画面で、更新ボタン、画面遷移すると、ログイン画面に遷移することを確認できる。
     * [http://localhost:8180/realms/demo/account](http://localhost:8180/realms/demo/account)
 
-        ![Keycloakログアウト画面](img/screen/keycloak-backchannel-logout.png)
-
+      ![Keycloakログアウト画面](img/screen/keycloak-backchannel-logout.png)
 
 ### Github
+
 * [参考: Spring Security OAuth 2.0 Login Sample - Login with Github](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#github-login)
 
 * GitHubアカウントを作成
 * GitHubのOAuth Appを作成
-    * GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)で、「New OAuth App」をクリックして、アプリを追加する。
-        * Application name:任意の文字列 
+    *
+    GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)
+    で、「New OAuth App」をクリックして、アプリを追加する。
+        * Application name:任意の文字列
             * 例: `demo`
         * Home Page URL: `http://localhost:8080/`
         * Authorization callback URL: `http://localhost:8080/login/oauth2/code/github`
@@ -304,7 +348,8 @@
     * Client secretsの「Generate a new client secret」をクリックして、クライアントシークレットを生成する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)
+      に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
@@ -313,17 +358,20 @@
 ![GitHub認証画面](img/screen/github.png)
 
 ### Google
+
 * [参考: Spring Security OAuth 2.0 Login Sample - Login with Google](https://github.com/spring-projects/spring-security-samples/tree/main/servlet/spring-boot/java/oauth2/login#google-login)
 
 * Googleアカウントを作成
 * [Google API Console](https://console.developers.google.com/)で、「OAuth同意画面」を作成。
-* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
+* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)
+  のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
     * アプリケーションの種類: ウェブアプリケーション
     * 名前:任意の文字列
     * 承認済みのリダイレクトURI: http://localhost:8080/login/oauth2/code/google
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)
+      に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GOOGLE_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GOOGLE_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
@@ -332,7 +380,10 @@
 ![Google認証画面](img/screen/google.png)
 
 ## （メモ）logback-access対応によるTomcatアクセスログ
-* Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
+
+* Spring
+  BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch
+  Logsへ転送することができる。
 
 * 開発端末上では、通常のテキスト形式で出力
 
@@ -385,13 +436,21 @@
 > 以降の手順が、最新化できていないので、今後見直し予定。
 
 ## Redisのローカル起動
-* MavenのデフォルトのProfile設定では、Spring Session Data Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
-* MavenのProfileを「production」に切り替えてビルドした実行可能jarでは、Spring Session Data Redisが有効化されセッションを外部管理するため、Redisサーバが必要となる。
-    * Spring Boot3系より、AutoConfigureでSpring Session Data Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring Session Data Redisが有効になる。
-    * ローカル実行時は、mvnコマンドで-P prroductionを指定してビルドする。Eclipse上では、プロジェクトのプロパティから「Maven」→「Active Maven Profiles」に「production」を追加してビルドする。    
+
+* MavenのデフォルトのProfile設定では、Spring Session Data
+  Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
+* MavenのProfileを「production」に切り替えてビルドした実行可能jarでは、Spring Session Data
+  Redisが有効化されセッションを外部管理するため、Redisサーバが必要となる。
+    * Spring Boot3系より、AutoConfigureでSpring Session Data
+      Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring
+      Session Data Redisが有効になる。
+    * ローカル実行時は、mvnコマンドで-P
+      prroductionを指定してビルドする。Eclipse上では、プロジェクトのプロパティから「Maven」→「Active
+      Maven Profiles」に「production」を追加してビルドする。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * Redisの利用するようなケースは、通常、Spring Bootのプロファイルも「production」に切り替えることを前提としている。
-* Profile「procution」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+*
+Profile「procution」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
         * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
         ```sh
@@ -407,10 +466,12 @@
         > keys *
         ```
     * RedisのKeyspace-Notificationを有効化して、キーの有効期限切れ（セッションタイムアウト）の検知できるように設定する必要がある
-        * https://docs.spring.io/spring-session/reference/api.html#api-redisindexedsessionrepository-sessiondestroyedevent        
+        * https://docs.spring.io/spring-session/reference/api.html#api-redisindexedsessionrepository-sessiondestroyedevent
         * https://redis.io/docs/manual/keyspace-notifications/
-            * Spring Session Data Redisはデフォルトで、Keyspace-Notificationを有効化してくれるが、Elasti Cache for Redisではconfigコマンドの実行が禁止されているため、当該サンプルAPでは、application-production.ymlに「spring.session.redis.configure-action」を「none」で設定しているため、redis-cliでconfigコマンド実行する手順としている。
-                * configコマンドでの「gxE」の意味                
+            * Spring Session Data Redisはデフォルトで、Keyspace-Notificationを有効化してくれるが、Elasti
+              Cache for
+              Redisではconfigコマンドの実行が禁止されているため、当該サンプルAPでは、application-production.ymlに「spring.session.redis.configure-action」を「none」で設定しているため、redis-cliでconfigコマンド実行する手順としている。
+                * configコマンドでの「gxE」の意味
                     * g: DEL, EXPIRE, RENAMEのような一般的なコマンド。
                     * x: 期限切れ（Expired）イベント。キーが有効期限切れになる毎に生成される
                     * E: キーイベント
@@ -423,14 +484,19 @@
         > config get notify-keyspace-events
         ```
 
-        * なお、ElastiCacheでKeyspace-Notificationを有効化するには、カスタムキャッシュパラメータグループで notify-keyspace-events パラメータを使用して、キースペース通知を有効にする。
+        * なお、ElastiCacheでKeyspace-Notificationを有効化するには、カスタムキャッシュパラメータグループで
+          notify-keyspace-events パラメータを使用して、キースペース通知を有効にする。
             * https://aws.amazon.com/jp/premiumsupport/knowledge-center/elasticache-redis-keyspace-notifications/
 
 ## PostgreSQLのローカル起動
+
 * Spring BootのProfileが「dev」（デフォルト）でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
-* Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+*
+Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
     * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
-* Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
+*
+Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
+
 ```sh
 #Postgres SQLの起動
 docker run --name test-postgres -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
@@ -443,21 +509,34 @@ postgres> CREATE DATABASE testdb;
 ```
 
 ## SQSの設定
-* Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
+
+* Spring
+  BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
-    * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
-    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
+    *
+    「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
+    *
+    「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 ## S3の設定
+
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:\tmpになっているので、フォルダの変更が必要な場合は、変更する。
+    *
+    application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:
+    \tmpになっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 > [!NOTE]
-> [MinIOのOSSのGitHub](https://github.com/minio/minio)はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
-> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
-> なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)であったためMinIOを同梱しての配布、利用等には注意すること。
+> [MinIOのOSSのGitHub](https://github.com/minio/minio)
+> はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)
+> してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
+> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
+> の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)
+> に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
+>
+なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)
+であったためMinIOを同梱しての配布、利用等には注意すること。
 
 > [!NOTE]
 > LocalStackのHobbyプラン（無料版）は非商用利用限定となったため、注意すること。
@@ -468,37 +547,47 @@ postgres> CREATE DATABASE testdb;
 
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIO、LocalStack、s3rver）を起動したい場合には、以下の通り
     * MinIOの場合
-        * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
-        * [REQUEST TRIAL LICENSE]のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
+        * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
+          の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
+        * [REQUEST TRIAL LICENSE]
+          のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
         * 取得したライセンスキーを、`minio.license`というファイル名で保存する
-    
+
         * 以下は、Windows版での起動例
-            * C:\minioフォルダにminio.exe、minio.licenseを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動するので適宜変更すること）
+            * C:
+              \minioフォルダにminio.exe、minio.licenseを格納して、起動した例（デフォルトポート9000番ポートで起動、コンソールは9001番ポートで起動するので適宜変更すること）
 
             ```sh        
             C:\minio\minio.exe server C:\minio\data --license C:\minio\minio.license --address ":9000" --console-address ":9001"
             ```
 
-        *  application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
+        * application-dev.ymlの「example.s3.localfake.type」を「minio」に変更し、以下の通り設定
 
-            ```yaml
-            example:
-              s3:
-                localfake:
-                  type: minio
-                  port: 9000
-                  access-key-id: minioadmin
-                  secret-access-key: minioadmin
-                bucket: mysd33bucket123
-            ```
+           ```yaml
+           example:
+             s3:
+               localfake:
+                 type: minio
+                 port: 9000
+                 access-key-id: minioadmin
+                 secret-access-key: minioadmin
+               bucket: mysd33bucket123
+           ```
 
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
-            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)（個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)（商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
-        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create Your Accountでアカウントを構築しておく。
-            * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuth Tokenを設定しておく必要がある。
-        * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
-            * ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
+            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)
+              （個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)
+              （商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
+        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create
+          Your Accountでアカウントを構築しておく。
+            * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuth
+              Tokenを設定しておく必要がある。
+        * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack
+          CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
+            *
+            ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)
+            を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
 
             ```sh
             cd localstack
@@ -542,16 +631,15 @@ postgres> CREATE DATABASE testdb;
             ```
 
     * Flociの場合
-        * [Flociのサイト](https://github.com/floci-io/floci)の手順に従い、インストールし、Flociを起動        
+        * [Flociのサイト](https://github.com/floci-io/floci)の手順に従い、インストールし、Flociを起動
         * ここでは、すでに、サンプルとしてflociフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
-            
+
             ```sh
             cd floci
             docker compose up -d
             ```        
 
         * 起動後は、localhostの4566番ポートで起動するので、以降の設定や操作は、localstackと同様である。
-
 
     * s3rverの場合
         * [s3rverのサイト](https://github.com/jamhall/s3rver)の手順に従い、npmでインストールし、s3rverを起動
@@ -572,12 +660,16 @@ postgres> CREATE DATABASE testdb;
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
     * application-production.ymlの「example.s3.bucket」プロパティを作成したバケット名に変更する。
-    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+    *
+    APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
+    /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
 ## X-Rayデーモンのローカル起動
-* Spring BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
+
+* Spring
+  BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
 * ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
-    * デーモンのダウンロード    
+    * デーモンのダウンロード
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
     * デーモンのローカル実行
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon-local.html
@@ -587,8 +679,11 @@ postgres> CREATE DATABASE testdb;
     ```    
 
 ## Dockerでのアプリ起動
+
 ### ローカルでDocker実行（Profileを「dev」でSpringBoot実行）の場合
+
 * Mavenビルド
+
 ```sh
 #Windows
 .\mvnw.cmd package
@@ -597,11 +692,13 @@ postgres> CREATE DATABASE testdb;
 ```
 
 * ローカルでDockerビルド
+
 ```sh
 docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
 ```
 
 * ローカルでDocker実行（Profileを「dev」でSpringBoot実行）
+
 ```sh
 #デフォルトのプロファイルの場合
 docker run -d -p 8080:8080 --name samplebff  --env API_BACKEND_URL=http://host.docker.internal:8000 XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
@@ -611,7 +708,9 @@ docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log
 ```
 
 ### ローカルでDocker実行（Profileを「production」でSpringBoot実行）　の場合
+
 * Mavenビルド（Profileを「production」でビルド）
+
 ```sh
 #Windows
 .\mvnw.cmd package -P production
@@ -620,11 +719,12 @@ docker run -d -p 8080:8080 --name samplebff --env SPRING_PROFILES_ACTIVE=dev,log
 ```
 
 * ローカルでDockerビルド
+
 ```sh
 docker build -t XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest .
 ```
 
-* ローカルでDocker実行（Profileを「production」でSpringBoot実行）　
+* ローカルでDocker実行（Profileを「production」でSpringBoot実行）
     * ※Redisのローカル起動、PostgreSQLのローカル起動、AWS上のSQS作成、S3作成も必要
 
 ```sh
@@ -636,16 +736,19 @@ docker run -d -p 8080:8080 -v %USERPROFILE%\.aws\:/home/app/.aws/ --name sampleb
 ```
 
 ## ECRプッシュ
+
 ```sh
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com
 docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
 ## 参考：Java Flight Recorder（JFR）の利用
+
 * 以下のサイトから、JMC（Java Mission Controll）をダウンロードしインストール
     * https://jdk.java.net/jmc/8/
 
 * Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
+
 ```
 -XX:StartFlightRecording:filename=recording.jfr
 ```
@@ -662,16 +765,21 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-02.html
 
 ## 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
-* Spring Boot APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring Boot APのスタートアップの追跡が可能になる。
+
+* Spring Boot
+  APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring
+  Boot APのスタートアップの追跡が可能になる。
 
 ```java
+
 @SpringBootApplication
 public class SampleBffApplication {
+
     public static void main(String[] args) {
         …
         // コメントアウト
         //SpringApplication.run(SampleBffApplication.class, args);
-        
+
         // FlightRecorderApplicationStartupを使った、JFRのアプリケーションのスタートアップの追跡する場合のAP起動例
         SpringApplication app = new SpringApplication(SampleBffApplication.class);
         app.setApplicationStartup(new FlightRecorderApplicationStartup());
@@ -681,6 +789,7 @@ public class SampleBffApplication {
 ```
 
 * Javaコマンド実行時、以下のJFRのオプションをつけて、SpringBootのJava APを起動
+
 ```
 -XX:StartFlightRecording:filename=recording.jfr
 ```
@@ -688,64 +797,66 @@ public class SampleBffApplication {
 * APを動作させて、JFRを記録する
 
 * AP実行が終了したら、出力されたrecording.jfrファイルを、JMCで開く
- 
-* JMC画面のアウトラインから、「イベント・ブラウザ」を選択すると、「Spring Application」という項目が追加で表示されているのが分かる。
+
+* JMC画面のアウトラインから、「イベント・ブラウザ」を選択すると、「Spring
+  Application」という項目が追加で表示されているのが分かる。
 
 * 「Startup Step」イベントで、どのBeanのインスタンス化に時間がかかっているか等分かる。
 
-* 参考 
+* 参考
     * https://hirakida29.hatenablog.com/entry/2021/01/23/213825
     * https://spring.pleiades.io/spring-boot/docs/current/reference/html/features.html#features.spring-application.startup-tracking
 
-
 ## ソフトウェアフレームワーク
+
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
-* ソースコードはcom.example.fwパッケージ配下に格納されている。    
-    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
+* ソースコードはcom.example.fwパッケージ配下に格納されている。
+    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype
+      NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
 * 各機能と実現方式は、以下の通り。
 
-| 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
-| ---- | ---- | ---- | ---- | ---- |
-| オンライン | オンラインAP制御 | SpringMVCの機能を利用し、ユーザからの要求受信、ビジネスロジック実行、応答返却まで一連の定型的な処理を実行を制御する。 | - | - |
-| | ファイルアップロード | SpringMVCのMultipartFileを利用し、ファイルをアップロードする機能を提供する。 | - | - |
-| | ファイルダウンロード | SpringMVCのViewや、Resourceを利用し、ファイルをダウンロードする機能を提供する。 | ○ | com.example.fw.web.view<br>com.example.fw.web.io |
-| | 共通画面レイアウト| Thymeleafの機能を利用し、ヘッダ、フッタ等の全画面共通のHTMLのレイアウトを一元管理する。 | - | - |
-| | ページネーション | Thymeleafの機能を利用し、一覧表示する際のページネーションの画面部品を提供する。 | ○ | com.example.fw.web.page |
-| | ユーザ認証・認可（フォーム認証） | Spring Securityを利用し、DBで管理するユーザ情報をもとにフォーム認証、認可を行う。 | - | - |
-| | ユーザ認証・認可（OIDC/OAuth2.0） | Spring Security OAuth2 Clientの機能でOIDCによるユーザ認証、認可を行う。 | - | - |
-| | API認可（OAuth2.0） | Spring Security OAuth2 Resource Serverの機能でバックエンドのAPIの認可を行う。 | - | - |
-| | セッション管理 | 通常、SpringMVCのセッション管理機能で管理するが、オートスケーリング等の対応のため、APサーバ上で保持していたセッション情報をRedisサーバ（AWSの場合、ElastiCache for Redis）に外部化するためにSpring Session Data Redisを利用する。 | - | - |
-| | 集約例外ハンドリング | SpringMVCのControllerAdviceやAOPを利用し、エラー（例外）発生時、エラーログの出力、DBのロールバック、エラー画面やエラー電文の返却といった共通的なエラーハンドリングを実施する。 | ○ | com.example.fw.web.advice、com.example.fw.web.aspect |
-| | トランザクション管理 | Spring Frameworkのトランザクション管理機能を利用して、@Transactionalアノテーションによる宣言的トランザクションを実現する機能を提供する。 | - | - |
-| | ヘルスチェック | Spring Boot Actuatorを利用して、ヘルスチェックエンドポイントを提供する。その他、Micrometerメトリックの情報提供も行う。 | - | - |
-| | グレースフルシャットダウン | SpringBootの機能で、Webサーバ（組み込みTomcat）のグレースフルシャットダウン機能を提供する 。 | - | - |
-| | トランサクショントークンチェック | TERASOLUNA Server Frameworkの共通ライブラリの機能を利用して、不正な画面遷移を防止するトランザクションチェック機能を提供する 。 | - | com.example.fw.web.token |
-| オン・バッチ共通 | RDBアクセス | MyBatisやSpringとの統合機能を利用し、DBコネクション取得、SQLの実行等のRDBへのアクセスのため定型的な処理を実施し、ORマッピングやSQLマッピングと呼ばれるドメイン層とインフラ層のインピーダンスミスマッチを吸収する機能を提供する。<br>また@TransactionalがreadOnlyかによって、Auroraのクラスタエンドポイントとリーダーエンドポイントを動的に切り替えて接続する。 | ○ | com.example.fw.common.datasource |
-| | 一時ファイル管理 | ファイルダウンロードを伴う処理等、一時的作成したファイルを明示的に削除できないため、本機能で作成した一時ファイルは一定時間後自動的に削除する機能を提供する。 | ○ | com.example.fw.common.file |
-| | オブジェクトストレージ（S3）アクセス | AWS SDK for Java 2.xのS3クライアント（S3Client)を使って、S3のアクセス機能を提供する。開発時にS3アクセスできない場合を考慮して通常のファイルシステムへのFakeに切り替える。 | ○ | com.example.fw.common.objectstorage |
-| | HTTPクライアント | WebClientやRestTemplateを利用してREST APIの呼び出しやサーバエラー時の例外の取り扱いを制御する。 | ○ | com.example.fw.common.httpclient |
-| | リトライ・サーキットブレーカ | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対する遮断やフォールバック処理等を制御する。また、WebClientのリトライ機能でエクスポネンシャルバックオフによりリトライを実現する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによりリトライ処理を提供。 | - | - |
-| | 非同期実行依頼 | Spring JMS、Amazon SQS Java Messaging Libraryを利用し、SQSの標準キューを介した非同期実行依頼のメッセージを送信する。 | ○ | com.example.fw.common.async |
-| | PDF帳票出力 | Jasper Reportsを利用してPDF帳票作成する。<br>Jasper Reportsを使った帳票の詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot) | ○ | com.example.fw.common.reports |
-| | PDF電子署名 | PDFに署名を付与する機能を提供する。署名の種類として、PKCS#12のキーストアをもとに、OpenPDFを使った基本的な署名、DSS(Digital Signature Service)を使ったPAdES署名を作成する。なおPAdESについてはAWS KMSで管理する鍵を使った署名付与にも対応している。詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot) | ○ | com.example.fw.common.digitalsignature |
-| | 署名鍵管理 | PDF署名機能で使用する署名鍵を、AWS KMSに作成し管理する機能を提供する。KMSで作成したキーペアに対して公開鍵の取得、電子署名の付与、CSRやテスト用自己署名証明書作成に対応している。詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot) | ○ | com.example.fw.common.keymanagment |
-| | 入力チェック| Java BeanValidationとSpringのValidation機能を利用し、単項目チェックや相関項目チェックといった画面の入力項目に対する形式的なチェックを実施する。 | ○ | com.example.fw.common.validation<br>com.example.fw.web.validation |
-| | メッセージ管理 | MessageResourceで画面やログに出力するメッセージを管理する。 | ○ | com.example.fw.common.message |
-| | 例外 | RuntimeExceptionを継承し、エラーコード（メッセージID）やメッセージを管理可能な共通的なビジネス例外、システム例外を提供する。 | ○ | com.example.fw.common.exception |
-| | ロギング | Slf4jとLogback、SpringBootのLogback拡張、ver3.4からのStructured Logs機能を利用し、プロファイルによって動作環境に応じたログレベルや出力先（ファイルや標準出力）、出力形式（タブ区切りやJSON）に切替可能とする。またメッセージIDをもとにログ出力可能な汎用的なAPIを提供する。<br>また、logback-accessを利用しTomcatのアクセスログを出力可能とする。 | ○ | com.example.fw.common.logging<br>com.example.fw.web.servlet |
-| | 分散トレーシング（ログ） | Micrometer Tracingを利用して、トレースIDやスパンIDをAP間でのREST API呼び出しで引継ぎ、ログにも記録することを実現する。 | - | - |
-| | 分散トレーシング（X-Ray） | X-Rayによるサービス間の分散トレーシング・可視化を実現する。2パターンの実装を提供している。<br>(1) AWS X-Ray SDKを利用する<br>(2)ADOT(AWS Distro for Open Telemetry)でAP側は未実装で自動計測する | ○ | com.example.fw.web.aspect<br>com.example.fw.servlet<br>com.example.fw.common.async<br>com.example.fw.common.dynamodb<br>com.example.fw.common.httpclient<br>com.example.fw.common.objectstorage <br> ※(1)の場合|
-| | メトリクス転送（CloudWatch） | Spring Cloud for AWSの機能により、JVM等、Spring Boot Actuatorが提供するメトリクスをCloudWatchメトリクスへ転送する。カスタムメトリクスとしてMyBatisのSQLの実行状況に対応する。 | - | - |
-| | プロパティ管理 | SpringBootのプロパティ管理を使用して、APから環境依存のパラメータを切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |
-| | プロパティ管理（SSM、Secrets Manager） | Spring Cloud for AWSの機能により、AWSのSSMパラメータストアやSecrets Managerに切り出したAPから環境依存のパラメータを、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。 | - | - |
-| | オブジェクトマッピング | MapStructを利用し、類似のプロパティを持つリソースオブジェクトやDTOとドメインオブジェクト間で、値のコピーやデータ変換処理を簡単にかつ高速に行えるようにする。 | - | - |
-| | DI | Springを利用し、DI（依存性の注入）機能を提供する。 | - | - |
-| | AOP | SpringとAspectJAOPを利用し、AOP機能を提供する。 | - | - |
-| | ボイラープレートコード排除 | Lombokを利用し、オブジェクトのコンストラクタやGetter/Setter等のソースコードを自動生成し、ボイラープレートコードを排除する。 | - | - |
-| | S3 Local起動 | 開発端末での動作確認のため、APをローカル起動可能とするようファイルシステムアクセスに差し替えたFakeやS3互換のFakeのサーバ（LocalStack、MinIO、s3ver）に接続する機能を提供する。 | ○ | com.example.fw.common.objectstorage |
+| 分類       | 機能                           | 機能概要と実現方式                                                                                                                                                                                                                       | 拡張実装 | 拡張実装の格納パッケージ                                                                                                                                                                                                 |
+|----------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| オンライン    | オンラインAP制御                    | SpringMVCの機能を利用し、ユーザからの要求受信、ビジネスロジック実行、応答返却まで一連の定型的な処理を実行を制御する。                                                                                                                                                                 | -    | -                                                                                                                                                                                                            |
+|          | ファイルアップロード                   | SpringMVCのMultipartFileを利用し、ファイルをアップロードする機能を提供する。                                                                                                                                                                               | -    | -                                                                                                                                                                                                            |
+|          | ファイルダウンロード                   | SpringMVCのViewや、Resourceを利用し、ファイルをダウンロードする機能を提供する。                                                                                                                                                                              | ○    | com.example.fw.web.view<br>com.example.fw.web.io                                                                                                                                                             |
+|          | 共通画面レイアウト                    | Thymeleafの機能を利用し、ヘッダ、フッタ等の全画面共通のHTMLのレイアウトを一元管理する。                                                                                                                                                                              | -    | -                                                                                                                                                                                                            |
+|          | ページネーション                     | Thymeleafの機能を利用し、一覧表示する際のページネーションの画面部品を提供する。                                                                                                                                                                                    | ○    | com.example.fw.web.page                                                                                                                                                                                      |
+|          | ユーザ認証・認可（フォーム認証）             | Spring Securityを利用し、DBで管理するユーザ情報をもとにフォーム認証、認可を行う。                                                                                                                                                                               | -    | -                                                                                                                                                                                                            |
+|          | ユーザ認証・認可（OIDC/OAuth2.0）      | Spring Security OAuth2 Clientの機能でOIDCによるユーザ認証、認可を行う。                                                                                                                                                                            | -    | -                                                                                                                                                                                                            |
+|          | API認可（OAuth2.0）              | Spring Security OAuth2 Resource Serverの機能でバックエンドのAPIの認可を行う。                                                                                                                                                                     | -    | -                                                                                                                                                                                                            |
+|          | セッション管理                      | 通常、SpringMVCのセッション管理機能で管理するが、オートスケーリング等の対応のため、APサーバ上で保持していたセッション情報をRedisサーバ（AWSの場合、ElastiCache for Redis）に外部化するためにSpring Session Data Redisを利用する。                                                                               | -    | -                                                                                                                                                                                                            |
+|          | 集約例外ハンドリング                   | SpringMVCのControllerAdviceやAOPを利用し、エラー（例外）発生時、エラーログの出力、DBのロールバック、エラー画面やエラー電文の返却といった共通的なエラーハンドリングを実施する。                                                                                                                          | ○    | com.example.fw.web.advice、com.example.fw.web.aspect                                                                                                                                                          |
+|          | トランザクション管理                   | Spring Frameworkのトランザクション管理機能を利用して、@Transactionalアノテーションによる宣言的トランザクションを実現する機能を提供する。                                                                                                                                             | -    | -                                                                                                                                                                                                            |
+|          | ヘルスチェック                      | Spring Boot Actuatorを利用して、ヘルスチェックエンドポイントを提供する。その他、Micrometerメトリックの情報提供も行う。                                                                                                                                                      | -    | -                                                                                                                                                                                                            |
+|          | グレースフルシャットダウン                | SpringBootの機能で、Webサーバ（組み込みTomcat）のグレースフルシャットダウン機能を提供する 。                                                                                                                                                                        | -    | -                                                                                                                                                                                                            |
+|          | トランサクショントークンチェック             | TERASOLUNA Server Frameworkの共通ライブラリの機能を利用して、不正な画面遷移を防止するトランザクションチェック機能を提供する 。                                                                                                                                                   | -    | com.example.fw.web.token                                                                                                                                                                                     |
+| オン・バッチ共通 | RDBアクセス                      | MyBatisやSpringとの統合機能を利用し、DBコネクション取得、SQLの実行等のRDBへのアクセスのため定型的な処理を実施し、ORマッピングやSQLマッピングと呼ばれるドメイン層とインフラ層のインピーダンスミスマッチを吸収する機能を提供する。<br>また@TransactionalがreadOnlyかによって、Auroraのクラスタエンドポイントとリーダーエンドポイントを動的に切り替えて接続する。                    | ○    | com.example.fw.common.datasource                                                                                                                                                                             |
+|          | 一時ファイル管理                     | ファイルダウンロードを伴う処理等、一時的作成したファイルを明示的に削除できないため、本機能で作成した一時ファイルは一定時間後自動的に削除する機能を提供する。                                                                                                                                                  | ○    | com.example.fw.common.file                                                                                                                                                                                   |
+|          | オブジェクトストレージ（S3）アクセス          | AWS SDK for Java 2.xのS3クライアント（S3Client)を使って、S3のアクセス機能を提供する。開発時にS3アクセスできない場合を考慮して通常のファイルシステムへのFakeに切り替える。                                                                                                                        | ○    | com.example.fw.common.objectstorage                                                                                                                                                                          |
+|          | HTTPクライアント                   | WebClientやRestTemplateを利用してREST APIの呼び出しやサーバエラー時の例外の取り扱いを制御する。                                                                                                                                                                  | ○    | com.example.fw.common.httpclient                                                                                                                                                                             |
+|          | リトライ・サーキットブレーカ               | Spring Cloud Circuit Breaker（Resillience4j）を利用し、REST APIの呼び出しでの一時的な障害に対する遮断やフォールバック処理等を制御する。また、WebClientのリトライ機能でエクスポネンシャルバックオフによりリトライを実現する。なお、AWSリソースのAPI呼び出しは、AWS SDKにてエクスポネンシャルバックオフによりリトライ処理を提供。                             | -    | -                                                                                                                                                                                                            |
+|          | 非同期実行依頼                      | Spring JMS、Amazon SQS Java Messaging Libraryを利用し、SQSの標準キューを介した非同期実行依頼のメッセージを送信する。                                                                                                                                               | ○    | com.example.fw.common.async                                                                                                                                                                                  |
+|          | PDF帳票出力                      | Jasper Reportsを利用してPDF帳票作成する。<br>Jasper Reportsを使った帳票の詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot)                                                                                                    | ○    | com.example.fw.common.reports                                                                                                                                                                                |
+|          | PDF電子署名                      | PDFに署名を付与する機能を提供する。署名の種類として、PKCS#12のキーストアをもとに、OpenPDFを使った基本的な署名、DSS(Digital Signature Service)を使ったPAdES署名を作成する。なおPAdESについてはAWS KMSで管理する鍵を使った署名付与にも対応している。詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot) | ○    | com.example.fw.common.digitalsignature                                                                                                                                                                       |
+|          | 署名鍵管理                        | PDF署名機能で使用する署名鍵を、AWS KMSに作成し管理する機能を提供する。KMSで作成したキーペアに対して公開鍵の取得、電子署名の付与、CSRやテスト用自己署名証明書作成に対応している。詳しい説明は[こちら](https://github.com/mysd33/sample-jasperreports-springboot)                                                          | ○    | com.example.fw.common.keymanagment                                                                                                                                                                           |
+|          | 入力チェック                       | Java BeanValidationとSpringのValidation機能を利用し、単項目チェックや相関項目チェックといった画面の入力項目に対する形式的なチェックを実施する。                                                                                                                                       | ○    | com.example.fw.common.validation<br>com.example.fw.web.validation                                                                                                                                            |
+|          | メッセージ管理                      | MessageResourceで画面やログに出力するメッセージを管理する。                                                                                                                                                                                           | ○    | com.example.fw.common.message                                                                                                                                                                                |
+|          | 例外                           | RuntimeExceptionを継承し、エラーコード（メッセージID）やメッセージを管理可能な共通的なビジネス例外、システム例外を提供する。                                                                                                                                                         | ○    | com.example.fw.common.exception                                                                                                                                                                              |
+|          | ロギング                         | Slf4jとLogback、SpringBootのLogback拡張、ver3.4からのStructured Logs機能を利用し、プロファイルによって動作環境に応じたログレベルや出力先（ファイルや標準出力）、出力形式（タブ区切りやJSON）に切替可能とする。またメッセージIDをもとにログ出力可能な汎用的なAPIを提供する。<br>また、logback-accessを利用しTomcatのアクセスログを出力可能とする。              | ○    | com.example.fw.common.logging<br>com.example.fw.web.servlet                                                                                                                                                  |
+|          | 分散トレーシング（ログ）                 | Micrometer Tracingを利用して、トレースIDやスパンIDをAP間でのREST API呼び出しで引継ぎ、ログにも記録することを実現する。                                                                                                                                                     | -    | -                                                                                                                                                                                                            |
+|          | 分散トレーシング（X-Ray）              | X-Rayによるサービス間の分散トレーシング・可視化を実現する。2パターンの実装を提供している。<br>(1) AWS X-Ray SDKを利用する<br>(2)ADOT(AWS Distro for Open Telemetry)でAP側は未実装で自動計測する                                                                                             | ○    | com.example.fw.web.aspect<br>com.example.fw.servlet<br>com.example.fw.common.async<br>com.example.fw.common.dynamodb<br>com.example.fw.common.httpclient<br>com.example.fw.common.objectstorage <br> ※(1)の場合 |
+|          | メトリクス転送（CloudWatch）          | Spring Cloud for AWSの機能により、JVM等、Spring Boot Actuatorが提供するメトリクスをCloudWatchメトリクスへ転送する。カスタムメトリクスとしてMyBatisのSQLの実行状況に対応する。                                                                                                          | -    | -                                                                                                                                                                                                            |
+|          | プロパティ管理                      | SpringBootのプロパティ管理を使用して、APから環境依存のパラメータを切り出し、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。                                                                                                                                                 | -    | -                                                                                                                                                                                                            |
+|          | プロパティ管理（SSM、Secrets Manager） | Spring Cloud for AWSの機能により、AWSのSSMパラメータストアやSecrets Managerに切り出したAPから環境依存のパラメータを、プロファイルによって動作環境に応じたパラメータ値に置き換え可能とする。                                                                                                             | -    | -                                                                                                                                                                                                            |
+|          | オブジェクトマッピング                  | MapStructを利用し、類似のプロパティを持つリソースオブジェクトやDTOとドメインオブジェクト間で、値のコピーやデータ変換処理を簡単にかつ高速に行えるようにする。                                                                                                                                            | -    | -                                                                                                                                                                                                            |
+|          | DI                           | Springを利用し、DI（依存性の注入）機能を提供する。                                                                                                                                                                                                   | -    | -                                                                                                                                                                                                            |
+|          | AOP                          | SpringとAspectJAOPを利用し、AOP機能を提供する。                                                                                                                                                                                               | -    | -                                                                                                                                                                                                            |
+|          | ボイラープレートコード排除                | Lombokを利用し、オブジェクトのコンストラクタやGetter/Setter等のソースコードを自動生成し、ボイラープレートコードを排除する。                                                                                                                                                         | -    | -                                                                                                                                                                                                            |
+|          | S3 Local起動                   | 開発端末での動作確認のため、APをローカル起動可能とするようファイルシステムアクセスに差し替えたFakeやS3互換のFakeのサーバ（LocalStack、MinIO、s3ver）に接続する機能を提供する。                                                                                                                         | ○    | com.example.fw.common.objectstorage                                                                                                                                                                          |
 
 * 以下は、今後追加適用を検討中。
 
-| 分類 | 機能 | 機能概要と実現方式 | 拡張実装 | 拡張実装の格納パッケージ |
-| ---- | ---- | ---- | ---- | ---- |
-| オン・バッチ共通 | テストコード作成支援 | JUnit、Mockito、Springのテスト機能を利用して、単体テストコードや結合テストコードの実装を支援する機能を提供する。 | - | - |
+| 分類       | 機能         | 機能概要と実現方式                                                         | 拡張実装 | 拡張実装の格納パッケージ |
+|----------|------------|-------------------------------------------------------------------|------|--------------|
+| オン・バッチ共通 | テストコード作成支援 | JUnit、Mockito、Springのテスト機能を利用して、単体テストコードや結合テストコードの実装を支援する機能を提供する。 | -    | -            |
