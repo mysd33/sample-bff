@@ -1,5 +1,6 @@
 package com.example.bff.infra.repository;
 
+import static com.example.bff.infra.repository.OAuth2Helper.CLIENT_REGISTRATION_ID;
 import static org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver.clientRegistrationId;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
@@ -29,7 +30,6 @@ import reactor.util.retry.Retry;
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClientOAuth2 implements TodoRepository {
 
-    static final String CLIENT_REGISTRATION_ID = "keycloak";
     private final WebClient webClientWithOIDC;
     private final WebClientResponseErrorHandler responseErrorHandler;
     // サーキットブレーカ
