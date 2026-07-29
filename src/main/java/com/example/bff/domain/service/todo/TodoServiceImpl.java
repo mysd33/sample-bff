@@ -1,16 +1,16 @@
 package com.example.bff.domain.service.todo;
 
-import java.util.Collection;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.domain.message.CommonMessageIds;
 import com.example.bff.domain.model.Todo;
 import com.example.bff.domain.repository.TodoRepository;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /// TodoServiceの実装クラス
 @XRayEnabled
@@ -19,16 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class TodoServiceImpl implements TodoService {
+
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
-    private final TodoRepository todoRepository;
+    private final TodoRepository todoRepositoryAdapter;
 
     @Override
     @Transactional(readOnly = true)
     public Collection<Todo> findAllByUserId(String userId) {
         appLogger.info(CommonMessageIds.I_CMN_0001);
 
-        return todoRepository.findAllByUserId(userId);
+        return todoRepositoryAdapter.findAllByUserId(userId);
     }
 
     @Override
@@ -39,24 +40,24 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public Todo create(Todo todo) {
-        todoRepository.create(todo);
+        todoRepositoryAdapter.create(todo);
 
         return todo;
     }
 
     @Override
     public void finish(String todoId) {
-        todoRepository.update(Todo.builder().todoId(todoId).build());
+        todoRepositoryAdapter.update(Todo.builder().todoId(todoId).build());
     }
 
     @Override
     public void delete(String todoId) {
         Todo todo = doFindOne(todoId);
-        todoRepository.delete(todo);
+        todoRepositoryAdapter.delete(todo);
     }
 
     private Todo doFindOne(String todoId) {
-        return todoRepository.findById(todoId).orElse(null);
+        return todoRepositoryAdapter.findById(todoId).orElse(null);
     }
 
 }

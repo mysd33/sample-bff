@@ -13,22 +13,12 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -37,21 +27,15 @@ import reactor.util.retry.Retry;
 @XRayEnabled
 @Repository
 @RequiredArgsConstructor
-public class TodoRepositoryImplByWebClient implements TodoRepository {
+public class TodoRepositoryImplByWebClientOAuth2 implements TodoRepository {
 
-    public static final String CLIENT_REGISTRATION_ID = "keycloak";
-
-    //TODO: OIDCありと、無しのWebClientのBeanを2つ用意しないとだめそう
-    private final WebClient webClient;
+    static final String CLIENT_REGISTRATION_ID = "keycloak";
     private final WebClient webClientWithOIDC;
     private final WebClientResponseErrorHandler responseErrorHandler;
     // サーキットブレーカ
     // （参考）https://spring.io/projects/spring-cloud-circuitbreaker
     @SuppressWarnings("rawtypes")
     private final ReactiveCircuitBreakerFactory cbFactory;
-
-    @Nullable
-    private final OAuth2AuthorizedClientService authorizedClientService;
 
     // リトライ回数
     @Value("${example.api.retry.max-attempts:3}")
@@ -63,14 +47,6 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     @Value("${example.api.backend.url}")
     private String backendUrl;
 
-    // Basic認証のユーザー名
-    @Value("${example.api.backend.basic-auth.username:}")
-    private String basicAuthUsername;
-
-    // Basic認証のパスワード
-    @Value("${example.api.backend.basic-auth.password:}")
-    private String basicAuthPassword;
-
     // WebClient(WebFlux)版の実装の参考ページ
     // https://news.mynavi.jp/techplus/article/techp5348/
     // https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-client
@@ -79,9 +55,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     @Override
     public Optional<Todo> findById(String todoId) {
-        var todoRequestHeaderSpec = webClient().get().uri(todoByIdUrl(), todoId);//
-        var todoRequestHeaderSpecWithAuthInfo = addAuthInfo(todoRequestHeaderSpec);
-        var todoMono = todoRequestHeaderSpecWithAuthInfo
+        var todoMono = webClientWithOIDC.get().uri(todoByIdUrl(), todoId)
+            // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
+            .attributes(clientRegistrationId(CLIENT_REGISTRATION_ID))
             .retrieve()//
             .onStatus(HttpStatusCode::is4xxClientError,
                 responseErrorHandler::createClientErrorException)//
@@ -102,9 +78,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
     public Collection<Todo> findAllByUserId(String userId) {
         var uri =
             UriComponentsBuilder.fromUriString(todosUrl()).queryParam("user_id", userId).build();
-        var todoRequestHeaderSpec = webClient().get().uri(uri.toUri());//
-        var todoRequestHeaderSpecWithAuthInfo = addAuthInfo(todoRequestHeaderSpec);
-        var todoListMono = todoRequestHeaderSpecWithAuthInfo
+        var todoListMono = webClientWithOIDC.get().uri(uri.toUri())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
             .attributes(
                 clientRegistrationId(CLIENT_REGISTRATION_ID))//
@@ -126,12 +100,9 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     @Override
     public void create(Todo todo) {
-        var todoRequestBodySpec = webClient().post().uri(todosUrl());//
-        var todoRequestBodySpecWithAuthInfo = addAuthInfo(todoRequestBodySpec);
-        todoRequestBodySpecWithAuthInfo
+        webClientWithOIDC.post().uri(todosUrl())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
-            .attributes(
-                clientRegistrationId(CLIENT_REGISTRATION_ID))//
+            .attributes(clientRegistrationId(CLIENT_REGISTRATION_ID))//
             .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
             .retrieve()//
             .onStatus(HttpStatusCode::is4xxClientError,
@@ -150,9 +121,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     @Override
     public boolean update(Todo todo) {
-        var todoRequestBodySpec = webClient().put().uri(todoByIdUrl(), todo.getTodoId());
-        var todoRequestBodySpecWithAuthInfo = addAuthInfo(todoRequestBodySpec);
-        todoRequestBodySpecWithAuthInfo
+        webClientWithOIDC.put().uri(todoByIdUrl(), todo.getTodoId())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
             .attributes(
                 clientRegistrationId(CLIENT_REGISTRATION_ID))//
@@ -174,9 +143,7 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
 
     @Override
     public boolean delete(Todo todo) {
-        var todoRequestHeaderSpec = webClient().delete().uri(todoByIdUrl(), todo.getTodoId());
-        var todoRequestHeaderSpecWithAuthInfo = addAuthInfo(todoRequestHeaderSpec);
-        todoRequestHeaderSpecWithAuthInfo
+        webClientWithOIDC.delete().uri(todoByIdUrl(), todo.getTodoId())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
             .attributes(
                 clientRegistrationId(CLIENT_REGISTRATION_ID))//
@@ -196,70 +163,15 @@ public class TodoRepositoryImplByWebClient implements TodoRepository {
         return true;
     }
 
-    /// KeyCloakのアクセストークンが存在する場合OIDC/Auth用のWebClient、そうでない場合は普通のWebClientを返す
-    private WebClient webClient() {
-        return resolveAccessToken() ? webClientWithOIDC : webClient;
-    }
-
-
     /// KeyCloakのアクセストークンが存在する場合はv2、なければv1のURLを返す
     private String todosUrl() {
-        String path = resolveAccessToken() ? "/api/v2/todos" : "/api/v1/todos";
-        return UriComponentsBuilder.fromUriString(backendUrl).path(path).build().toUriString();
+        return UriComponentsBuilder.fromUriString(backendUrl).path("/api/v2/todos").build()
+            .toUriString();
     }
 
     /// KeyCloakのアクセストークンが存在する場合はv2、なければv1のURLを返す
     private String todoByIdUrl() {
-        String path = resolveAccessToken() ? "/api/v2/todos/{todoId}" : "/api/v1/todos/{todoId}";
-        return UriComponentsBuilder.fromUriString(backendUrl).path(path).build().toUriString();
-    }
-
-    /// KeyCloakのアクセストークンがあれば、リクエストに付与する
-    /// それ以外は、Basic認証で呼び出すようにする
-    private @NonNull RequestHeadersSpec<? extends RequestHeadersSpec<?>> addAuthInfo(
-        RequestHeadersSpec<? extends RequestHeadersSpec<?>> todoRequestHeaderSpec) {
-        return resolveAccessToken() ?
-            todoRequestHeaderSpec
-                .attributes(clientRegistrationId(CLIENT_REGISTRATION_ID))//
-            : todoRequestHeaderSpec.headers(httpHeaders ->
-                httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword)
-            );
-    }
-
-    /// KeyCloakアクセストークンがあれば、リクエストに付与する
-    /// それ以外は、Basic認証で呼び出すようにする
-    private WebClient.RequestBodySpec addAuthInfo(
-        RequestBodySpec todoRequestBodySpec) {
-        return resolveAccessToken() ?
-            todoRequestBodySpec
-                .attributes(clientRegistrationId(CLIENT_REGISTRATION_ID))
-            : todoRequestBodySpec.headers(httpHeaders ->
-                httpHeaders.setBasicAuth(basicAuthUsername, basicAuthPassword)
-            );
-    }
-
-    /// Spring Securityで管理されているアクセストークンを取得する。存在しない場合はnullを返す
-    private boolean resolveAccessToken() {
-        if (authorizedClientService == null) {
-            return false;
-        }
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof OAuth2AuthenticationToken oauth2Authentication)) {
-            return false;
-        }
-        // サンプルAPではKeyCloakの場合のみアクセストークンを送信するようにする
-        // (それ以外のIdPでは対応が難しいのでBasic認証にする)
-        if (!CLIENT_REGISTRATION_ID.equals(
-            oauth2Authentication.getAuthorizedClientRegistrationId())) {
-            return false;
-        }
-        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
-            oauth2Authentication.getAuthorizedClientRegistrationId(),
-            oauth2Authentication.getName());
-        if (authorizedClient == null) {
-            return false;
-        }
-        OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
-        return accessToken != null && StringUtils.hasText(accessToken.getTokenValue());
+        return UriComponentsBuilder.fromUriString(backendUrl).path("/api/v2/todos/{todoId}").build()
+            .toUriString();
     }
 }
