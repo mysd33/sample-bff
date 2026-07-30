@@ -259,18 +259,17 @@ Backendアプリケーションについては、[sample-backendプロジェク�
             * Group Name: `admin`
         * もう一度、「Create group」をクリックして新しいグループを作成する。
             * Group Name: `general`
-        * Membersタブをクリックし、「Add menber」をクリックし、作成したユーザをグループに割り当てる。
+        * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
             * adminグループに、ユーザ`yamadatr`を割り当てる。
             * generalグループに、ユーザ`tamuraichr`を割り当てる。
     * ロールの設定
-        * 左のメニューの「Roles」をクリックし、「Add Role」をクリックして新しいロールを作成する。
+        * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
             * Role Name: `ADMIN`
-        * もう一度、「Add Role」をクリックして新しいロールを作成する。
+        * もう一度、「Create Role」をクリックして新しいロールを作成する。
             * Role Name: `GENERAL`
         * グループにロールを割り当てる
             * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
-            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに
-              `ADMIN`ロールを割り当てる。
+            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
             * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
     * BFFアプリケーションのクライアントを作成
         * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
@@ -285,6 +284,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
             * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
                 * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
                   `/login/oauth2/code/{registrationId}`
+            * Valid post logout redirect URIs: `http://localhost:8080/`
         * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
     * ログイン成功後の同意画面の表示を有効化
         * 「Settings」タブの「Login Settings」セクションで以下の設定
@@ -293,24 +293,21 @@ Backendアプリケーションについては、[sample-backendプロジェク�
         * 「Settings」タブの「Logout Settings」セクションで以下の設定
             * Front channel logout: `Off`
             * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
-                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、
-                  `/logout/connect/back-channel/{registrationId}`
+                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
     * IDトークンのクレームにロールを追加する設定
-        * 「Client scopes」で、「sample-bff-oidc-dedicated」で、「Configure a new mapper」で、「User Realm
-          Role」を選択し、ロールをマッピングする。
+        * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
+        * 「Client scopes」タブで、「sample-bff-oidc-dedicated」を選択、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
         * Name: `realm roles`
         * Token Claim Name: `realm_access.roles`
-        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token
-          introspection: `On`にチェックする。
+        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。
 
     * スコープの追加
         * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
-            * 左のメニューの「Client scopes」をクリックし、「Create client
-              scope」をクリックして新しいクライアントスコープを作成する。
+            * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
                 * Name: `todo`
                 * Include in token scope: `On`
-            * クライアントの`sample-bff-oidc`、「Client scopes」タブをクリックし、「Add client
-              scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
+            * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
+            * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
     * [application-dev.yaml](./src/main/resources/application-dev.yml)
@@ -323,8 +320,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
 ![Keycloak認証画面](img/screen/keycloak.png)
 
 * バックチャネルログアウト
-    *
-    アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
+    * アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
         * アプリケーション側の画面で、更新ボタン、画面遷移すると、ログイン画面に遷移することを確認できる。
     * [http://localhost:8180/realms/demo/account](http://localhost:8180/realms/demo/account)
 
@@ -336,9 +332,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
 
 * GitHubアカウントを作成
 * GitHubのOAuth Appを作成
-    *
-    GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)
-    で、「New OAuth App」をクリックして、アプリを追加する。
+    * GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)で、「New OAuth App」をクリックして、アプリを追加する。
         * Application name:任意の文字列
             * 例: `demo`
         * Home Page URL: `http://localhost:8080/`
@@ -348,8 +342,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
     * Client secretsの「Generate a new client secret」をクリックして、クライアントシークレットを生成する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)
-      に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
@@ -363,8 +356,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
 
 * Googleアカウントを作成
 * [Google API Console](https://console.developers.google.com/)で、「OAuth同意画面」を作成。
-* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)
-  のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
+* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
     * アプリケーションの種類: ウェブアプリケーション
     * 名前:任意の文字列
     * 承認済みのリダイレクトURI: http://localhost:8080/login/oauth2/code/google
@@ -381,9 +373,7 @@ Backendアプリケーションについては、[sample-backendプロジェク�
 
 ## （メモ）logback-access対応によるTomcatアクセスログ
 
-* Spring
-  BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch
-  Logsへ転送することができる。
+* Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
 
 * 開発端末上では、通常のテキスト形式で出力
 
@@ -437,20 +427,13 @@ Backendアプリケーションについては、[sample-backendプロジェク�
 
 ## Redisのローカル起動
 
-* MavenのデフォルトのProfile設定では、Spring Session Data
-  Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
-* MavenのProfileを「production」に切り替えてビルドした実行可能jarでは、Spring Session Data
-  Redisが有効化されセッションを外部管理するため、Redisサーバが必要となる。
-    * Spring Boot3系より、AutoConfigureでSpring Session Data
-      Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring
-      Session Data Redisが有効になる。
-    * ローカル実行時は、mvnコマンドで-P
-      prroductionを指定してビルドする。Eclipse上では、プロジェクトのプロパティから「Maven」→「Active
-      Maven Profiles」に「production」を追加してビルドする。
+* MavenのデフォルトのProfile設定では、Spring Session Data Redisのjarを読み込まないようにして無効化し、オンメモリでのセッション管理となっているので、何もしなくてよい。
+* MavenのProfileを「production」に切り替えてビルドした実行可能jarでは、Spring Session Data Redisが有効化されセッションを外部管理するため、Redisサーバが必要となる。
+    * Spring Boot3系より、AutoConfigureでSpring Session Data Redisがクラスパスに存在するかによって有効になるため、mavenのプロファイルも「production」を指定してビルドするとSpring Session Data Redisが有効になる。
+    * ローカル実行時は、mvnコマンドで-P productionを指定してビルドする。Eclipse上では、プロジェクトのプロパティから「Maven」→「Active Maven Profiles」に「production」を追加してビルドする。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * Redisの利用するようなケースは、通常、Spring Bootのプロファイルも「production」に切り替えることを前提としている。
-*
-Profile「procution」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+* Profile「production」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
         * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
         ```sh
@@ -491,11 +474,9 @@ Profile「procution」でビルドしたAPをローカル実行する場合は�
 ## PostgreSQLのローカル起動
 
 * Spring BootのProfileが「dev」（デフォルト）でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
-*
-Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+* Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
     * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
-*
-Profile「procution」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
+* Profile「production」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
 
 ```sh
 #Postgres SQLの起動
@@ -510,21 +491,16 @@ postgres> CREATE DATABASE testdb;
 
 ## SQSの設定
 
-* Spring
-  BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
+* Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にAWS上にSQSのバケットを作成する必要がある。
-    *
-    「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
-    *
-    「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
+    * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等して、sample-bff、sample-batchの両方のプロジェクトのプロファイルを「production」に変えて実行する。
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 ## S3の設定
 
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    *
-    application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、C:
-    \tmpになっているので、フォルダの変更が必要な場合は、変更する。
+    * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、`C:\tmp`になっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 > [!NOTE]
@@ -547,10 +523,8 @@ postgres> CREATE DATABASE testdb;
 
 * Profileが「dev」でも、S3のローカル起動用のFake（MinIO、LocalStack、s3rver）を起動したい場合には、以下の通り
     * MinIOの場合
-        * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
-          の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
-        * [REQUEST TRIAL LICENSE]
-          のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
+        * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
+        * [REQUEST TRIAL LICENSE]のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
         * 取得したライセンスキーを、`minio.license`というファイル名で保存する
 
         * 以下は、Windows版での起動例
@@ -576,18 +550,12 @@ postgres> CREATE DATABASE testdb;
 
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
-            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)
-              （個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)
-              （商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
-        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create
-          Your Accountでアカウントを構築しておく。
-            * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuth
-              Tokenを設定しておく必要がある。
+            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)（個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)（商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
+        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create Your Accountでアカウントを構築しておく。
+            * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuthTokenを設定しておく必要がある。
         * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack
           CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
-            *
-            ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)
-            を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
+            * ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
 
             ```sh
             cd localstack
@@ -660,20 +628,18 @@ postgres> CREATE DATABASE testdb;
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にAWS上に、S3のバケットを作成する必要がある。
     * application-production.ymlの「example.s3.bucket」プロパティを作成したバケット名に変更する。
-    *
-    APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
-    /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
 ## X-Rayデーモンのローカル起動
 
-* Spring
-  BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
+* Spring BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
 * ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
     * デーモンのダウンロード
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
     * デーモンのローカル実行
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon-local.html
 * Windows版の場合の起動例（C:\aws-xray-daemon-windows-process-3.xフォルダにxray_windows.exeを格納した例）
+
     ```    
     C:\aws-xray-daemon-windows-process-3.x\xray_windows.exe -o -n ap-northeast-1
     ```    
@@ -766,9 +732,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 ## 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
 
-* Spring Boot
-  APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring
-  Boot APのスタートアップの追跡が可能になる。
+* Spring Boot APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring Boot APのスタートアップの追跡が可能になる。
 
 ```java
 
@@ -811,8 +775,7 @@ public class SampleBffApplication {
 
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
 * ソースコードはcom.example.fwパッケージ配下に格納されている。
-    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype
-      NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
+    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
 * 各機能と実現方式は、以下の通り。
 
 | 分類       | 機能                           | 機能概要と実現方式                                                                                                                                                                                                                       | 拡張実装 | 拡張実装の格納パッケージ                                                                                                                                                                                                 |
