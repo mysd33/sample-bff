@@ -46,6 +46,7 @@ spring:
       - optional:aws-secretsmanager:${DB_SECRETS_NAME}?prefix=spring.datasource.
       - optional:aws-secretsmanager:${DB_SECRETS_NAME}?prefix=example.datasource.read.
       - optional:aws-secretsmanager:${DB_SECRETS_NAME}?prefix=example.datasource.write.
+      - optional:aws-secretsmanager:${BASIC_AUTH_SECRETS_NAME}?prefix=example.api.backend.basic-auth.
 
 # Spring Boot Actuator
 management:
