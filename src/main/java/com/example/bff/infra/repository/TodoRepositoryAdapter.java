@@ -5,9 +5,9 @@ import com.example.bff.domain.repository.TodoRepository;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class TodoRepositoryAdapter implements TodoRepository {
 
