@@ -1,10 +1,9 @@
 package com.example.bff.app.web.todo;
 
+import com.example.bff.domain.model.Todo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants.ComponentModel;
-
-import com.example.bff.domain.model.Todo;
 
 /// MapStructを使ったTodoのマッパークラス
 @Mapper(componentModel = ComponentModel.SPRING)
@@ -20,6 +19,7 @@ public interface TodoMapper {
     ///
     /// @param form Form
     /// @return Model
+    @Mapping(target = "userId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "finished", ignore = true)
     Todo formToModel(TodoForm form);
