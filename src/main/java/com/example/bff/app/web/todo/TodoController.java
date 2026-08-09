@@ -1,15 +1,5 @@
 package com.example.bff.app.web.todo;
 
-import java.util.Collection;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.example.bff.app.web.common.authentication.AuthenticationUtil;
 import com.example.bff.app.web.todo.TodoForm.TodoCreate;
@@ -23,7 +13,17 @@ import com.example.fw.common.exception.BusinessException;
 import com.example.fw.common.message.ResultMessage;
 import com.example.fw.common.message.ResultMessageType;
 import jakarta.validation.groups.Default;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /// Todo機能のコントローラクラス
 @XRayEnabled
@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("todo")
 @RequiredArgsConstructor
 public class TodoController {
+
     private final TodoService todoService;
     private final TodoMapper todoMapper;
 
@@ -54,7 +55,7 @@ public class TodoController {
     /// Todoの登録
     @PostMapping("create")
     public String create(@Validated({Default.class, TodoCreate.class}) TodoForm todoForm,
-            BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+        BindingResult bindingResult, Model model, RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return list(model);
         }
@@ -68,17 +69,17 @@ public class TodoController {
             todoService.create(todo);
         } catch (BusinessException e) {
             model.addAttribute(e.getResultMessage());
-            return list(model);
+            return "todo/todoList";
         }
         attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
-                .code(MessageIds.I_EX_0001).build());
+            .code(MessageIds.I_EX_0001).build());
         return "redirect:/todo/list";
     }
 
     /// Todoの完了
     @PostMapping("finish")
     public String finish(@Validated({Default.class, TodoFinish.class}) TodoForm form,
-            BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+        BindingResult bindingResult, Model model, RedirectAttributes attributes) {
         if (bindingResult.hasErrors()) {
             return list(model);
         }
@@ -89,13 +90,13 @@ public class TodoController {
             return list(model);
         }
         attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
-                .code(MessageIds.I_EX_0002).build());
+            .code(MessageIds.I_EX_0002).build());
         return "redirect:/todo/list";
     }
 
     @PostMapping("delete")
     public String delete(@Validated({Default.class, TodoDelete.class}) TodoForm form,
-            BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+        BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 
         if (bindingResult.hasErrors()) {
             return list(model);
@@ -108,7 +109,7 @@ public class TodoController {
             return list(model);
         }
         attributes.addFlashAttribute(ResultMessage.builder().type(ResultMessageType.INFO)
-                .code(MessageIds.I_EX_0003).build());
+            .code(MessageIds.I_EX_0003).build());
         return "redirect:/todo/list";
     }
 }

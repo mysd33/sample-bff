@@ -46,7 +46,7 @@ public class TodoRepositoryAdapter implements TodoRepository {
 
 
     private TodoRepository todoRepository() {
-        return oAuth2Helper.resolveAccessToken() ?
+        return oAuth2Helper.isWebAPIByOAuth() ?
             todoRepositoryImplByWebClientOAuth2Auth : todoRepositoryImplByWebClientBasicAuth;
     }
 
