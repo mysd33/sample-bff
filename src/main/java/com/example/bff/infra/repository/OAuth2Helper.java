@@ -43,6 +43,6 @@ public class OAuth2Helper {
         }
         // アクセストークンが存在するか
         OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
-        return accessToken != null && StringUtils.hasText(accessToken.getTokenValue());
+        return StringUtils.hasText(accessToken.getTokenValue());
     }
 }

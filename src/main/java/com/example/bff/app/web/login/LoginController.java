@@ -3,9 +3,14 @@ package com.example.bff.app.web.login;
 import com.example.bff.app.web.common.authentication.AuthenticationUtil;
 import com.example.fw.common.logging.ApplicationLogger;
 import com.example.fw.common.logging.LoggerFactory;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -16,11 +21,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /// ログイン機能のコントローラクラス
+@RequiredArgsConstructor
+
 @Controller
 @Slf4j
 public class LoginController {
 
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
+    @Nullable
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
     @ModelAttribute
     public LoginForm setUpForm() {
@@ -74,9 +83,28 @@ public class LoginController {
     public String getOIDCMenu(
         @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
         @AuthenticationPrincipal OAuth2User oidcUser) {
-        appLogger.debug("username: {}", oidcUser.getName());
-        appLogger.debug("userAttributes: {}", oidcUser.getAttributes());
-        appLogger.debug("clientName: {}", authorizedClient.getClientRegistration().getClientName());
+        appLogger.debug("IDトークンの名称: {}", oidcUser.getName());
+        appLogger.debug("IDトークンの属性: {}", oidcUser.getAttributes());
+        appLogger.debug("クライアント名: {}",
+            authorizedClient.getClientRegistration().getClientName());
+
+        if (authorizedClientService != null) {
+            // アクセストークンの取得
+            var accessToken = authorizedClient.getAccessToken();
+            var scopes = accessToken.getScopes();
+            appLogger.debug("アクセストークンのスコープ: {}", scopes);
+            var expiresAt = accessToken.getExpiresAt();
+            if (expiresAt != null) {
+                // 有効期限
+                String dateOfExpiry = expiresAt
+                    .atZone(
+                        ZoneId.systemDefault())
+                    .toLocalDateTime()
+                    .format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH時mm分ss秒"));
+                appLogger.debug("アクセストークン有効期限: {}", dateOfExpiry);
+
+            }
+        }
         return "menu/menu";
     }
 
