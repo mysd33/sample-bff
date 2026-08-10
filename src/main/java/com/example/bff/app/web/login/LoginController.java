@@ -7,10 +7,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -28,8 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class LoginController {
 
     private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
-    @Nullable
-    private final OAuth2AuthorizedClientService authorizedClientService;
 
     @ModelAttribute
     public LoginForm setUpForm() {
@@ -88,22 +84,20 @@ public class LoginController {
         appLogger.debug("クライアント名: {}",
             authorizedClient.getClientRegistration().getClientName());
 
-        if (authorizedClientService != null) {
-            // アクセストークンの取得
-            var accessToken = authorizedClient.getAccessToken();
-            var scopes = accessToken.getScopes();
-            appLogger.debug("アクセストークンのスコープ: {}", scopes);
-            var expiresAt = accessToken.getExpiresAt();
-            if (expiresAt != null) {
-                // 有効期限
-                String dateOfExpiry = expiresAt
-                    .atZone(
-                        ZoneId.systemDefault())
-                    .toLocalDateTime()
-                    .format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH時mm分ss秒"));
-                appLogger.debug("アクセストークン有効期限: {}", dateOfExpiry);
+        // アクセストークンの取得
+        var accessToken = authorizedClient.getAccessToken();
+        var scopes = accessToken.getScopes();
+        appLogger.debug("アクセストークンのスコープ: {}", scopes);
+        var expiresAt = accessToken.getExpiresAt();
+        if (expiresAt != null) {
+            // 有効期限
+            String dateOfExpiry = expiresAt
+                .atZone(
+                    ZoneId.systemDefault())
+                .toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH時mm分ss秒"));
+            appLogger.debug("アクセストークン有効期限: {}", dateOfExpiry);
 
-            }
         }
         return "menu/menu";
     }
