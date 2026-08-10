@@ -96,7 +96,7 @@ public class TodoRepositoryImplByWebClientBasicAuth implements TodoRepository {
                 .filter(th -> !(th instanceof BusinessException)))
             // サーキットブレーカによる処理
             // Fallback時にエラーとせずに空のリストを例
-            .transform(it -> cbFactory.create("todo_findAll").run(it,
+            .transform(it -> cbFactory.create("todo_findAllByUserId").run(it,
                 _ -> Mono.just(new TodoList())));
         return todoListMono.block();
     }

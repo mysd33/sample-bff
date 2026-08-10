@@ -30,6 +30,7 @@ import reactor.util.retry.Retry;
 @RequiredArgsConstructor
 public class TodoRepositoryImplByWebClientOAuth2 implements TodoRepository {
 
+    private final TodoV2ResourceMapper todoV2ResourceMapper;
     private final WebClient webClientWithOIDC;
     private final WebClientResponseErrorHandler responseErrorHandler;
     // サーキットブレーカ
@@ -76,8 +77,9 @@ public class TodoRepositoryImplByWebClientOAuth2 implements TodoRepository {
 
     @Override
     public Collection<Todo> findAllByUserId(String userId) {
+        // アクセストークンに含まれるpreferred_nameを使うため、userIdは渡さない
         var uri =
-            UriComponentsBuilder.fromUriString(todosUrl()).queryParam("user_id", userId).build();
+            UriComponentsBuilder.fromUriString(todosUrl()).build();
         var todoListMono = webClientWithOIDC.get().uri(uri.toUri())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
             .attributes(
@@ -93,23 +95,24 @@ public class TodoRepositoryImplByWebClientOAuth2 implements TodoRepository {
                 .filter(th -> !(th instanceof BusinessException)))
             // サーキットブレーカによる処理
             // Fallback時にエラーとせずに空のリストを例
-            .transform(it -> cbFactory.create("todo_findAll").run(it,
+            .transform(it -> cbFactory.create("todo_findAllByUserId").run(it,
                 _ -> Mono.just(new TodoList())));
         return todoListMono.block();
     }
 
     @Override
     public void create(Todo todo) {
+        var todoV2Resource = todoV2ResourceMapper.modelToResource(todo);
         webClientWithOIDC.post().uri(todosUrl())
             // Spring Security OAuth Clientにアクセストークンを付与してもらうようにする
             .attributes(clientRegistrationId(CLIENT_REGISTRATION_ID))//
-            .contentType(MediaType.APPLICATION_JSON).bodyValue(todo)//
+            .contentType(MediaType.APPLICATION_JSON).bodyValue(todoV2Resource)//
             .retrieve()//
             .onStatus(HttpStatusCode::is4xxClientError,
                 responseErrorHandler::createClientErrorException)//
             .onStatus(HttpStatusCode::is5xxServerError,
                 responseErrorHandler::createServerErrorException) //
-            .bodyToMono(Todo.class)//
+            .bodyToMono(TodoV2Resource.class)//
             // エクスポネンシャルバックオフによるリトライ
             .retryWhen(Retry.backoff(maxAttempts, Duration.ofMillis(minBackoff))
                 .filter(th -> !(th instanceof BusinessException)))
