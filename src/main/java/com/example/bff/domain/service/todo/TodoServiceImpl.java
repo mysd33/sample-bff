@@ -35,13 +35,12 @@ public class TodoServiceImpl implements TodoService {
     @Override
     @Transactional(readOnly = true)
     public Todo findOne(String todoId) {
-        return doFindOne(todoId);
+        return todoRepositoryAdapter.findById(todoId).orElse(null);
     }
 
     @Override
     public Todo create(Todo todo) {
         todoRepositoryAdapter.create(todo);
-
         return todo;
     }
 
@@ -52,12 +51,6 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void delete(String todoId) {
-        Todo todo = doFindOne(todoId);
-        todoRepositoryAdapter.delete(todo);
+        todoRepositoryAdapter.delete(Todo.builder().todoId(todoId).build());
     }
-
-    private Todo doFindOne(String todoId) {
-        return todoRepositoryAdapter.findById(todoId).orElse(null);
-    }
-
 }

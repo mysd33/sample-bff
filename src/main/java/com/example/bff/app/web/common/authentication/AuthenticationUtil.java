@@ -2,17 +2,15 @@ package com.example.bff.app.web.common.authentication;
 
 import com.example.bff.domain.model.LoginUserDetails;
 import com.example.bff.domain.model.User;
+import lombok.NoArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /// 認証情報取得ユーティリティクラス
-public class AuthenticationUtil {
-
-    /// コンストラクタ
-    private AuthenticationUtil() {
-    }
-
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class AuthenticationUtil {
+    
     /// ログイン済みかどうか取得する
     ///
     /// @return trueならログイン済

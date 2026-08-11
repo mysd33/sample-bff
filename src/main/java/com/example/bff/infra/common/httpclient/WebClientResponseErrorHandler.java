@@ -25,6 +25,8 @@ public class WebClientResponseErrorHandler {
     public Mono<Exception> createClientErrorException(ClientResponse response) {
 
         try {
+            // TODO: 通信途中で、KeyCloakの再ログインが必要になったときに、上位に認証エラー用の専用例外を投げて、ログイン画面へ遷移させるようにする。
+            //  org.springframework.security.oauth2.client.ClientAuthorizationRequiredException: [client_authorization_required] Authorization required for Client Registration Id: keycloak
             // 403エラーの場合
             if (response.statusCode().isSameCodeAs(HttpStatus.FORBIDDEN)) {
                 HttpStatusCode statusCode = response.statusCode();
