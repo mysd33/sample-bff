@@ -92,10 +92,10 @@
 * ログイン画面が表示されたら、Form認証の場合は、例えば、以下のユーザ情報を入力する。
     * OIDCによるログインの場合は、[OIDC認証・認可](#oidc認証認可)を参照のこと。
 
-  | ユーザID | パスワード | ロール |
-      | ---- | ---- | ---- |
-  | yamada@xxx.co.jp | password | 管理者 |
-  | tamura@xxx.co.jp | password | 一般ユーザ |
+        | ユーザID | パスワード | ロール |
+        | ---- | ---- | ---- |
+        | yamada@xxx.co.jp | password | 管理者 |
+        | tamura@xxx.co.jp | password | 一般ユーザ |
 
 * ログイン後、メニューが表示される。
     * 「Todo管理」ボタンを押下するとTodo管理、Todo一括登録の画面を表示する。
