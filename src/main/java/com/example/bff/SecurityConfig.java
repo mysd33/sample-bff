@@ -158,7 +158,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated(); // それ以外は認証が必要
                 })
-            // REST APIはCSRF保護不要（サンプルAPでの暫定）
+            // REST APIはCSRF保護不要
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
     }
 
