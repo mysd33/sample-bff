@@ -166,6 +166,8 @@
         * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
         * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
             * Realm name: `demo`
+        * レルムがdemoに切り替わったら、左のメニューの「Realm settings」をクリックし、「Display name」を設定する。
+            * Display name: `サンプルシステム`
     * ユーザを作成
         * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
             * Username: `yamadatr`
@@ -230,8 +232,15 @@
         * 「Client scopes」タブで、「sample-bff-oidc-dedicated」を選択、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
         * Name: `realm roles`
         * Token Claim Name: `realm_access.roles`
-        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。
-
+        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+    * Backendアプリケーションのクライアントを作成
+        * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
+        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+            * Client Type: `OpenID Connect`
+            * Client ID: `sample-backend-oidc`※任意の文字列でよい
+            * Name: `sample-backend`※任意の文字列でよい
+            * Client authentication: `On`
+            * Authentication flow: 全てチェックを外す
     * スコープの追加
         * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
             * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
@@ -239,12 +248,22 @@
                 * Include in token scope: `On`
             * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
             * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
+        * Introspectionエンドポイントアクセス時のaudクレームの検証が通るように設定
+            * 左のメニューの「Client scopes」をクリックし、`todo`を選択
+            * 「Mappers」タブをクリックし、「Add mapper」をクリックして新しいマッパーを作成する。
+                * Name: `todo-audience`
+                * Mapper Type: `Audience`
+                * Included Client Audience: `sample-backend-oidc`
+                * Add to access token: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+        
 
-* クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)
-      に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+* BFFアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
+    * [application-oidc.yml](./src/main/resources/application-oidc.yml)
+      に規定された以下の環境変数を設定することで、KeycloakのOIDC認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-bff-oidc`）を設定
         * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
+* BackendアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
+    * [sample-backendプロジェクト](https://github.com/mysd33/sample-backend#6-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照のこと。
 
 * Keycloakの認証画面
 
@@ -273,7 +292,7 @@
     * Client secretsの「Generate a new client secret」をクリックして、クライアントシークレットを生成する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-oidc.yml](./src/main/resources/application-oidc.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
@@ -293,7 +312,7 @@
     * 承認済みのリダイレクトURI: http://localhost:8080/login/oauth2/code/google
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-dev.yaml](./src/main/resources/application-dev.yml)
+    * [application-oidc.yml](./src/main/resources/application-oidc.yml)
       に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GOOGLE_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GOOGLE_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
