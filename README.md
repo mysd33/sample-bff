@@ -434,13 +434,15 @@ postgres> CREATE DATABASE testdb;
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にSQSを起動しておく必要がある。
     * AWS上でAPを起動する場合は、SQSのキューを作成する必要がある。
+    * APがSQSにアクセスする権限が必要なので、開発端末上でローカル実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+
 * Profile「production」でAPをローカル実行する場合は、ローカルでDockerでElasticMQを起動しておく必要がある。
 
 > [!WARNING]
 > TBD: DockerでのElasticMQ起動方法
 
 * キューの作成
-    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「delayed.batch.queue」プロパティを作成したキュー名に変更する。
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「example.async.queue」プロパティを作成したキュー名に変更する。
     * 「sample-batch」アプリケーション側も変更が必要
 
 ### 9.4. S3の設定
@@ -450,12 +452,8 @@ postgres> CREATE DATABASE testdb;
         * 「sample-batch」アプリケーション側も変更が必要
 
 > [!NOTE]
-> [MinIOのOSSのGitHub](https://github.com/minio/minio)
-> はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)
-> してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
-> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
-> の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)
-> に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
+> [MinIOのOSSのGitHub](https://github.com/minio/minio)はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
+> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
 > なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)であったためMinIOを同梱しての配布、利用等には注意すること。
 
 > [!NOTE]
