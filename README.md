@@ -116,7 +116,7 @@
 > 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring Bootに対応しつつ、ただいま実装中。  
 > 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
 
-* Spring Security OAuth2.0 Client、Resource Serverを利用して、OIDC/OAuth2.0による認証・認可を実装する。
+* Spring Security OAuth2.0 Clientを利用して、OIDCによるユーザ認証・認可を実装する。
 
 * BFFアプリケーションでは、Spring Security OAuth2.0
   Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
@@ -357,8 +357,6 @@
     * Dockerfileも上記のように実行可能jarを解凍して実行する方法を利用している。
         * [Dockerfile](Dockerfile)
         * [Dockerfile(ADOT用)](DockerfileForADOT)
-
-
 
 ## 9. プロファイル「production」でのローカル実行
 * 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
@@ -664,12 +662,12 @@ aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS
 docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 ```
 
-## AWS上でのアプリ起動
+## 13. AWS上でのアプリ起動
 * SpringBoot APをECS/Fargate等で動作させる場合は、[ecs-on-fargate-adot-cfn-demo](https://github.com/mysd33/ecs-on-fargate-adot-cfn-demo)を参照する。
 
-## 13. OpenAPI
+## 14. OpenAPI
 * Springdoc-openapiにより、RestControllerの実装からAPIドキュメントをリバースエンジニアリングできる
-    * アプリケーションを起動し、以下のURLへアクセスするとそれぞれjson、yaml、html形式のドキュメントを表示する。
+    * アプリケーションを起動し、以下のURLへアクセスするとそれぞれjson   、yaml、html形式のドキュメントを表示する。
     * http://localhost:8000/v3/api-docs
         * json形式のドキュメント
     * http://localhost:8000/v3/api-docs.yaml
@@ -677,7 +675,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
     * http://localhost:8000/swagger-ui.html
         * html形式（Swagger-UI）のドキュメント
 
-## 14. logback-access対応によるTomcatアクセスログ
+## 15. logback-access対応によるTomcatアクセスログ
 * Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
 
 * 開発端末上では、通常のテキスト形式で出力
@@ -727,7 +725,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
         }
         ```
 
-## 15. 参考：Java Flight Recorder（JFR）の利用
+## 16. 参考：Java Flight Recorder（JFR）の利用
 
 * 以下のサイトから、JMC（Java Mission Controll）をダウンロードしインストール
     * https://jdk.java.net/jmc/8/
@@ -749,7 +747,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-01.html
     * https://software.fujitsu.com/jp/manual/manualfiles/m230004/b1ws1414/03z200/b1414-00-08-03-02.html
 
-## 16. 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
+## 17. 参考： JFRによるSpringBootでのアプリケーションのスタートアップの追跡
 
 * Spring Boot APのMainクラス（このサンプルではSampleBffApplication.java）に、以下のようにFlightRecorderApplicationStartupを設定することで、Spring Boot APのスタートアップの追跡が可能になる。
 
@@ -790,7 +788,7 @@ public class SampleBffApplication {
     * https://hirakida29.hatenablog.com/entry/2021/01/23/213825
     * https://spring.pleiades.io/spring-boot/docs/current/reference/html/features.html#features.spring-application.startup-tracking
 
-## 17. ソフトウェアフレームワーク
+## 18. ソフトウェアフレームワーク
 
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
 * ソースコードはcom.example.fwパッケージ配下に格納されている。
