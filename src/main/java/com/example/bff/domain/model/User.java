@@ -3,7 +3,7 @@ package com.example.bff.domain.model;
 import com.example.bff.domain.rule.CalendarRules;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class User implements Serializable {
     @ToString.Exclude
     private String password;
     private String userName;
-    private Date birthday;
+    private LocalDate birthday;
     private String role;
     private long version;
 

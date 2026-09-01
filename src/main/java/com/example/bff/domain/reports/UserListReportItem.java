@@ -9,6 +9,7 @@ public class UserListReportItem {
 
     String userId;
     String userName;
+    // JasperReportsで日時型をフォーマットする仕組みはData型のほうが使いやすいので、Date型で保持する
     Date birthday;
     String role;
     String note = ""; // 備考欄

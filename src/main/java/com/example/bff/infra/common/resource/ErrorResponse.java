@@ -1,9 +1,6 @@
 package com.example.bff.infra.common.resource;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,9 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -707495429327768166L;
+public class ErrorResponse {
 
     // エラーコード
     private String code;

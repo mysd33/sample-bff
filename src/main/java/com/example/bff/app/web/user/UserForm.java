@@ -7,7 +7,7 @@ import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -54,7 +54,7 @@ public class UserForm {
 
     @NotNull(groups = ValidGroup1.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date birthday; // 誕生日
+    private LocalDate birthday; // 誕生日
 
     private boolean admin; // 管理者かどうか
 
