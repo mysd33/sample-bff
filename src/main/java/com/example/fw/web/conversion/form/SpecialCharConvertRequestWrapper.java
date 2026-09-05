@@ -1,13 +1,12 @@
-package com.example.fw.web.conversion;
+package com.example.fw.web.conversion.form;
 
+import com.example.fw.common.utils.JapaneseStringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
-import com.example.fw.common.utils.JapaneseStringUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 
 /// 特殊文字のコードポイント変換を行うリクエストラッパークラス
 public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper {
@@ -18,8 +17,8 @@ public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper 
         super(request);
 
         convertedParams = request.getParameterMap().entrySet().stream()//
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.stream(e.getValue())//
-                        .map(JapaneseStringUtils::convertCodePoints).toArray(String[]::new)));
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> Arrays.stream(e.getValue())//
+                .map(JapaneseStringUtils::convertCodePoints).toArray(String[]::new)));
     }
 
     @Override
@@ -29,7 +28,7 @@ public class SpecialCharConvertRequestWrapper extends HttpServletRequestWrapper 
     }
 
     @Override
-    public String @Nullable[] getParameterValues(String name) {
+    public String @Nullable [] getParameterValues(String name) {
         return convertedParams.get(name);
     }
 

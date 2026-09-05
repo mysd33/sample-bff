@@ -23,9 +23,10 @@ spring:
   h2:
     console:
       enabled: true
-  devtools:
-    livereload:
-      enabled: true
+  # Spring Boot4.1からLiveReloadは非推奨で廃止予定
+  #devtools:
+  #  livereload:
+  #    enabled: true
   # WebClient ログ詳細化
   http:
     codecs:

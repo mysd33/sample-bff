@@ -2,16 +2,14 @@ package com.example.bff;
 
 import com.example.bff.domain.message.MessageIds;
 import com.example.fw.common.systemdate.SystemDate;
-import com.example.fw.common.systemdate.config.SystemDateConfig;
+import com.example.fw.common.systemdate.config.SystemDateConfigPackage;
 import com.example.fw.web.advice.DefaultErrorResponseCreator;
 import com.example.fw.web.advice.ErrorResponseCreator;
 import com.example.fw.web.aspect.LogAspect;
-import com.example.fw.web.conversion.FormSpecialCharConvertConfig;
+import com.example.fw.web.conversion.form.config.FormConversionConfigPackage;
 import com.example.fw.web.page.config.PaginationConfigPackage;
-import com.example.fw.web.servlet.config.TomcatAccessLogConfig;
 import com.example.fw.web.token.config.TransactionTokenConfigPackage;
-//springdoc-openapiの内部io.swagger.v3.core.jacksonはJackson2を使用しているため
-//Jackson2のObjectMapperをインポートする
+import com.example.fw.web.tomcat.config.TomcatAccessLogConfigPackage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.swagger.v3.core.jackson.ModelResolver;
@@ -21,16 +19,19 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+
+//springdoc-openapiの内部io.swagger.v3.core.jacksonはJackson2を使用しているため
+//Jackson2のObjectMapperをインポートする
 
 
 /// アプリケーション層の設定クラス
 @Configuration
-// ページネーション機能、トランザクショントークンチェック機能の追加
+// ページネーション機能、トランザクショントークンチェック機能、システム日時機能、
+// Tomcatアクセスログ設定、Formの特殊文字のコードポイント変換機能の追加
 @ComponentScan(basePackageClasses = {PaginationConfigPackage.class,
-    TransactionTokenConfigPackage.class})
-// システム日時機能の追加、Tomcatのログ設定の追加、Formの特殊文字のコードポイント変換機能の追加
-@Import({SystemDateConfig.class, TomcatAccessLogConfig.class, FormSpecialCharConvertConfig.class})
+    TransactionTokenConfigPackage.class, SystemDateConfigPackage.class,
+    TomcatAccessLogConfigPackage.class,
+    FormConversionConfigPackage.class})
 public class AppConfig {
 
     /// エラーレスポンス作成クラス
