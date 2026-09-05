@@ -12,15 +12,6 @@ public class CalendarRules {
     /// 年齢を計算する
     ///
     /// @param birthday 誕生日
-    /// @return 年齢
-    public static int calcAge(LocalDate birthday) {
-        // TODO: 本来はソフトウェアフレームワークのシステム日時取得機能で現在日付を取得するべき
-        return calcAge(birthday, LocalDate.now());
-    }
-
-    /// 年齢を計算する
-    ///
-    /// @param birthday 誕生日
     /// @param now      現在日付
     /// @return 年齢
     public static int calcAge(LocalDate birthday, LocalDate now) {

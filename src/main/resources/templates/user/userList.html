@@ -31,11 +31,11 @@
         <td th:text="*{userId}"></td>
         <td th:text="*{userName}"></td>
         <td th:text="*{#temporals.format(birthday, 'YYYY/MM/dd')}"></td>
-        <td th:text="*{age}"></td>
+        <td th:text="${@userAgeCalculator.calculate(user.birthday)}"></td>
         <td th:text="*{role == 'ROLE_ADMIN'} ? '○' : '-'"></td>
         <td>
-          <!-- ユーザー詳細画面へのリンク --> <a class="btn btn-primary"
-                                                 th:href="@{'/userDetail/' + ${user.userId}}">詳細</a>
+          <!-- ユーザー詳細画面へのリンク -->
+          <a class="btn btn-primary" th:href="@{'/userDetail/' + ${user.userId}}">詳細</a>
         </td>
       </tr>
       </tbody>
