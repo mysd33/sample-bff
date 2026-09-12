@@ -162,100 +162,99 @@
             ```sh
             docker run -p 127.0.0.1:8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.6.4 start-dev
             ```
-    * レルムを作成
-        * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
-        * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
-            * Realm name: `demo`
-        * レルムがdemoに切り替わったら、左のメニューの「Realm settings」をクリックし、「Display name」を設定する。
-            * Display name: `サンプルシステム`
-    * ユーザを作成
-        * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
-            * Username: `yamadatr`
-            * Email: `yamada@xxx.co.jp`
-            * First Name: `太郎`
-            * Last Name: `山田`
-        * Credentialsタブをクリックし、パスワードを設定する。
-            * Password: `password`
-            * Password Confirmation: `password`
-            * Temporary: OFF
-        * もう一度、「Create new user」をクリックして新しいユーザを作成する。
-            * Username: `tamuraichr`
-            * Email: `tamura@xxx.co.jp`
-            * First Name: `一郎`
-            * Last Name: `田村`
-        * Credentialsタブをクリックし、パスワードを設定する。
-            * Password: `password`
-            * Password Confirmation: `password`
-            * Temporary: OFF
-    * グループの設定
-        * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
-            * Group Name: `admin`
-        * もう一度、「Create group」をクリックして新しいグループを作成する。
-            * Group Name: `general`
-        * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
-            * adminグループに、ユーザ`yamadatr`を割り当てる。
-            * generalグループに、ユーザ`tamuraichr`を割り当てる。
-    * ロールの設定
-        * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
-            * Role Name: `ADMIN`
-        * もう一度、「Create Role」をクリックして新しいロールを作成する。
-            * Role Name: `GENERAL`
-        * グループにロールを割り当てる
-            * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
-            * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
-            * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
-    * BFFアプリケーションのクライアントを作成
-        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
-            * Client Type: `OpenID Connect`
-            * Client ID: `sample-bff-oidc`※任意の文字列でよい
-            * Name: `sample-bff`※任意の文字列でよい
-            * Client authentication: `On`
-            * Authentication flow: `Standard flow`にチェック
-            * Require PKCE: `On`
-            * Root URL: `http://localhost:8080/`
-            * Home URL: `http://localhost:8080/`
-            * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
-                * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
-                  `/login/oauth2/code/{registrationId}`
-            * Valid post logout redirect URIs: `http://localhost:8080/`
-        * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
-    * ログイン成功後の同意画面の表示を有効化
-        * 「Settings」タブの「Login Settings」セクションで以下の設定
-            * Consent Required: `On`
-    * バックチャネルログアウトの設定
-        * 「Settings」タブの「Logout Settings」セクションで以下の設定
-            * Front channel logout: `Off`
-            * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
-                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
-    * IDトークンのクレームにロールを追加する設定
-        * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
-        * 「Client scopes」タブで、「sample-bff-oidc-dedicated」を選択、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
-        * Name: `realm roles`
-        * Token Claim Name: `realm_access.roles`
-        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
-    * Backendアプリケーションのクライアントを作成
-        * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
-        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
-            * Client Type: `OpenID Connect`
-            * Client ID: `sample-backend-oidc`※任意の文字列でよい
-            * Name: `sample-backend`※任意の文字列でよい
-            * Client authentication: `On`
-            * Authentication flow: 全てチェックを外す
-    * スコープの追加
-        * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
-            * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
-                * Name: `todo`
-                * Include in token scope: `On`
-            * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
-            * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
-        * Introspectionエンドポイントアクセス時のaudクレームの検証が通るように設定
-            * 左のメニューの「Client scopes」をクリックし、`todo`を選択
-            * 「Mappers」タブをクリックし、「Add mapper」をクリックして新しいマッパーを作成する。
-                * Name: `todo-audience`
-                * Mapper Type: `Audience`
-                * Included Client Audience: `sample-backend-oidc`
-                * Add to access token: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
-        
+* レルムを作成
+    * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
+    * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
+        * Realm name: `demo`
+    * レルムがdemoに切り替わったら、左のメニューの「Realm settings」をクリックし、「Display name」を設定する。
+        * Display name: `サンプルシステム`
+* ユーザを作成
+    * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
+        * Username: `yamadatr`
+        * Email: `yamada@xxx.co.jp`
+        * First Name: `太郎`
+        * Last Name: `山田`
+    * Credentialsタブをクリックし、パスワードを設定する。
+        * Password: `password`
+        * Password Confirmation: `password`
+        * Temporary: OFF
+    * もう一度、「Create new user」をクリックして新しいユーザを作成する。
+        * Username: `tamuraichr`
+        * Email: `tamura@xxx.co.jp`
+        * First Name: `一郎`
+        * Last Name: `田村`
+    * Credentialsタブをクリックし、パスワードを設定する。
+        * Password: `password`
+        * Password Confirmation: `password`
+        * Temporary: OFF
+* グループの設定
+    * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
+        * Group Name: `admin`
+    * もう一度、「Create group」をクリックして新しいグループを作成する。
+        * Group Name: `general`
+    * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
+        * adminグループに、ユーザ`yamadatr`を割り当てる。
+        * generalグループに、ユーザ`tamuraichr`を割り当てる。
+* ロールの設定
+    * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
+        * Role Name: `ADMIN`
+    * もう一度、「Create Role」をクリックして新しいロールを作成する。
+        * Role Name: `GENERAL`
+    * グループにロールを割り当てる
+        * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
+        * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
+        * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
+* BFFアプリケーションのクライアントを作成
+    * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+        * Client Type: `OpenID Connect`
+        * Client ID: `sample-bff-oidc`※任意の文字列でよい
+        * Name: `sample-bff`※任意の文字列でよい
+        * Client authentication: `On`
+        * Authentication flow: `Standard flow`にチェック
+        * Require PKCE: `On`
+        * Root URL: `http://localhost:8080/`
+        * Home URL: `http://localhost:8080/`
+        * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
+            * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
+                `/login/oauth2/code/{registrationId}`
+        * Valid post logout redirect URIs: `http://localhost:8080/`
+    * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
+* ログイン成功後の同意画面の表示を有効化
+    * 「Settings」タブの「Login Settings」セクションで以下の設定
+        * Consent Required: `On`
+* バックチャネルログアウトの設定
+    * 「Settings」タブの「Logout Settings」セクションで以下の設定
+        * Front channel logout: `Off`
+        * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
+            * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
+* IDトークンのクレームにロールを追加する設定
+    * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
+    * 「Client scopes」タブで、「sample-bff-oidc-dedicated」を選択、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
+    * Name: `realm roles`
+    * Token Claim Name: `realm_access.roles`
+    * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+* Backendアプリケーションのクライアントを作成
+    * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
+    * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+        * Client Type: `OpenID Connect`
+        * Client ID: `sample-backend-oidc`※任意の文字列でよい
+        * Name: `sample-backend`※任意の文字列でよい
+        * Client authentication: `On`
+        * Authentication flow: 全てチェックを外す
+* スコープの追加
+    * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
+        * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
+            * Name: `todo`
+            * Include in token scope: `On`
+        * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
+        * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ`todo`を、Assign type 「Optional」に追加する。
+    * Introspectionエンドポイントアクセス時のaudクレームの検証が通るように設定
+        * 左のメニューの「Client scopes」をクリックし、`todo`を選択
+        * 「Mappers」タブをクリックし、「Add mapper」をクリックして新しいマッパーを作成する。
+            * Name: `todo-audience`
+            * Mapper Type: `Audience`
+            * Included Client Audience: `sample-backend-oidc`
+            * Add to access token: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
 
 * BFFアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
     * [application-oidc.yml](./src/main/resources/application-oidc.yml)

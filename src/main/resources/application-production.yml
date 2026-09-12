@@ -47,7 +47,9 @@ spring:
       - optional:aws-secretsmanager:${DB_SECRETS_NAME}?prefix=example.datasource.read.
       - optional:aws-secretsmanager:${DB_SECRETS_NAME}?prefix=example.datasource.write.
       - optional:aws-secretsmanager:${BASIC_AUTH_SECRETS_NAME}?prefix=example.api.backend.basic-auth.
-
+      - optional:aws-secretsmanager:${KEYCLOAK_SECRETS_NAME}?prefix=spring.security.oauth2.client.registration.keycloak.
+      - optional:aws-secretsmanager:${GITHUB_SECRETS_NAME}?prefix=spring.security.oauth2.client.registration.github.
+      - optional:aws-secretsmanager:${GOOGLE_SECRETS_NAME}?prefix=spring.security.oauth2.client.registration.google.
 # Spring Boot Actuator
 management:
   endpoints:
