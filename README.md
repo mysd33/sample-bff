@@ -112,14 +112,23 @@
 
 ## 7. OIDC認証・認可
 
-> [!WARNING]
-> 昔に作成した[サンプルコード](https://github.com/mysd33/sample-springsecurity-oauth2)を最新のSpring Bootに対応しつつ、ただいま実装中。  
-> 現状、端末ローカル実行での起動時（devプロファイル）のみに対応。AWS実行時の本番環境相当のプロファイル（production）は今後対応予定。
+> [!NOTE]
+> OIDC認証・認可の機能を無効化する場合には、`application.yml`の設定で、spring.profiles.activeのoidcの設定をコメントアウトするか-Dspring.profiles.activeでoidc未指定で起動する。
+>
+> ```yaml
+> spring:
+>   application:
+>     name: sample-bff
+>   profiles:
+>     active:
+>       - dev
+>       - log_default
+>       - oidc
+> ```
 
 * Spring Security OAuth2.0 Clientを利用して、OIDCによるユーザ認証・認可を実装する。
 
-* BFFアプリケーションでは、Spring Security OAuth2.0
-  Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
+* BFFアプリケーションでは、Spring Security OAuth2.0 Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
 
 * Backendアプリケーションについては、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照。
 
@@ -129,6 +138,7 @@
       `/login/oauth2/code/{registrationId}`
 
 ![OIDC認証・認可の画面](img/screen/screen8.png)
+
 
 ### 7.1. Keycloak
 
