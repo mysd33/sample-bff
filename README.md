@@ -343,16 +343,21 @@ sequenceDiagram
 * グループの設定
     * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
         * Group Name: `admin`
-    * もう一度、「Create group」をクリックして新しいグループを作成する。
-        * Group Name: `general`
+        * Description: 管理者グループ
     * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
         * adminグループに、ユーザ`yamadatr`を割り当てる。
+    * もう一度、「Create group」をクリックして新しいグループを作成する。
+        * Group Name: `general`
+        * Description: 一般ユーザグループ
+    * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
         * generalグループに、ユーザ`tamuraichr`を割り当てる。
 * ロールの設定
     * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
         * Role Name: `ADMIN`
+        * Description: 管理者ロール
     * もう一度、「Create Role」をクリックして新しいロールを作成する。
         * Role Name: `GENERAL`
+        * Description: 一般ユーザロール
     * グループにロールを割り当てる
         * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
         * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
@@ -360,13 +365,14 @@ sequenceDiagram
 * BFFアプリケーションのクライアントを作成
     * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
         * Client Type: `OpenID Connect`
-        * Client ID: `sample-bff-oidc`※任意の文字列でよい
-        * Name: `sample-bff`※任意の文字列でよい
+        * Client ID: `sample-bff-oidc`
+        * Name: `sample-bff`
         * Client authentication: `On`
         * Authentication flow: `Standard flow`にチェック
         * Require PKCE: `On`
         * Root URL: `http://localhost:8080/`
         * Home URL: `http://localhost:8080/`
+            * CloudFormationの「ECS-ALB-Stack」スタックの出力「PublicALBDNS」の値を参照
         * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
             * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
                 `/login/oauth2/code/{registrationId}`
@@ -379,6 +385,7 @@ sequenceDiagram
     * 「Settings」タブの「Logout Settings」セクションで以下の設定
         * Front channel logout: `Off`
         * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
+            * CloudFormationの「ECS-ALB-Stack」スタックの出力「PublicALBDNS」の値を参照
             * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、`/logout/connect/back-channel/{registrationId}`
 * IDトークンのクレームにロールを追加する設定
     * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
@@ -390,8 +397,8 @@ sequenceDiagram
     * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
     * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
         * Client Type: `OpenID Connect`
-        * Client ID: `sample-backend-oidc`※任意の文字列でよい
-        * Name: `sample-backend`※任意の文字列でよい
+        * Client ID: `sample-backend-oidc`
+        * Name: `sample-backend`
         * Client authentication: `On`
         * Authentication flow: 全てチェックを外す
 * スコープの追加
