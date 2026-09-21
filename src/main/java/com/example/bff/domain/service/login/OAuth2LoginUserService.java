@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,15 @@ public class OAuth2LoginUserService implements OAuth2UserService<OAuth2UserReque
         user.setAdmin(false);
         user.setRole("ROLE_GENERAL");
 
-        return new OAuth2LoginUserDetails(user, oauth2User);
+        if (oauth2User instanceof DefaultOAuth2User defaultOAuth2User) {
+            return new OAuth2LoginUserDetails(user, defaultOAuth2User);
+        } else {
+
+            return new OAuth2LoginUserDetails(user,
+                new DefaultOAuth2User(
+                    oauth2User.getAuthorities(),
+                    oauth2User.getAttributes(),
+                    userIdAttribute));
+        }
     }
 }
