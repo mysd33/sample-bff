@@ -21,7 +21,17 @@ spring:
     driver-class-name: org.postgresql.Driver 
     username: postgres
     password: password
-
+# Spring Security OAuth2 Client Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+              - email
+              - todo
 #Spring Session Data Redis
   session:
     data:
