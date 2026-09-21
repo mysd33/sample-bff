@@ -1,17 +1,22 @@
 package com.example.bff.domain.model;
 
+import java.io.Serial;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 /// OIDC認証でもフォーム認証と同じLoginUserDetailsとして扱うためのUserDetails実装
 public class OidcLoginUserDetails extends LoginUserDetails implements OidcUser {
 
-    private final transient OidcUser delegate;
+    @Serial
+    private static final long serialVersionUID = 2152056894130861078L;
 
-    public OidcLoginUserDetails(User user, OidcUser delegate) {
+    private final DefaultOidcUser delegate;
+
+    public OidcLoginUserDetails(User user, DefaultOidcUser delegate) {
         super(user);
         this.delegate = delegate;
     }

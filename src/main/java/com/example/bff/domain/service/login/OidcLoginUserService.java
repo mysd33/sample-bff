@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
@@ -61,20 +62,27 @@ public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, 
         Map<String, Object> realmAccess = oidcUser.getClaimAsMap(realmClaimName);
         if (realmAccess != null) {
             var roles = (List<?>) realmAccess.get(roleClaimName);
-
-            roles.forEach(role -> {
-                var roleName = (String) role;
-                if ("ADMIN".equals(roleName)) {
-                    user.setAdmin(true);
-                    user.setRole("ROLE_ADMIN");
-                }
-            });
+            if (roles != null) {
+                roles.forEach(role -> {
+                    var roleName = (String) role;
+                    if ("ADMIN".equals(roleName)) {
+                        user.setAdmin(true);
+                        user.setRole("ROLE_ADMIN");
+                    }
+                });
+            }
         }
         if (!user.isAdmin()) {
             // それ以外は一般ユーザ
             user.setRole("ROLE_GENERAL");
         }
         // LoginUserDetailsにマッピング
-        return new OidcLoginUserDetails(user, oidcUser);
+        if (oidcUser instanceof DefaultOidcUser defaultOidcUser) {
+            return new OidcLoginUserDetails(user, defaultOidcUser);
+        } else {
+            return new OidcLoginUserDetails(user,
+                new DefaultOidcUser(oidcUser.getAuthorities(), oidcUser.getIdToken(),
+                    oidcUser.getUserInfo()));
+        }
     }
 }
