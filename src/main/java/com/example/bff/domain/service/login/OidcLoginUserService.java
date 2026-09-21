@@ -2,9 +2,12 @@ package com.example.bff.domain.service.login;
 
 import com.example.bff.domain.model.OidcLoginUserDetails;
 import com.example.bff.domain.model.User;
+import com.example.fw.common.logging.ApplicationLogger;
+import com.example.fw.common.logging.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -14,9 +17,12 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 /// Keycloak/Google等のOIDC準拠プロバイダのユーザ情報をアプリ内のLoginUserDetailsへマッピングするOAuth2UserService
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
+
+    private static final ApplicationLogger appLogger = LoggerFactory.getApplicationLogger(log);
 
     private final OidcUserService delegate = new OidcUserService();
 
@@ -32,11 +38,14 @@ public class OidcLoginUserService implements OAuth2UserService<OidcUserRequest, 
     @Value("${example.security.oidc.user-id-claim:preferred_username}")
     String userIdClaim;
 
+
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        appLogger.debug("### OidcLoginUserService.loadUser START");
         OidcUser oidcUser = delegate.loadUser(userRequest);
+        appLogger.debug("### OidcLoginUserService.loadUser END");
+        appLogger.debug("### OidcLoginUserService.loadUser returned user: {}", oidcUser);
         User user = new User();
-
         // ユーザIDの設定
         String userId = oidcUser.getClaimAsString(userIdClaim);
         if (userId == null || userId.isBlank()) {

@@ -1,7 +1,9 @@
 package com.example.fw.common.httpclient.config;
 
+import com.example.fw.common.constants.FrameworkConstants;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -10,9 +12,12 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.web.reactive.function.client.WebClient;
 
 /// RESTクライアント関連の設定クラス（OIDC OAuth 用）
-@Profile("oidc")
+@ConditionalOnProperty(name = OidcOAuthWebClientConfig.OIDC_ENABLED_PROPERTY, havingValue = "true")
 @Configuration
 public class OidcOAuthWebClientConfig {
+
+    private static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "oidc";
+    static final String OIDC_ENABLED_PROPERTY = PROPERTY_PREFIX + ".enabled";
 
     /// WebClientクラス
     @Profile("!xray")
