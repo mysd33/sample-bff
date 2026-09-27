@@ -31,7 +31,7 @@ spring:
     multipart:
       file-size-threshold: 512KB
       max-file-size: 3MB
-      max-request-size: 10MB
+      max-request-size: 8MB
 # Virtual Thread
   threads:
     virtual:
