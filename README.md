@@ -7,48 +7,35 @@
 * TODOの操作は別途作成されたTODOを管理するBackendアプリケーションのREST APIを利用している。
 * 非同期処理/バッチアプリケーションを利用して、TodoリストファイルからTodoを一括登録を行える画面も提供する。
 * ユーザはDBで管理されており、ユーザの登録、変更、削除の管理する画面も提供する。
-  ![実装イメージ](img/sample-bff.png)
+
+    ![実装イメージ](img/sample-bff.png)
 
 * 本サンプルAPのソフトウェアアーキテクチャの図は以下の通り。
 
-![ソフトウェアアーキテクチャ](img/architecture.png)
+    ![ソフトウェアアーキテクチャ](img/architecture.png)
 
 ## 2. プロジェクト構成
 
 * [sample-bff](https://github.com/mysd33/sample-bff)
-    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend
-      for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
-        *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL (AWS上はAurora等）、セッション外部化はRedis
-          (ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
+    * 本プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのWebブラウザアプリケーション（Backend for Frontend）で、ユーザがログイン後、TODOやユーザを管理する画面を提供する。また、画面やAPIからsample-batchへの非同期実行依頼も可能である。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDB、S3アクセスは無効化、セッション外部化は無効化、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL（AWS上はAurora等）、セッション外部化はRedis(ローカル時はRedis on Docker、AWS上はElastiCache for Redis)、SQS接続はSQSへ送信するようになっている。
         * DB管理したユーザ情報に基づくForm認証によるログインと、外部のIdP（Keycloak、GitHub、Google）によるOIDC認証・認可によるログインの両方に対応している。
-* [sample-backend](https://github.com/mysd33/sample-backend)
-  （または[sample-backend-dynamodb](https://github.com/mysd33/sample-backend-dynamodb)）
-    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST
-      APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
+* [sample-backend](https://github.com/mysd33/sample-backend)（または[sample-backend-dynamodb](https://github.com/mysd33/sample-backend-dynamodb)）
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring BootのREST APIアプリケーションで、sample-webやsample-batchが送信したREST APIのメッセージを受信し処理することが可能である。
         * sample-backendは永続化にRDBを使っているが、sample-backend-dynamodbは同じAPのDynamoDB版になっている。
-        *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB
-        Localを組み込みで起動し、接続するようになっている。
-        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL (AWS上はAurora等)
-          になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、RDB永続化にはH2DBによる組み込みDBになっている。また、sample-backend-dynamodbプロジェクトの場合は、AP起動時にDynamoDBの代わりに、DynamoDB Localを組み込みで起動し、接続するようになっている。
+        * プロファイルproductionの場合は、RDB永続化にはPostgreSQL (AWS上はAurora等)になっている。また、sample-backend-dynamodbプロジェクトの場合は、DynamoDBに接続するようになっている。
 * [sample-batch](https://github.com/mysd33/sample-batch)
-    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring
-      Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
-        *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
-        * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL
-          (AWS上はAurora等）になっている。
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。Spring JMSを使ったSpring Bootの非同期処理アプリケーションで、sample-webやsample-schedulelaunchが送信した非同期実行依頼のメッセージをSQSを介して受信し処理することが可能である。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、AP起動時にSQSの代わりにElasticMQを組み込みで起動し、リッスンするようになっている。また、RDB永続化にはH2DBによる組み込みDBになっている。
+        * プロファイルproductionの場合は、SQSをリッスンするようになっている。また、RDB永続化にはPostgreSQL(AWS上はAurora等）になっている。
 * [sample-schedulelaunch](https://github.com/mysd33/sample-schedulelaunch)
-    *
-    別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
-        *
-        デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
+    * 別プロジェクト。当該名称のリポジトリを参照のこと。SpringBootのCLIアプリケーションで、実行時に引数または環境変数で指定したスケジュール起動バッチ定義IDに対応するジョブの非同期実行依頼を実施し、SQSを介して、sample-batchアプリケーションのジョブを実行する。スケジュールによるバッチ起動を想定したアプリケーション。
+        * デフォルトでは「spring.profiles.active」プロパティが「dev」になっている。プロファイルdevの場合は、SQS接続はsample-batch側で組み込みで起動するElasticMQへ送信するようになっている。
         * プロファイルproductionの場合は、SQS接続はSQSへ送信するようになっている。
 
-*
-その他、本APとは連携しないので図に掲載がないが、StepFunctionsのステートマシンを使用してジョブの実行順序制御を行うバッチAPのサンプルプロジェクトとして以下があるので、参考にするとよい。
+* その他、本APとは連携しないので図に掲載がないが、StepFunctionsのステートマシンを使用してジョブの実行順序制御を行うバッチAPのサンプルプロジェクトとして以下があるので、参考にするとよい。
     * [sample-batch-jobflow](https://github.com/mysd33/sample-batch-jobflow)
 
 ## 3. 画面一覧
@@ -103,12 +90,13 @@
     * http://localhost:8080/
 
 * ログイン画面が表示されたら、Form認証の場合は、例えば、以下のユーザ情報を入力する。
-    * OIDCによるログインの場合は、[OIDC認証・認可](#7-oidc認証認可)を参照のこと。
 
-      | ユーザID | パスワード | ロール |
-              | ---- | ---- | ---- |
-      | yamada@xxx.co.jp | password | 管理者 |
-      | tamura@xxx.co.jp | password | 一般ユーザ |
+    | ユーザID | パスワード | ロール |
+    | ---- | ---- | ---- |
+    | yamada@xxx.co.jp | password | 管理者 |
+    | tamura@xxx.co.jp | password | 一般ユーザ |
+
+* OIDCによる外部のIDプロバイダでのログインの場合は、[OIDC認証・認可](#7-oidc認証認可)を参照のこと。
 
 * ログイン後、メニューが表示される。
 
@@ -139,23 +127,16 @@
 
 * Spring Security OAuth2.0 Clientを利用して、OIDCによるユーザ認証・認可を実装する。
 
-* BFFアプリケーションでは、Spring Security OAuth2.0
-  Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
+* BFFアプリケーションでは、Spring Security OAuth2.0 Clientを利用して、外部のIDプロバイダ（Keycloak、GitHub、Google）によるユーザ認証・認可を行う。
 
-*
-Backendアプリケーションについては、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
-または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
-を参照。
+* BackendアプリケーションのOAuth2.0によるAPI認可については、[sample-backendプロジェクト](https://github.com/mysd33/sample-backend#6-oauth20%E3%81%AB%E3%82%88%E3%82%8Bapi%E8%AA%8D%E5%8F%AF)または[sample-backend-dynamodbプロジェクト](https://github.com/mysd33/sample-backend-dynamodb#6-oauth20%E3%81%AB%E3%82%88%E3%82%8Bapi%E8%AA%8D%E5%8F%AF)を参照。
 
-* [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)
-  の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。
-    * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
-      `/login/oauth2/code/{registrationId}`
+* [外部のIDプロバイダでのログイン画面](./src/main/resources/templates/login/oidc-login.html)の各ボタンにOPの認可エンドポイントにリダイレクトするための開始URIを設定している。
+    * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、`/login/oauth2/code/{registrationId}`
 
-![OIDC認証・認可の画面](img/screen/screen8.png)
+    ![OIDC認証・認可の画面](img/screen/screen8.png)
 
-* 特にKeycloackは、ユーザ認証については認可コードフローを使用したシングルサインオン (SSO)
-  、バックチャネルログアウトによるシングルサインアウト（SLO）、IDトークンやユーザー情報エンドポイントからのユーザ情報取得、レルムロールに基づくユーザ認可、アクセストークンのスコープを使ったリソースサーバへのAPI認可、イントロスペクションエンドポイントによるアクセストークン検証といった、OIDC/OAuth2.0の代表的な機能を網羅的に実装している。
+* 特にKeycloakは、ユーザ認証については認可コードフローを使用したシングルサインオン (SSO)、バックチャネルログアウトによるシングルサインアウト（SLO）、IDトークンやユーザー情報エンドポイントからのユーザ情報取得、レルムロールに基づくユーザ認可、アクセストークンのスコープを使ったリソースサーバへのAPI認可、イントロスペクションエンドポイントによるアクセストークン検証といった、OIDC/OAuth2.0の代表的な機能を網羅的に実装している。
 
 * 認可コードフローによるユーザ認証・認可、API認可
 
@@ -300,163 +281,171 @@ sequenceDiagram
 ```
 
 ### 7.1. Keycloak
-
-> [!WARNING]
-> 設定ファイルのインポートする手順に修正
-
 * Keycloakのインストール
     * Zipファイルでの実行（[参考](https://www.keycloak.org/getting-started/getting-started-zip)）
         * [Keycloakのダウンロードサイト](https://www.keycloak.org/downloads)よりzipをダウンロードし、解凍する。
 
-            ```sh
-            # Windowsの場合: C:\Java\keycloak-26.6.4に解凍した場合
-            cd C:\Java\keycloak-26.6.4\bin
-            kc.bat start-dev --http-port 8180
-            ```
 
-            ```sh
-            # Linuxの場合
-            cd /path/to/keycloak-26.6.4/bin
-            kc.sh start-dev --http-port 8180
-            ```
-        * Keycloakの管理コンソールにアクセスする。
-            * http://localhost:8180/
-            * 管理者のユーザ名、パスワードを設定する。
-                * ユーザ名: admin
-                * パスワード: admin
+* Keycloakの設定ファイルのインポート
+    * あらかじめ作成しておいたサンプルアプリケーションで使用する`demo`というレルムの設定ファイルをインポートする。
+        * 自分で手動で設定する場合には、後述の「Keycloakの設定ファイルのインポートを実施せずに手動で設定する場合の手順」を参照する。
+    
+    ```sh
+    # Windowsの場合: C:\Java\keycloak-26.7.4に解凍した場合    
+    cd keycloak
+    C:\Java\keycloak-26.7.4\bin\kc.bat import --file keycloak-demo-realm.json
+    ```
 
-    * Dockerでの実行（[参考](https://www.keycloak.org/getting-started/getting-started-docker)）
-        * 上記の参考サイトに従い、KeycloakをDockerで起動する。
+    ```sh
+    # Linuxの場合: /path/to/keycloak-26.7.4に解凍した場合
+    cd keycloak
+    /path/to/keycloak-26.7.4/bin/kc.sh import --file keycloak-demo-realm.json
+    ```
 
-            ```sh
-            docker run -p 127.0.0.1:8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.6.4 start-dev
-            ```
-* レルムを作成
-    * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
-    * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
-        * Realm name: `demo`
-    * レルムがdemoに切り替わったら、左のメニューの「Realm settings」をクリックし、「Display name」を設定する。
-        * Display name: `サンプルシステム`
-* ユーザを作成
-    * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
-        * Username: `yamadatr`
-        * Email: `yamada@xxx.co.jp`
-        * First Name: `太郎`
-        * Last Name: `山田`
-    * Credentialsタブをクリックし、パスワードを設定する。
-        * Password: `password`
-        * Password Confirmation: `password`
-        * Temporary: OFF
-    * もう一度、「Create new user」をクリックして新しいユーザを作成する。
-        * Username: `tamuraichr`
-        * Email: `tamura@xxx.co.jp`
-        * First Name: `一郎`
-        * Last Name: `田村`
-    * Credentialsタブをクリックし、パスワードを設定する。
-        * Password: `password`
-        * Password Confirmation: `password`
-        * Temporary: OFF
-* グループの設定
-    * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
-        * Group Name: `admin`
-        * Description: 管理者グループ
-    * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
-        * adminグループに、ユーザ`yamadatr`を割り当てる。
-    * もう一度、「Create group」をクリックして新しいグループを作成する。
-        * Group Name: `general`
-        * Description: 一般ユーザグループ
-    * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
-        * generalグループに、ユーザ`tamuraichr`を割り当てる。
-* ロールの設定
-    * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
-        * Role Name: `ADMIN`
-        * Description: 管理者ロール
-    * もう一度、「Create Role」をクリックして新しいロールを作成する。
-        * Role Name: `GENERAL`
-        * Description: 一般ユーザロール
-    * グループにロールを割り当てる
-        * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
-        * 「Role Mappings」タブをクリックし、「Assign Roles」から「Realm Roles」を選択し、グループに`ADMIN`
-          ロールを割り当てる。
-        * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
-* BFFアプリケーションのクライアントを作成
-    * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
-        * Client Type: `OpenID Connect`
-        * Client ID: `sample-bff-oidc`
-        * Name: `sample-bff`
-        * Client authentication: `On`
-        * Authentication flow: `Standard flow`にチェック
-        * Require PKCE: `On`
-        * Root URL: `http://localhost:8080/`
-        * Home URL: `http://localhost:8080/`
-            * CloudFormationの「ECS-ALB-Stack」スタックの出力「PublicALBDNS」の値を参照
-        * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
-            * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
-              `/login/oauth2/code/{registrationId}`
-        * Valid post logout redirect URIs: `http://localhost:8080/`
-    * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
-* ログイン成功後の同意画面の表示を有効化
-    * 「Settings」タブの「Login Settings」セクションで以下の設定
-        * Consent Required: `On`
-* バックチャネルログアウトの設定
-    * 「Settings」タブの「Logout Settings」セクションで以下の設定
-        * Front channel logout: `Off`
-        * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
-            * CloudFormationの「ECS-ALB-Stack」スタックの出力「PublicALBDNS」の値を参照
-            * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、
-              `/logout/connect/back-channel/{registrationId}`
-* IDトークンのクレームにロールを追加する設定
-    * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
-    * 「Client scopes」タブで、「sample-bff-oidc-dedicated」を選択、「Configure a new mapper」で、「User Realm
-      Role」を選択し、ロールをマッピングする。
-    * Name: `realm roles`
-    * Token Claim Name: `realm_access.roles`
-    * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token
-      introspection: `On`にチェックする。（デフォルトのまま）
-* Backendアプリケーションのクライアントを作成
-    * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
-    * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
-        * Client Type: `OpenID Connect`
-        * Client ID: `sample-backend-oidc`
-        * Name: `sample-backend`
-        * Client authentication: `On`
-        * Authentication flow: 全てチェックを外す
-* スコープの追加
-    * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
-        * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
-            * Name: `todo`
-            * Include in token scope: `On`
-        * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
-        * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ
-          `todo`を、Assign type 「Optional」に追加する。
-    * Introspectionエンドポイントアクセス時のaudクレームの検証が通るように設定
-        * 左のメニューの「Client scopes」をクリックし、`todo`を選択
-        * 「Mappers」タブをクリックし、「Add mapper」をクリックして新しいマッパーを作成する。
-            * Name: `todo-audience`
-            * Mapper Type: `Audience`
-            * Included Client Audience: `sample-backend-oidc`
-            * Add to access token: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+    * あくまでも一時的な端末ローカル実行を前提しているため気にしなくても問題ありませんが、クライアントシークレットは必要に応じて値を再生成するなどしてください。
 
-* BFFアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)
-      に規定された以下の環境変数を設定することで、KeycloakのOIDC認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
-        * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-bff-oidc`）を設定
-        * 環境変数`KEYCLOAK_CLIENT_SECRET` 生成されたクライアントシークレットを設定
-* BackendアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
-    * [sample-backendプロジェクト](https://github.com/mysd33/sample-backend#6-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)
-      を参照のこと。
+* Keycloakの起動
+    * 以下のコマンドでKeycloakを起動する。
+
+        ```sh
+        # Windowsの場合: C:\Java\keycloak-26.7.4に解凍した場合
+        cd C:\Java\keycloak-26.7.4\bin
+        kc.bat start-dev --http-port 8180
+        ```
+
+        ```sh        
+        # Linuxの場合: /path/to/keycloak-26.7.4に解凍した場合
+        cd /path/to/keycloak-26.7.4/bin
+        kc.sh start-dev --http-port 8180
+        ```
+
+    * Keycloakの管理コンソールにアクセスする。
+        * http://localhost:8180/
+        * 管理者のユーザ名、パスワードを設定する。
+            * ユーザ名: admin
+            * パスワード: admin
+
+* 【実施不要】（参考）Keycloakの設定ファイルのインポートを実施せずに手動で設定する場合の手順
+    * 以前の手順にある設定ファイルのインポートを行わずに、手動で設定する場合の手順を示す。
+    * レルムを作成
+        * [Keycloak管理コンソール](http://localhost:8180/)に管理者ユーザログイン
+        * 左のメニューの「Manage realms」をクリックし、「Create realm」をクリックして新しいレルムを作成する。
+            * Realm name: `demo`
+        * レルムがdemoに切り替わったら、左のメニューの「Realm settings」をクリックし、「Display name」を設定する。
+            * Display name: `サンプルシステム`
+    * ユーザを作成
+        * 左のメニューの「Users」をクリックし、「Create new user」をクリックして新しいユーザを作成する。
+            * Username: `yamadatr`
+            * Email: `yamada@xxx.co.jp`
+            * First Name: `太郎`
+            * Last Name: `山田`
+        * Credentialsタブをクリックし、「Set password」をクリックしてパスワードを設定する。
+            * Password: `password`
+            * Password Confirmation: `password`
+            * Temporary: Off
+        * もう一度、「Create new user」をクリックして新しいユーザを作成する。
+            * Username: `tamuraichr`
+            * Email: `tamura@xxx.co.jp`
+            * First Name: `一郎`
+            * Last Name: `田村`
+        * Credentialsタブをクリックし、「Set password」をクリックしてパスワードを設定する。
+            * Password: `password`
+            * Password Confirmation: `password`
+            * Temporary: Off
+    * グループの設定
+        * 左のメニューの「Groups」をクリックし、「Create group」をクリックして新しいグループを作成する。
+            * Group Name: `admin`
+            * Description: 管理者グループ
+        * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
+            * adminグループに、ユーザ`yamadatr`を割り当てる。
+        * もう一度、「Create group」をクリックして新しいグループを作成する。
+            * Group Name: `general`
+            * Description: 一般ユーザグループ
+        * Membersタブをクリックし、「Add member」をクリックし、作成したユーザをグループに割り当てる。
+            * generalグループに、ユーザ`tamuraichr`を割り当てる。
+    * ロールの設定
+        * 左のメニューの「Realm roles」をクリックし、「Create Role」をクリックして新しいロールを作成する。
+            * Role Name: `ADMIN`
+            * Description: 管理者ロール
+        * もう一度、「Create Role」をクリックして新しいロールを作成する。
+            * Role Name: `GENERAL`
+            * Description: 一般ユーザロール
+        * グループにロールを割り当てる
+            * 左のメニューの「Groups」をクリックし、作成した`admin`グループをクリックする。
+            * 「Role Mappings」タブをクリックし、「Assign role」から「Realm Roles」を選択し、グループに`ADMIN`ロールを割り当てる。
+            * 同様に、作成した`general`グループにも`GENERAL`ロールを割り当てる。
+    * BFFアプリケーションのクライアントを作成
+        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+            * Client Type: `OpenID Connect`
+            * Client ID: `sample-bff-oidc`
+            * Name: `sample-bff`
+            * Client authentication: `On`
+            * Authentication flow: `Standard flow`にチェック（デフォルトのまま）
+            * Require PKCE: `On`
+            * Root URL: `http://localhost:8080/`
+            * Home URL: `http://localhost:8080/`
+            * Valid Redirect URIs: `http://localhost:8080/login/oauth2/code/keycloak`
+                * Spring Security OAuth2.0 ClientのデフォルトのリダイレクトエンドポイントのURIは、
+                `/login/oauth2/code/{registrationId}`
+            * Valid post logout redirect URIs: `http://localhost:8080/`
+        * 作成したクライアントの設定画面で、「Credentials」タブをクリックし、クライアントシークレットを確認する。
+    * ログイン成功後の同意画面の表示を有効化
+        * 「Settings」タブの「Login Settings」セクションで以下の設定
+            * Consent Required: `On`
+    * バックチャネルログアウトの設定
+        * 「Settings」タブの「Logout Settings」セクションで以下の設定
+            * Front channel logout: `Off`
+            * Backchannel Logout URL: `http://localhost:8080/logout/connect/back-channel/keycloak`
+                * Spring Security OAuth2.0 ClientのデフォルトのバックチャネルログアウトエンドポイントのURIは、
+                `/logout/connect/back-channel/{registrationId}`
+    * IDトークン等のクレームにロールを追加する設定
+        * 左のメニューで「Clients」をクリックし、`sample-bff-oidc`を選択
+        * 「Client scopes」タブで、`sample-bff-oidc-dedicated`を選択、「Configure a new mapper」で、「User Realm Role」を選択し、ロールをマッピングする。
+        * Name: `realm roles`
+        * Token Claim Name: `realm_access.roles`
+        * Add to ID token: `On`、Add to access token: `On`、Add to userinfo: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+    * Backendアプリケーションのクライアントを作成
+        * Introspection エンドポイントを利用して、アクセストークンの検証を行うため、Backendアプリケーションのクライアントを作成する。
+        * 左のメニューの「Clients」をクリックし、「Create client」をクリックして新しいクライアントを作成する。
+            * Client Type: `OpenID Connect`
+            * Client ID: `sample-backend-oidc`
+            * Name: `sample-backend`
+            * Client authentication: `On`
+            * Authentication flow: 全てチェックを外す
+    * スコープの追加
+        * バックエンドのTodo APIへのアクセスを許可するためのスコープ`todo`を追加する。
+            * 左のメニューの「Client scopes」をクリックし、「Create client scope」をクリックして新しいクライアントスコープを作成する。
+                * Name: `todo`
+                * Include in token scope: `On`
+            * 左のメニューの「Clients」をクリックし、`sample-bff-oidc`を選択
+            * 「Client scopes」タブをクリックし、「Add client scope」をクリックして、作成したクライアントスコープ
+            `todo`を、Assign type 「Optional」に追加する。
+        * Introspectionエンドポイントアクセス時のaudクレームの検証が通るように設定
+            * 左のメニューの「Client scopes」をクリックし、`todo`を選択
+            * 「Mappers」タブをクリックし、「Configure a new mapper」をクリックして「Audience」を選択し、新しいマッパーを作成する。
+                * Name: `todo-audience`
+                * Included Client Audience: `sample-backend-oidc`
+                * Add to access token: `On`、Add to token introspection: `On`にチェックする。（デフォルトのまま）
+
+* クライアントIDとクライアントシークレットを環境変数に設定する
+    * BFFアプリケーションのクライアントIDとクライアントシークレットを環境変数に設定する
+        * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)に規定された以下の環境変数を設定することで、KeycloakのOIDC認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+            * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-bff-oidc`）を設定
+            * 環境変数`KEYCLOAK_CLIENT_SECRET` sample-bff-oidcで生成されたクライアントシークレットを設定
+    * Backendアプリケーションのイントロスペクションエンドポイント用のクライアントIDとクライアントシークレットを環境変数に設定する
+        * [sample-backendプロジェクト](https://github.com/mysd33/sample-backend#6-oidc%E8%AA%8D%E8%A8%BC%E8%AA%8D%E5%8F%AF)を参照のこと。
+            * 環境変数`KEYCLOAK_CLIENT_ID` 指定したクライアントID（`sample-backend-oidc`）を設定
+            * 環境変数`KEYCLOAK_CLIENT_SECRET` sample-backend-oidcで生成されたクライアントシークレットを設定
 
 * Keycloakの認証画面
 
-![Keycloak認証画面](img/screen/keycloak.png)
+    ![Keycloak認証画面](img/screen/keycloak.png)
 
 * バックチャネルログアウト
-    *
-    アプリケーションでログイン成功後の状態で、以下のURLにアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
+    * アプリケーションでログイン成功後の状態で、ブラウザの別タブを開き、以下のKeycloakのアカウント管理ページ（例: `http://localhost:8180/realms/demo/account`）にアクセスし、画面右上のサインアウトボタンをクリックすると、Keycloakの画面からログアウトされるだけでなく、アプリケーションのバックチャネルログアウトのエンドポイントが呼び出され、アプリケーション側でもログアウトされる。
         * アプリケーション側の画面で、更新ボタン、画面遷移すると、ログイン画面に遷移することを確認できる。
-    * [http://localhost:8180/realms/demo/account](http://localhost:8180/realms/demo/account)
 
-      ![Keycloakログアウト画面](img/screen/keycloak-backchannel-logout.png)
+    ![Keycloakログアウト画面](img/screen/keycloak-backchannel-logout.png)
 
 ### 7.2. Github
 
@@ -464,9 +453,7 @@ sequenceDiagram
 
 * GitHubアカウントを作成
 * GitHubのOAuth Appを作成
-    *
-    GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)
-    で、「New OAuth App」をクリックして、アプリを追加する。
+    * GitHubのOAuth2.0認証システムを使用するため、[GitHubのDevelopper settingのページ](https://github.com/settings/developers)で、「New OAuth App」をクリックして、アプリを追加する。
         * Application name:任意の文字列
             * 例: `demo`
         * Home Page URL: `http://localhost:8080/`
@@ -476,14 +463,13 @@ sequenceDiagram
     * Client secretsの「Generate a new client secret」をクリックして、クライアントシークレットを生成する。
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)
-      に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)に規定された以下の環境変数を設定することで、GitHubのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GITHUB_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GITHUB_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
 * GitHubの認証画面
 
-![GitHub認証画面](img/screen/github.png)
+    ![GitHub認証画面](img/screen/github.png)
 
 ### 7.3. Google
 
@@ -491,21 +477,19 @@ sequenceDiagram
 
 * Googleアカウントを作成
 * [Google API Console](https://console.developers.google.com/)で、「OAuth同意画面」を作成。
-* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)
-  のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
+* Google API ConsoleのOAuth同意画面の[クライアント](https://console.cloud.google.com/auth/clients)のメニューを選択し、OAuth 2.0 クライアント IDの画面「＋クライアントを作成」から「OAuth 2.0 クライアントID」を作成
     * アプリケーションの種類: ウェブアプリケーション
     * 名前:任意の文字列
     * 承認済みのリダイレクトURI: http://localhost:8080/login/oauth2/code/google
 
 * クライアントIDとクライアントシークレットを環境変数に設定する
-    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)
-      に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
+    * [application-oidc.yml](./src/main/resources/application-dev_oidc.yml)に規定された以下の環境変数を設定することで、GoogleのOAuth2.0認証を利用できるようになる。EclipseやIntelliJ等のIDEから起動する場合には、IDEの環境変数設定で設定するとよい。
         * 環境変数`GOOGLE_CLIENT_ID`client-idに生成されたクライアントIDを設定
         * 環境変数`GOOGLE_CLIENT_SECRET`client-secretに生成されたクライアントシークレットを設定
 
 * Googleの認証画面
 
-![Google認証画面](img/screen/google.png)
+    ![Google認証画面](img/screen/google.png)
 
 ## 8. Spring Bootの実行可能jarでの実行
 
@@ -546,12 +530,9 @@ sequenceDiagram
     場所: クラス userlist45report_6a33d393bc17ef2842ad92471820b69be97dc641474f1ee0117fb323861308cf    
     ```
 
-* 原因は、本サンプルAPが、Jasper Reportsを使ったPDF帳票出力機能を実装しており、Jasper
-  Reportsのライブラリ（JasperReportsのJRJdk13Compilerクラス）がjrxmlの様式コンパイルする際、JasperReportsのライブラリが実行可能jarにしてしまうと、クラスパスからJasperReportsのライブラリを見つけられず、上記のようなエラーになるためである。
+* 原因は、本サンプルAPが、Jasper Reportsを使ったPDF帳票出力機能を実装しており、Jasper Reportsのライブラリ（JasperReportsのJRJdk13Compilerクラス）がjrxmlの様式コンパイルする際、JasperReportsのライブラリが実行可能jarにしてしまうと、クラスパスからJasperReportsのライブラリを見つけられず、上記のようなエラーになるためである。
 
-* 回避策として、Spring
-  Bootのマニュアルの手順にある[実行可能jarを解凍して実行する](https://spring.pleiades.io/spring-boot/reference/packaging/efficient.html)
-  方法を利用して、実行する。これで、JasperReportsのライブラリをクラスパスから見つけられるようになり、正常に起動する。
+* 回避策として、Spring Bootのマニュアルの手順にある[実行可能jarを解凍して実行する](https://spring.pleiades.io/spring-boot/reference/packaging/efficient.html)方法を利用して、実行する。これで、JasperReportsのライブラリをクラスパスから見つけられるようになり、正常に起動する。
 
     ```sh
     cd target
@@ -567,8 +548,7 @@ sequenceDiagram
 
 ## 9. プロファイル「production」でのローカル実行
 
-*
-「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
+* 「production」に切り替えるには、例えばJVM引数を「-Dspring.profiles.active=production」に変更するか、環境変数「SPRING_PROFILES_ACTIVE=production」を設定する等で起動する。
 
 > [!WARNING]
 > 以降の手順が、最新化できていないので、今後見直し予定。
@@ -586,8 +566,7 @@ sequenceDiagram
       Maven Profiles」に「production」を追加してビルドする。
     * AWS上でAPを起動する場合はElastiCache for Redisを起動しておくことを想定している。
 * Redisの利用するようなケースは、通常、Spring Bootのプロファイルも「production」に切り替えることを前提としている。
-*
-Profile「production」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
+* Profile「production」でビルドしたAPをローカル実行する場合は、AP起動前にあらかじめ、redisをDockerで起動しローカル実行しておく必要がある。以下で、Redisのローカル実行手順を示す。
     * DockerによるRedisのローカル実行手順
         * 以下のコマンドで、Redisを起動し6379番ポートで公開する。
         ```sh
@@ -628,11 +607,9 @@ Profile「production」でビルドしたAPをローカル実行する場合は�
 ### 9.2. PostgreSQLのローカル起動
 
 * Spring BootのProfileが「dev」（デフォルト）でSpringBootアプリケーションを実行する場合、H2DBが起動するので、何もしなくてよい。
-*
-Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
+* Profileを「production」に切り替えてSpringBootアプリケーションを実行する場合、DBがPostgreSQLで動作する設定になっているため、事前にPostgreSQLを起動する必要がある。
     * AWS上でAPを起動する場合はAurora for PostgreSQLや、RDS for PostgreSQLを起動しておくことを想定している。
-*
-Profile「production」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
+* Profile「production」でAPをローカル実行する場合は、AP起動前にあらかじめ、PostgreSQLをDockerで起動しローカル実行しておく必要がある。以下で、PostgreSQLのローカル実行手順を示す。
 
 ```sh
 #Postgres SQLの起動
@@ -651,9 +628,7 @@ postgres> CREATE DATABASE testdb;
   BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、「sample-batch」アプリケーション側で、ElasitqMQが起動し、「SampleQueue」という名前のキューを作成し、それを使ってメッセージ送信するので、何もしなくてよい。
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、事前にSQSを起動しておく必要がある。
     * AWS上でAPを起動する場合は、SQSのキューを作成する必要がある。
-    *
-    APがSQSにアクセスする権限が必要なので、開発端末上でローカル実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
-    /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
+    * APがSQSにアクセスする権限が必要なので、開発端末上でローカル実行する場合はSQSのアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにSQSのアクセス権限を持ったIAMロールが付与されている必要がある。
 
 * Profile「production」でAPをローカル実行する場合は、ローカルでDockerでElasticMQを起動しておく必要がある。
 
@@ -661,28 +636,19 @@ postgres> CREATE DATABASE testdb;
 > TBD: DockerでのElasticMQ起動方法
 
 * キューの作成
-    *
-    「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「example.async.queue」プロパティを作成したキュー名に変更する。
+    * 「SampleQueue」という名前のキューを作成すればよいが、キュー名を変更したい場合はapplication-production.ymlの「example.async.queue」プロパティを作成したキュー名に変更する。
     * 「sample-batch」アプリケーション側も変更が必要
 
 ### 9.4. S3の設定
 
 * Spring BootのProfileが「dev」でSpringBootアプリケーションを実行する場合、S3アクセスは無効化し、ローカルのファイルシステムアクセスする設定になっている。
-    *
-    application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、
-    `C:\tmp`になっているので、フォルダの変更が必要な場合は、変更する。
+    * application-dev.ymlの「example.s3.localfake.type」が「file」であり、「example.s3.localfake.base-dir」を一時保存するファイルシステムのディレクトリパスが現状、`C:\tmp`になっているので、フォルダの変更が必要な場合は、変更する。
         * 「sample-batch」アプリケーション側も変更が必要
 
 > [!NOTE]
-> [MinIOのOSSのGitHub](https://github.com/minio/minio)
-はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)
-してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
-> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
-の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)
-に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
->
-なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)
-であったためMinIOを同梱しての配布、利用等には注意すること。
+> [MinIOのOSSのGitHub](https://github.com/minio/minio)はアーカイブされて、以前の[OSSのDockerイメージの配布を停止](https://github.com/minio/minio/issues/21647)してしまった模様。現在は、MinIOは、AIStor Serverとして、Free版とEnterprise版の2つのエディションで提供されている。
+> 以下の[ダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)の手順にしたがって、MinIOのexeをダウンロードして、ローカルでMinIOを起動することが可能である。Free版は[MinIO AIStor Free Tier License Agreement](https://www.min.io/legal/aistor-free-agreement)に同意することで利用可能となっており、スタンドアロンモードのみでの利用、開発作業、プロトタイピング、研究等の目的での利用に制限されている。なお、Free版でもライセンスキーの取得が必要である。
+> なお、以前のバージョンをまだ使用している場合、OSSライセンスと商用ライセンスのデュアルライセンスで提供されており、OSSライセンスは[GNU AGPL v3](https://www.min.io/commercial-license)であったためMinIOを同梱しての配布、利用等には注意すること。
 
 > [!NOTE]
 > LocalStackのHobbyプラン（無料版）は非商用利用限定となったため、注意すること。
@@ -695,8 +661,7 @@ postgres> CREATE DATABASE testdb;
     * MinIOの場合
         * [MinIOのダウンロードサイト](https://www.min.io/download/aistor-server?platform=windows)
           の手順にしたがってコマンドを実行しminio.exeをダウンロードする。
-        * [REQUEST TRIAL LICENSE]
-          のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
+        * 「REQUEST TRIAL LICENSE」のボタンをクリックし、必要事項を記入しライセンスキーを取得する。（メールアドレス宛にライセンスキーのメールが届くので、メール内のリンクをクリックしてライセンキーを確認する）
         * 取得したライセンスキーを、`minio.license`というファイル名で保存する
 
         * 以下は、Windows版での起動例
@@ -722,17 +687,11 @@ postgres> CREATE DATABASE testdb;
 
     * LocalStackの場合
         * Docker起動が前提になるため、Dockerがインストールされている必要がある。
-            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)
-              （個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)
-              （商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
-        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create
-          Your Accountでアカウントを構築しておく。
+            * Windowsであれば[Docker Desktop](https://www.docker.com/products/docker-desktop/)（個人利用であれば無料版可能）、[Rancher Desktop](https://rancherdesktop.io/)（商用利用を含め無料で使用可能）等のDocker環境をインストールしておくこと。
+        * [LocalStackのサイト](https://www.localstack.cloud/pricing#Tab%201)で、Freeプランに記載された、Create Your Accountでアカウントを構築しておく。
             * `LOCALSTACK_AUTH_TOKEN`という環境変数に、LocalStackのサイトでアカウント作成後に表示されるAuthTokenを設定しておく必要がある。
-        * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack
-          CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
-            *
-            ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)
-            を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
+        * [https://docs.localstack.cloud/aws/getting-started/installation/]に従い、LocalStack CLIのインストーラ、pip、Docker等、いずれかの方法でインストールする
+            * ここでは[Docker Composeでの起動例](https://docs.localstack.cloud/aws/getting-started/installation/#docker-compose)を記載する。すでに、サンプルとしてlocalstackフォルダにdocker-compose.ymlが用意されているので、以下の通り起動する。
 
             ```sh
             cd localstack
@@ -805,9 +764,7 @@ postgres> CREATE DATABASE testdb;
 
 * Profileが「production」に切り替えてSpringBootアプリケーションを実行する場合、S3を使用する設定になっているため、事前にS3のバケットを作成しておく必要がある。
     * application-production.ymlの「example.s3.bucket」プロパティを作成したバケット名に変更する。
-    *
-    APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~
-    /.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにS3のアクセス権限を持ったIAMロールが付与されている必要がある。
+    * APがS3にアクセスする権限が必要なので、開発端末上でローカル実行する場合はS3のアクセス権限をもったIAMユーザのクレデンシャル情報が「%USERPROFILE%/.aws/credentials」や「~/.aws/credentials」に格納されている、もしくはEC2やECS等のAWS上のラインタイム環境で実行する場合は対象のAWSリソースにS3のアクセス権限を持ったIAMロールが付与されている必要がある。
 
 * Profileが「production」でローカル実行する場合、上に「dev」の場合の記載の手順同様に、MinIO等のS3のFakeをローカルで起動しておく必要がある。
 
@@ -817,8 +774,7 @@ postgres> CREATE DATABASE testdb;
 > X-Ray SDK/X-Rayデーモンは、AWS X-Ray 用の SDK と Daemon
 は2026年2月25日にメンテナンスモードに入り、2027年2月25日にサポート終了となるため、削除予定。
 
-* Spring
-  BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
+* Spring BootのProfileに「xray」を追加してSpringBootアプリケーションを実行する場合、X-Rayにトレースデータを送信するため、X-Rayデーモンを起動しておく必要がある。
 * ローカルでのX-Rayデーモンの起動方法は以下を参照すること。
     * デーモンのダウンロード
         * https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-daemon.html
@@ -901,9 +857,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 ## 13. AWS上でのアプリ起動
 
-* SpringBoot
-  APをECS/Fargate等で動作させる場合は、[ecs-on-fargate-adot-cfn-demo](https://github.com/mysd33/ecs-on-fargate-adot-cfn-demo)
-  を参照する。
+* SpringBoot APをECS/Fargate等で動作させる場合は、[ecs-on-fargate-adot-cfn-demo](https://github.com/mysd33/ecs-on-fargate-adot-cfn-demo)を参照する。
 
 ## 14. OpenAPI
 
@@ -918,9 +872,7 @@ docker push XXXXXXXXXXXX.dkr.ecr.ap-northeast-1.amazonaws.com/sample-bff:latest
 
 ## 15. logback-access対応によるTomcatアクセスログ
 
-* Spring
-  BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch
-  Logsへ転送することができる。
+* Spring BootのデフォルトのTomcatアクセスログは、ログファイルに出力される形式であるが、logback-accessを利用することで標準出力に出力できるので、APログと一緒に、クラウド・コンテナ実行時にCloudWatch Logsへ転送することができる。
 
 * 開発端末上では、通常のテキスト形式で出力
 
@@ -1038,8 +990,7 @@ public class SampleBffApplication {
 
 * 本サンプルアプリケーションでは、ソフトウェアフレームワーク実装例も同梱している。簡単のため、アプリケーションと同じプロジェクトでソース管理している。
 * ソースコードはcom.example.fwパッケージ配下に格納されている。
-    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype
-      NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
+    * 本格的な開発を実施する場合には、業務アプリケーションと別のGitリポジトリとして管理し、CodeArtifactやSonatype NEXUSといったライブラリリポジトリサーバでjarを管理し、pom.xmlから参照するようにすべきであるし、テストやCI/CD等もちゃんとすべきであるが、ここでは、あえて同じプロジェクトに格納してノウハウを簡単に参考にしてもらいやすいようにしている。
 * 各機能と実現方式は、以下の通り。
 
 | 分類             | 機能                                   | 機能概要と実現方式                                                                                                                                                                                                                                                                                                                                             | 拡張実装 | 拡張実装の格納パッケージ                                                                                                                                                                                        |
