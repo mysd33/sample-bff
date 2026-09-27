@@ -26,7 +26,7 @@ spring:
 # Graceful Shutdown
   lifecycle:
     timeout-per-shutdown-phase: 20s
-# Servicet File Upload Max Size
+# Servlet File Upload Max Size
   servlet:
     multipart:
       file-size-threshold: 512KB
