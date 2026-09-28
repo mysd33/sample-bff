@@ -32,6 +32,8 @@ import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInit
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 
 /// SpringSecurityの設定クラス
 @Configuration
@@ -123,6 +125,22 @@ public class SecurityConfig {
     @Bean
     OidcSessionRegistry oidcSessionRegistry() {
         return new InMemoryOidcSessionRegistry();
+    }
+
+    @Profile("production")
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        // Spring SessionのDefaultCookieSerializerは、
+        // デフォルトで Cookie の値を Base64エンコードして送受信する。
+        // しかし、OidcBackChannelLogoutHandler は内部リクエストを作成する際、
+        // セッションIDを生の文字列のままCookieヘッダーに設定するため、
+        // Spring Session 側で「Base64 デコードできない、または壊れたセッションID」と判定され、
+        // Redis 上のセッションが見つからずに削除がスキップされてしまう。
+        // OidcBackChannelLogoutHandler と整合性を保つため Base64 エンコードを無効化する。
+        // https://github.com/spring-projects/spring-security/issues/14904
+        serializer.setUseBase64Encoding(false);
+        return serializer;
     }
 
     // Spring Security5.7より大幅に設定方法が変更された
