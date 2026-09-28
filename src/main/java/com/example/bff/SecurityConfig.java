@@ -21,10 +21,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OidcBackChannelLogoutHandler;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.session.InMemoryOidcSessionRegistry;
+import org.springframework.security.oauth2.client.oidc.session.OidcSessionRegistry;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
@@ -101,6 +104,25 @@ public class SecurityConfig {
         oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/");
 
         return oidcLogoutSuccessHandler;
+    }
+
+    /// デフォルトではセッションログアウトエンドポイントのセッションIDはJSESSIONIDでCookieに保存されるが
+    /// 商用環境では、Spring Session Redisが利用されるるためセッションIDをSESSIONでCookieに保存するように設定する。
+    /// これを設定しないとバックチャネルログアウト時にセッションIDが取得できず、ログアウト処理が失敗する。
+    @Profile("production")
+    @Bean
+    OidcBackChannelLogoutHandler oidcLogoutHandler(OidcSessionRegistry oidcSessionRegistry) {
+        // https://docs.spring.io/spring-security/reference/servlet/oauth2/login/logout.html#_customizing_the_session_logout_cookie_name
+        OidcBackChannelLogoutHandler logoutHandler = new OidcBackChannelLogoutHandler(
+            oidcSessionRegistry);
+        logoutHandler.setSessionCookieName("SESSION");
+        return logoutHandler;
+    }
+
+    @Profile("production")
+    @Bean
+    OidcSessionRegistry oidcSessionRegistry() {
+        return new InMemoryOidcSessionRegistry();
     }
 
     // Spring Security5.7より大幅に設定方法が変更された
