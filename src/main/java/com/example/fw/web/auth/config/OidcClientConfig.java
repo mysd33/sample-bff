@@ -22,7 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @ConditionalOnProperty(name = OidcClientConfig.OIDC_ENABLED_PROPERTY, havingValue = "true")
 public class OidcClientConfig {
 
-    private static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "oidc";
+    private static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "oauth2";
     static final String OIDC_ENABLED_PROPERTY = PROPERTY_PREFIX + ".enabled";
 
     /// RESTクライアント関連の設定クラス（OIDC OAuth 用）

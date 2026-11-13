@@ -49,7 +49,7 @@ public class SecurityConfig {
 
     /// Spring SecurityによるOIDC併用の認証認可設定
     @Bean
-    @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "true")
+    @ConditionalOnProperty(name = "example.oauth2.enabled", havingValue = "true")
     SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http,
         ClientRegistrationRepository clientRegistrationRepository//,
         //OidcLoginUserService oidcLoginUserService,
@@ -109,8 +109,8 @@ public class SecurityConfig {
 
     /// Spring SecurityによるForm認証のみの認証認可設定
     @Bean
-    @ConditionalOnProperty(name = "example.oidc.enabled", havingValue = "false", matchIfMissing = true)
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @ConditionalOnProperty(name = "example.oauth2.enabled", havingValue = "false", matchIfMissing = true)
+    SecurityFilterChain securityFilterChain(HttpSecurity http) {
         // フォーム認証によるログイン処理
         http.formLogin(login -> login.loginProcessingUrl("/authenticate") // ログイン処理のパス
                 .loginPage("/login") // ログインページの指定

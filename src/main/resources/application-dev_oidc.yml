@@ -30,5 +30,5 @@ logging:
 
 # OIDC/OAuth認証機能の有効
 example:
-  oidc:
+  oauth2:
     enabled: true

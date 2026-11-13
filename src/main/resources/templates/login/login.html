@@ -65,8 +65,8 @@
         </tbody>
       </table>
     </div>
-    <!--/* example.oidc.enabledプロパティが有効な場合にリンクボタンを表示 */-->
-    <div th:if="${@environment.getProperty('example.oidc.enabled')}">
+    <!--/* example.oauth2.enabledプロパティが有効な場合にリンクボタンを表示 */-->
+    <div th:if="${@environment.getProperty('example.oauth2.enabled')}">
       <p>※外部のIDプロバイダでもログインできます</p>
       <a class="btn btn btn-outline-primary"
          th:href="@{/oidc-login}">外部のIDプロバイダでログイン</a>
