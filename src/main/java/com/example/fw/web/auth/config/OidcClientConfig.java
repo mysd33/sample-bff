@@ -3,19 +3,23 @@ package com.example.fw.web.auth.config;
 import com.example.fw.common.constants.FrameworkConstants;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
+import com.example.fw.web.auth.RedisOidcSessionRegistry;
+import java.time.Duration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OidcBackChannelLogoutHandler;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.oidc.session.InMemoryOidcSessionRegistry;
 import org.springframework.security.oauth2.client.oidc.session.OidcSessionRegistry;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.reactive.function.client.WebClient;
+import tools.jackson.databind.ObjectMapper;
 
 /// OIDC OAuthクライアント関連の設定クラス
 @Configuration
@@ -67,6 +71,17 @@ public class OidcClientConfig {
     @ConditionalOnClass(name = "org.springframework.session.data.redis.RedisIndexedSessionRepository")
     static class SpringSessionConfig {
 
+        /// OidcSessionRegistryのデフォルト実装がInMemoryOidcSessionRegistryであるため、
+        /// 複数台でのサーバ構成だとセッション情報が共有されず、バックチャネルログアウトが正しく動作しない。
+        /// Spring Session Redisが利用される場合は、Redis実装のOidcSessionRegistryを利用するように設定する。
+        @Bean
+        OidcSessionRegistry oidcSessionRegistry(
+            StringRedisTemplate redisTemplate, ObjectMapper objectMapper,
+            @Value("${server.servlet.session.timeout:30m}") Duration sessionTimeout) {
+            return new RedisOidcSessionRegistry(redisTemplate, objectMapper,
+                sessionTimeout);
+        }
+
         /// デフォルトではセッションログアウトエンドポイントのセッションIDはJSESSIONIDでCookieに保存されるが
         /// 商用環境では、Spring Session Redisが利用されるるためセッションIDをSESSIONでCookieに保存するように設定する。
         /// これを設定しないとバックチャネルログアウト時にセッションIDが取得できず、ログアウト処理が失敗する。
@@ -77,11 +92,6 @@ public class OidcClientConfig {
                 oidcSessionRegistry);
             logoutHandler.setSessionCookieName("SESSION");
             return logoutHandler;
-        }
-
-        @Bean
-        OidcSessionRegistry oidcSessionRegistry() {
-            return new InMemoryOidcSessionRegistry();
         }
 
         @Bean
