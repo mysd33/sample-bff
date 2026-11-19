@@ -3,7 +3,9 @@ package com.example.fw.web.auth.config;
 import com.example.fw.common.constants.FrameworkConstants;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
-import com.example.fw.web.auth.RedisOidcSessionRegistry;
+import com.example.fw.web.auth.ExternalStoreOidcSessionRegistry;
+import com.example.fw.web.auth.OidcSessionDataRepository;
+import com.example.fw.web.auth.RedisOidcSessionDataRepository;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -71,15 +73,21 @@ public class OidcClientConfig {
     @ConditionalOnClass(name = "org.springframework.session.data.redis.RedisIndexedSessionRepository")
     static class SpringSessionConfig {
 
-        /// OidcSessionRegistryのデフォルト実装がInMemoryOidcSessionRegistryであるため、
-        /// 複数台でのサーバ構成だとセッション情報が共有されず、バックチャネルログアウトが正しく動作しない。
-        /// Spring Session Redisが利用される場合は、Redis実装のOidcSessionRegistryを利用するように設定する。
+        /// 外部のストアに管理されたOidcSessionRegistry実装の定義
+        /// Spring Session Redisが利用される場合として、Redis実装のOidcSessionRegistryを利用するように設定する。
         @Bean
         OidcSessionRegistry oidcSessionRegistry(
+            OidcSessionDataRepository oidcSessionDataRepository) {
+            return new ExternalStoreOidcSessionRegistry(oidcSessionDataRepository);
+        }
+
+        /// OidcSession情報（クライアントセッションIDとOpenID ProviderとのセッションIDを紐づける情報）を
+        /// Redisを利用し永続化するためのリポジトリの定義
+        @Bean
+        OidcSessionDataRepository oidcSessionDataRepository(
             StringRedisTemplate redisTemplate, ObjectMapper objectMapper,
             @Value("${server.servlet.session.timeout:30m}") Duration sessionTimeout) {
-            return new RedisOidcSessionRegistry(redisTemplate, objectMapper,
-                sessionTimeout);
+            return new RedisOidcSessionDataRepository(redisTemplate, objectMapper, sessionTimeout);
         }
 
         /// デフォルトではセッションログアウトエンドポイントのセッションIDはJSESSIONIDでCookieに保存されるが
