@@ -6,7 +6,6 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import reactor.core.publisher.Hooks;
 
 @Configuration
 public class CommonWebClientConfig {
@@ -22,8 +21,10 @@ public class CommonWebClientConfig {
                 }
             }, //
             MDC::clear);
+        // TODO: 「SecurityContext の遅延取得 → HttpSession → Redis 接続 → Reactor subscribe → SecurityContext」の循環でスタックオーバフローの事象が起きた
+        // オンラインAPのみコメントアウトして様子を見る。（バッチAPはこれがないとリトライのときなどうまく伝搬せずのためオンラインのみ）
         // Reactor で自動伝搬を有効化
-        Hooks.enableAutomaticContextPropagation();
+        // Hooks.enableAutomaticContextPropagation();
     }
 
     /// WebClientでのログ出力クラス
