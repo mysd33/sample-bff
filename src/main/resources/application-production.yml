@@ -111,5 +111,5 @@ example:
   async:
     queue: SampleQueue
 # OIDC/OAuth認証機能の有効
-  oidc:
+  oauth2:
     enabled: true
