@@ -22,6 +22,8 @@ public class OAuth2AuthorizedClientRemoveLogoutHandler implements LogoutHandler 
                 oauth2AuthenticationToken.getName()
             );
         }
+        // 現状、バックチャネルログアウトの際には、OidcBackChannelLogoutAuthenticationがデフォルト修飾子のため、参照できないことから
+        // instanceofによる判定式およびremoveAuthorizedClientの呼び出しは、バックチャネルログアウト時には実行されない。
     }
 
 }
