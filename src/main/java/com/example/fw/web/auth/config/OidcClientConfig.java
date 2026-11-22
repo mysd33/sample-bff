@@ -6,6 +6,7 @@ import com.example.fw.common.httpclient.WebClientXrayFilter;
 import com.example.fw.web.auth.ExternalStoreOidcSessionRegistry;
 import com.example.fw.web.auth.OidcSessionDataRepository;
 import com.example.fw.web.auth.RedisOidcSessionDataRepository;
+import com.example.fw.web.auth.TransactionalJdbcOAuth2AuthorizedClientService;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -14,9 +15,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OidcBackChannelLogoutHandler;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.oidc.session.OidcSessionRegistry;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -30,6 +34,19 @@ public class OidcClientConfig {
 
     private static final String PROPERTY_PREFIX = FrameworkConstants.PROPERTY_BASE_NAME + "oauth2";
     static final String OIDC_ENABLED_PROPERTY = PROPERTY_PREFIX + ".enabled";
+    static final String OAUTH2_AUTHORIZED_CLIENT_SERVICE_STORE_TYPE =
+        PROPERTY_PREFIX + ".authorized-client-service.store-type";
+
+    /// RelyingPartyの複数ノード間で共有するための外部のストアに管理されたOidcSessionRegistry実装の定義
+    @ConditionalOnProperty(name = OidcClientConfig.OAUTH2_AUTHORIZED_CLIENT_SERVICE_STORE_TYPE, havingValue = "jdbc", matchIfMissing = true)
+    @Bean
+    OAuth2AuthorizedClientService authorizedClientService(
+        JdbcOperations jdbcOperations,
+        ClientRegistrationRepository clientRegistrationRepository) {
+        return new TransactionalJdbcOAuth2AuthorizedClientService(
+            jdbcOperations,
+            clientRegistrationRepository);
+    }
 
     /// RESTクライアント関連の設定クラス（OIDC OAuth 用）
     /// WebClientクラス
@@ -73,11 +90,12 @@ public class OidcClientConfig {
     @ConditionalOnClass(name = "org.springframework.session.data.redis.RedisIndexedSessionRepository")
     static class SpringSessionConfig {
 
-        /// 外部のストアに管理されたOidcSessionRegistry実装の定義
-        /// Spring Session Redisが利用される場合として、Redis実装のOidcSessionRegistryを利用するように設定する。
+        /// RelyingPartyの複数ノード間で共有するための外部のストアに管理されたOidcSessionRegistry実装の定義
         @Bean
         OidcSessionRegistry oidcSessionRegistry(
             OidcSessionDataRepository oidcSessionDataRepository) {
+            // 標準機能がないため、独自実装のExternalStoreOidcSessionRegistryを利用する。
+            // Spring Session Redisが利用される場合として、Redis実装のOidcSessionRegistryが利用される。
             return new ExternalStoreOidcSessionRegistry(oidcSessionDataRepository);
         }
 
