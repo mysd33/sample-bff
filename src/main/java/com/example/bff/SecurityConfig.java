@@ -3,6 +3,7 @@ package com.example.bff;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toH2Console;
 import static org.springframework.boot.security.autoconfigure.web.servlet.PathRequest.toStaticResources;
 
+import com.example.fw.web.auth.OAuth2AuthorizedClientRemoveLogoutHandler;
 import com.example.fw.web.auth.config.AuthConfigPackage;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -51,7 +52,8 @@ public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(name = "example.oauth2.enabled", havingValue = "true")
     SecurityFilterChain securityFilterChainForOIDC(HttpSecurity http,
-        ClientRegistrationRepository clientRegistrationRepository//,
+        ClientRegistrationRepository clientRegistrationRepository,
+        OAuth2AuthorizedClientRemoveLogoutHandler authorizedClientRemoveLogoutHandler
         //OidcLoginUserService oidcLoginUserService,
         //OAuth2LoginUserService oauth2LoginUserService
     ) {
@@ -81,6 +83,7 @@ public class SecurityConfig {
             .oidcLogout(logout -> logout.backChannel(Customizer.withDefaults()))
             // ログアウト処理（フォーム認証、OIDCのRP起点のログアウト処理共通）
             .logout(logout -> logout.logoutUrl("/logout") // ログアウトのURL
+                .addLogoutHandler(authorizedClientRemoveLogoutHandler)
                 .logoutSuccessHandler(oidcLogoutSuccessHandler(clientRegistrationRepository))
             )
             // OAuthClientの設定

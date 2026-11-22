@@ -4,6 +4,7 @@ import com.example.fw.common.constants.FrameworkConstants;
 import com.example.fw.common.httpclient.WebClientLoggingFilter;
 import com.example.fw.common.httpclient.WebClientXrayFilter;
 import com.example.fw.web.auth.ExternalStoreOidcSessionRegistry;
+import com.example.fw.web.auth.OAuth2AuthorizedClientRemoveLogoutHandler;
 import com.example.fw.web.auth.OidcSessionDataRepository;
 import com.example.fw.web.auth.RedisOidcSessionDataRepository;
 import com.example.fw.web.auth.TransactionalJdbcOAuth2AuthorizedClientService;
@@ -48,6 +49,12 @@ public class OidcClientConfig {
             clientRegistrationRepository);
     }
 
+    @Bean
+    OAuth2AuthorizedClientRemoveLogoutHandler authorizedClientRemoveLogoutHandler(
+        OAuth2AuthorizedClientService authorizedClientService) {
+        return new OAuth2AuthorizedClientRemoveLogoutHandler(authorizedClientService);
+    }
+    
     /// RESTクライアント関連の設定クラス（OIDC OAuth 用）
     /// WebClientクラス
     @Profile("!xray")

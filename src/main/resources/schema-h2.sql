@@ -35,7 +35,7 @@ CREATE INDEX IF NOT EXISTS transaction_token_index_clean ON transaction_token (s
 CREATE SEQUENCE IF NOT EXISTS transaction_token_sequence;
 
 /* Spring Security OAuth 2.0 Client(JdbcOAuth2AuthorizedClientService）用テーブル */
-CREATE TABLE oauth2_authorized_client
+CREATE TABLE IF NOT EXISTS oauth2_authorized_client
 (
     client_registration_id  varchar(100)                            NOT NULL,
     principal_name          varchar(200)                            NOT NULL,
