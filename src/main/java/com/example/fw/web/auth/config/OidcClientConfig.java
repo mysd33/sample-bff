@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OidcBackChannelLogoutHandler;
+import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.oidc.session.OidcSessionRegistry;
@@ -45,8 +46,7 @@ public class OidcClientConfig {
         JdbcOperations jdbcOperations,
         ClientRegistrationRepository clientRegistrationRepository) {
         return new TransactionalJdbcOAuth2AuthorizedClientService(
-            jdbcOperations,
-            clientRegistrationRepository);
+            new JdbcOAuth2AuthorizedClientService(jdbcOperations, clientRegistrationRepository));
     }
 
     @Bean
@@ -54,7 +54,7 @@ public class OidcClientConfig {
         OAuth2AuthorizedClientService authorizedClientService) {
         return new OAuth2AuthorizedClientRemoveLogoutHandler(authorizedClientService);
     }
-    
+
     /// RESTクライアント関連の設定クラス（OIDC OAuth 用）
     /// WebClientクラス
     @Profile("!xray")
